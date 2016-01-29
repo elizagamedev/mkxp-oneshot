@@ -115,10 +115,13 @@ Script
 # Puzzles
 Puzzle_Sokoban
 Puzzle_Pixel
+Puzzle_Film
 
 # Misc
 SaveLoad
 Ed_Message
 Particles
+
+Demo
 
 Main
