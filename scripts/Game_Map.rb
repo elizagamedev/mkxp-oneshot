@@ -23,10 +23,13 @@ class Game_Map
   attr_accessor :battleback_name          # battleback file name
   attr_accessor :display_x                # display x-coordinate * 128
   attr_accessor :display_y                # display y-coordinate * 128
+  attr_accessor :wrap_x                   # display x-coordinate * 128 for wrap
+  attr_accessor :wrap_y                   # display y-coordinate * 128 for wrap
   attr_accessor :need_refresh             # refresh request flag
   attr_accessor :bg_name                  # bg file name
   attr_accessor :particles_type           # particles name
-  attr_accessor :clamped_panorama         # panorama is clamped?
+  attr_accessor :clamped_x                # panorama is horizontally clamped?
+  attr_accessor :clamped_y                # panorama is vertically clamped?
   attr_accessor :wrapping                 # map is wrapping?
   attr_accessor :ambient                  # ambient light
   attr_reader   :passages                 # passage table
@@ -39,9 +42,14 @@ class Game_Map
   #--------------------------------------------------------------------------
   # * List of clamped panorama images
   #--------------------------------------------------------------------------
-  CLAMPED_PANORAMAS = [
+  CLAMPED = [
     'red',
     'red_distort',
+  ]
+  CLAMPED_X = [
+  ]
+  CLAMPED_Y = [
+    'red_obsdesk',
   ]
   #--------------------------------------------------------------------------
   # * Object Initialization
@@ -85,6 +93,8 @@ class Game_Map
     # Initialize displayed coordinates
     @display_x = 0
     @display_y = 0
+    @wrap_x = 0
+    @wrap_y = 0
     # Clear refresh request flag
     @need_refresh = false
     # Set map event data
@@ -114,7 +124,19 @@ class Game_Map
     # Clear particles
     @particles_type = nil
     # Unclamp panorama
-    @clamped_panorama = CLAMPED_PANORAMAS.include? @panorama_name
+    if CLAMPED.include? @panorama_name
+      @clamped_x = true
+      @clamped_y = true
+    elsif CLAMPED_X.include? @panorama_name
+      @clamped_x = true
+      @clamped_y = false
+    elsif CLAMPED_Y.include? @panorama_name
+      @clamped_x = false
+      @clamped_y = true
+    else
+      @clamped_x = false
+      @clamped_y = false
+    end
     # Unwrap map
     @wrapping = false
     # Full bright ambient light

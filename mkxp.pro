@@ -242,6 +242,7 @@ EMBED = \
 	shader/simpleAlpha.frag \
 	shader/simpleAlphaUni.frag \
 	shader/flashMap.frag \
+	shader/obscured.frag \
 	shader/minimal.vert \
 	shader/simple.vert \
 	shader/simpleColor.vert \

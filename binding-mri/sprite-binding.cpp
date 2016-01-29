@@ -69,6 +69,7 @@ DEF_PROP_F(Sprite, Angle)
 DEF_PROP_F(Sprite, WavePhase)
 
 DEF_PROP_B(Sprite, Mirror)
+DEF_PROP_B(Sprite, Obscured)
 
 RB_METHOD(spriteWidth)
 {
@@ -121,6 +122,7 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, BlendType, "blend_type" );
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
+	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
 
 	if (rgssVer >= 2)
 	{

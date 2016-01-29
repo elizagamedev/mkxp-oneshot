@@ -139,6 +139,17 @@ class Window_Item < Window_Selectable
         $game_system.se_play($data_system.buzzer_se)
         return
       end
+
+      # Run common event of item if valid
+      item = @data[@index]
+      if item.common_event_id > 0
+        $game_temp.common_event_id = item.common_event_id
+        $game_system.se_play($data_system.decision_se)
+        @fade_out = true
+        return
+      end
+
+      # Select or combine items
       item_a = $game_variables[1]
       item_b = @data[@index].id
       if item_a == item_b

@@ -50,6 +50,13 @@ def has_lightbulb?
   $game_party.item_number(1) > 0
 end
 
+def button_pressed?
+  (1..18).each do |i|
+    return true if Input.trigger?(i)
+  end
+  return false
+end
+
 def enter_name
   $game_temp.name_calling = true
 end
@@ -100,10 +107,6 @@ def clear_lights
   #$scene.clear_lights
 end
 
-def clamp_panorama
-  $game_map.clamped_panorama = true
-end
-
 def wrap_map
   $game_map.wrapping = true
 end
@@ -133,4 +136,8 @@ end
 
 def plight_update_timer
   Script.tmp_v1 = ((Time.now - $game_oneshot.plight_timer) / 60).to_i
+end
+
+def quit
+  $scene = nil
 end

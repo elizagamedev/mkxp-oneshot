@@ -304,6 +304,18 @@ private:
 	GLint u_source, u_destination, u_subRect, u_opacity;
 };
 
+/* Obscured graphic */
+class ObscuredShader : public ShaderBase
+{
+public:
+	ObscuredShader();
+
+	void setObscured(const TEX::ID value);
+
+private:
+	GLint u_obscured;
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -325,6 +337,7 @@ struct ShaderSet
 	SimpleMatrixShader simpleMatrix;
 	BlurShader blur;
 	TilemapVXShader tilemapVX;
+	ObscuredShader obscured;
 };
 
 #endif // SHADER_H

@@ -54,6 +54,7 @@ class Game_Temp
   attr_accessor :debug_top_row            # debug screen: for saving conditions
   attr_accessor :debug_index              # debug screen: for saving conditions
   attr_accessor :footstep_sfx             # current footstep sfx array
+  attr_accessor :filmsprite               # film puzzle sprite
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -104,5 +105,6 @@ class Game_Temp
     @debug_top_row = 0
     @debug_index = 0
     @footstep_sfx = nil
+    @filmsprite = nil
   end
 end

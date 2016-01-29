@@ -7,8 +7,8 @@ class Ed_Message
   def initialize
     @viewport = Viewport.new(0, 0, 640, 480)
     @sprite_bg = Sprite.new(@viewport)
-    @sprite_bg.bitmap = RPG::Cache.menu('ed')
-    @sprite_bg.blend_type = 2
+    @sprite_bg.bitmap = Bitmap.new(640, 480)
+    @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(640, HEIGHT)
     @sprite_text.bitmap = @contents

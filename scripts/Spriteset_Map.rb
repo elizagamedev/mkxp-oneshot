@@ -195,13 +195,16 @@ class Spriteset_Map
     @tilemap.oy = $game_map.display_y / 4
     @tilemap.update
     # Update panorama plane
-    if $game_map.clamped_panorama
+    if $game_map.clamped_x
       x = ($game_player.real_x.to_f / (($game_map.width - 1) * 128)) * (@panorama.bitmap.width - 640)
-      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height - 480)
       @panorama.ox = x < 0.0 ? 0.0 : x
-      @panorama.oy = y < 0.0 ? 0.0 : y
     else
       @panorama.ox = $game_map.display_x / 8
+    end
+    if $game_map.clamped_y
+      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height - 480)
+      @panorama.oy = y < 0.0 ? 0.0 : y
+    else
       @panorama.oy = $game_map.display_y / 8
     end
     # Update fog plane

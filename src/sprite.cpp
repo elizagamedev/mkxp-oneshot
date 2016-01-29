@@ -33,6 +33,8 @@
 #include "shader.h"
 #include "glstate.h"
 #include "quadarray.h"
+#include "config.h"
+#include "debugwriter.h"
 
 #include <math.h>
 
@@ -63,6 +65,8 @@ struct SpritePrivate
 	/* Would this sprite be visible on
 	 * the screen if drawn? */
 	bool isVisible;
+
+	bool obscured;
 
 	Color *color;
 	Tone *tone;
@@ -95,6 +99,7 @@ struct SpritePrivate
 	      opacity(255),
 	      blendType(BlendNormal),
 	      isVisible(false),
+	      obscured(false),
 	      color(&tmp.color),
 	      tone(&tmp.tone)
 
@@ -322,6 +327,7 @@ DEF_ATTR_SIMPLE(Sprite, Opacity,     int,     p->opacity)
 DEF_ATTR_SIMPLE(Sprite, SrcRect,     Rect&,  *p->srcRect)
 DEF_ATTR_SIMPLE(Sprite, Color,       Color&, *p->color)
 DEF_ATTR_SIMPLE(Sprite, Tone,        Tone&,  *p->tone)
+DEF_ATTR_SIMPLE(Sprite, Obscured,    bool,    p->obscured)
 
 void Sprite::setBitmap(Bitmap *bitmap)
 {
@@ -518,7 +524,15 @@ void Sprite::draw()
 	                    flashing              ||
 	                    p->bushDepth != 0;
 
-	if (renderEffect)
+	if (p->obscured)
+	{
+		ObscuredShader &shader = shState->shaders().obscured;
+		shader.bind();
+		shader.applyViewportProj();
+		shader.setObscured(shState->graphics().obscuredTex());
+		base = &shader;
+	}
+	else if (renderEffect)
 	{
 		SpriteShader &shader = shState->shaders().sprite;
 

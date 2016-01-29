@@ -6,6 +6,7 @@
 #==============================================================================
 
 class Interpreter
+  @@chill_pill = false
   #--------------------------------------------------------------------------
   # * Object Initialization
   #     depth : nest depth
@@ -128,6 +129,11 @@ class Interpreter
         # Call Graphics.update for freeze prevention
         Graphics.update
         @loop_count = 0
+      end
+      # Chill pill
+      if @@chill_pill
+        @@chill_pill = false
+        return
       end
       # If map is different than event startup time
       if $game_map.map_id != @map_id
@@ -305,5 +311,9 @@ class Interpreter
         yield actor if actor != nil
       end
     end
+  end
+  # Chill out
+  def self.take_a_chill_pill
+    @@chill_pill = true
   end
 end

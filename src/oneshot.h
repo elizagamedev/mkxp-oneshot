@@ -42,16 +42,25 @@ public:
 		GRADIENT_VERTICAL,
 	};
 
+	void update();
+
 	//Accessors
 	const std::string &lang() const;
 	const std::string &userName() const;
 	const std::string &savePath() const;
+	const std::vector<uint8_t> &obscuredMap() const;
+	bool obscuredCleared() const;
 
 	//Mutators
 	void setYesNo(const char *yes, const char *no);
+	void setWindowPos(int x, int y);
+	void resetObscured();
 
 	//Functions
 	bool msgbox(int type, const char *body, const char *title);
+
+	//Dirty flag for obscured texture
+	bool obscuredDirty;
 
 private:
 	OneshotPrivate *p;

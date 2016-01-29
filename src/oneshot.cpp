@@ -80,6 +80,12 @@ struct OneshotPrivate
 	std::string txtYes;
 	std::string txtNo;
 
+	//Alpha texture data for portions of window obscured by screen edges
+	int winX, winY;
+	bool winPosChanged;
+	std::vector<uint8_t> obscuredMap;
+	bool obscuredCleared;
+
 #if defined OS_LINUX
 	//GTK+
 	void *libgtk;
@@ -205,6 +211,11 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 	p = new OneshotPrivate();
 	p->window = threadData.window;
 	p->savePath = threadData.config.commonDataPath.substr(0, threadData.config.commonDataPath.size() - 1);
+	p->obscuredMap.resize(640 * 480, 255);
+	obscuredDirty = true;
+	p->winX = 0;
+	p->winY = 0;
+	p->winPosChanged = false;
 
 	/********************
 	 * USERNAME/SAVE PATH
@@ -337,6 +348,69 @@ Oneshot::~Oneshot()
 	delete p;
 }
 
+void Oneshot::update()
+{
+	if (p->winPosChanged)
+	{
+		p->winPosChanged = false;
+
+		//Map of unobscured pixels in this frame
+		static std::vector<bool> obscuredFrame(p->obscuredMap.size());
+		std::fill(obscuredFrame.begin(), obscuredFrame.end(), true);
+
+		SDL_Rect screenRect;
+		screenRect.x = p->winX;
+		screenRect.y = p->winY;
+		screenRect.w = 640;
+		screenRect.h = 480;
+
+		//Update obscured map and texture for window portion offscreen
+		for (int i = 0, max = SDL_GetNumVideoDisplays(); i < max; ++i)
+		{
+			SDL_Rect bounds;
+			SDL_GetDisplayBounds(i, &bounds);
+
+			//If it's fully within the monitor, it's completely unobscured
+			//and no texture update is necessary
+			if (p->winX >= bounds.x && p->winY >= bounds.y && p->winX + 640 <= bounds.x + bounds.w && p->winY + 480 <= bounds.y + bounds.h)
+				return;
+
+			//Update obscuredFrame otherwise
+			SDL_Rect intersect;
+			if (!SDL_IntersectRect(&screenRect, &bounds, &intersect))
+				continue;
+			intersect.x -= p->winX;
+			intersect.y -= p->winY;
+			for (int y = intersect.y; y < intersect.y + intersect.h; ++y)
+			{
+				int start = y * 640 + intersect.x;
+				std::fill(obscuredFrame.begin() + start, obscuredFrame.begin() + (start + intersect.w), false);
+			}
+		}
+
+		//Update the obscured map, and return prematurely if we don't have any changes
+		//to make to the texture
+		bool needsUpdate = false;
+		bool cleared = true;
+		for (size_t i = 0; i < obscuredFrame.size(); ++i)
+		{
+			if (obscuredFrame[i])
+			{
+				p->obscuredMap[i] = 0;
+				needsUpdate = true;
+			}
+			if (p->obscuredMap[i] == 255)
+				cleared = false;
+		}
+		p->obscuredCleared = cleared;
+		if (!needsUpdate)
+			return;
+
+		//Flag as dirty
+		obscuredDirty = true;
+	}
+}
+
 const std::string &Oneshot::lang() const
 {
 	return p->lang;
@@ -350,6 +424,16 @@ const std::string &Oneshot::userName() const
 const std::string &Oneshot::savePath() const
 {
 	return p->savePath;
+}
+
+const std::vector<uint8_t> &Oneshot::obscuredMap() const
+{
+	return p->obscuredMap;
+}
+
+bool Oneshot::obscuredCleared() const
+{
+	return p->obscuredCleared;
 }
 
 void Oneshot::setYesNo(const char *yes, const char *no)
@@ -457,4 +541,17 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	SDL_ShowMessageBox(&data, &button);
 	return button ? true : false;
 #endif
+}
+
+void Oneshot::setWindowPos(int x, int y)
+{
+	p->winX = x;
+	p->winY = y;
+	p->winPosChanged = true;
+}
+
+void Oneshot::resetObscured()
+{
+	std::fill(p->obscuredMap.begin(), p->obscuredMap.end(), 255);
+	obscuredDirty = true;
 }

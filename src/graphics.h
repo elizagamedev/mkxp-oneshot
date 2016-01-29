@@ -23,6 +23,7 @@
 #define GRAPHICS_H
 
 #include "util.h"
+#include "gl-util.h"
 
 class Scene;
 class Bitmap;
@@ -34,7 +35,7 @@ struct AtomicFlag;
 class Graphics
 {
 public:
-	void update();
+	void update(bool limitFps = true);
 	void freeze();
 	void transition(int duration = 8,
 	                const char *filename = "",
@@ -69,6 +70,8 @@ public:
 	 * if "checkReset" */
 	void repaintWait(const AtomicFlag &exitCond,
 	                 bool checkReset = true);
+
+	const TEX::ID &obscuredTex() const;
 
 private:
 	Graphics(RGSSThreadData *data);

@@ -52,6 +52,7 @@
 #include "blurH.vert.xxd"
 #include "blurV.vert.xxd"
 #include "tilemapvx.vert.xxd"
+#include "obscured.frag.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -640,4 +641,18 @@ void BltShader::setSubRect(const FloatRect &value)
 void BltShader::setOpacity(float value)
 {
 	gl.Uniform1f(u_opacity, value);
+}
+
+ObscuredShader::ObscuredShader()
+{
+	INIT_SHADER(simple, obscured, ObscuredShader);
+
+	ShaderBase::init();
+
+	GET_U(obscured);
+}
+
+void ObscuredShader::setObscured(const TEX::ID value)
+{
+	setTexUniform(u_obscured, 1, value);
 }

@@ -37,6 +37,7 @@
 #include "intrulist.h"
 #include "binding.h"
 #include "debugwriter.h"
+#include "oneshot.h"
 
 #include <SDL_video.h>
 #include <SDL_timer.h>
@@ -484,6 +485,8 @@ struct GraphicsPrivate
 	 * (disposed on reset) */
 	IntruList<Disposable> dispList;
 
+	TEX::ID obscuredTex;
+
 	GraphicsPrivate(RGSSThreadData *rtData)
 	    : scRes(DEF_SCREEN_W, DEF_SCREEN_H),
 	      scSize(scRes),
@@ -516,6 +519,12 @@ struct GraphicsPrivate
 		TEXFBO::linkFBO(transBuffer);
 
 		fpsLimiter.resetFrameAdjust();
+
+		obscuredTex = TEX::gen();
+		TEX::bind(obscuredTex);
+		TEX::setRepeat(false);
+		TEX::setSmooth(false);
+		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, 640, 480, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 	}
 
 	~GraphicsPrivate()
@@ -612,6 +621,12 @@ struct GraphicsPrivate
 
 	void redrawScreen()
 	{
+		if (shState->oneshot().obscuredDirty)
+		{
+			TEX::bind(obscuredTex);
+			TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
+			shState->oneshot().obscuredDirty = false;
+		}
 		screen.composite();
 
 		GLMeta::blitBeginScreen(winSize);
@@ -665,7 +680,7 @@ Graphics::~Graphics()
 	delete p;
 }
 
-void Graphics::update()
+void Graphics::update(bool limitFps)
 {
 	p->checkShutDownReset();
 	p->checkSyncLock();
@@ -673,23 +688,33 @@ void Graphics::update()
 	if (p->frozen)
 		return;
 
-	if (p->fpsLimiter.frameSkipRequired())
+	if (limitFps)
 	{
-		if (p->threadData->config.frameSkip)
+		if (p->fpsLimiter.frameSkipRequired())
 		{
-			/* Skip frame */
-			p->fpsLimiter.delay();
-			++p->frameCount;
-			p->threadData->ethread->notifyFrame();
+			if (p->threadData->config.frameSkip)
+			{
+				/* Skip frame */
+				p->fpsLimiter.delay();
+				++p->frameCount;
+				p->threadData->ethread->notifyFrame();
 
-			return;
-		}
-		else
-		{
-			/* Just reset frame adjust counter */
-			p->fpsLimiter.resetFrameAdjust();
+				return;
+			}
+			else
+			{
+				/* Just reset frame adjust counter */
+				p->fpsLimiter.resetFrameAdjust();
+			}
 		}
 	}
+	else
+	{
+		if (!p->fpsLimiter.frameSkipRequired())
+			return;
+	}
+
+	shState->oneshot().update();
 
 	p->checkResize();
 	p->redrawScreen();
@@ -1061,4 +1086,9 @@ void Graphics::addDisposable(Disposable *d)
 void Graphics::remDisposable(Disposable *d)
 {
 	p->dispList.remove(d->link);
+}
+
+const TEX::ID &Graphics::obscuredTex() const
+{
+	return p->obscuredTex;
 }

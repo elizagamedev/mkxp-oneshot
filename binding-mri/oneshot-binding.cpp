@@ -26,6 +26,19 @@ RB_METHOD(oneshotMsgBox)
     return rb_bool_new(shState->oneshot().msgbox(type, body, title));
 }
 
+RB_METHOD(oneshotResetObscured)
+{
+	RB_UNUSED_PARAM;
+	shState->oneshot().resetObscured();
+	return Qnil;
+}
+
+RB_METHOD(oneshotObscuredCleared)
+{
+	RB_UNUSED_PARAM;
+	return shState->oneshot().obscuredCleared() ? Qtrue : Qfalse;
+}
+
 void oneshotBindingInit()
 {
     VALUE module = rb_define_module("Oneshot");
@@ -43,4 +56,6 @@ void oneshotBindingInit()
     //Functions
     _rb_define_module_function(module, "set_yes_no", oneshotSetYesNo);
     _rb_define_module_function(module, "msgbox", oneshotMsgBox);
+	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
+	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
 }

@@ -194,7 +194,7 @@ class Window_Message < Window_Selectable
         @text.sub!(/\[([0-9]+)\]/, "")
         color = $1.to_i
         if color >= 0 and color <= 7
-          self.contents.font.color = text_color(color)
+          self.contents.font.color = Window_Base.text_color(color)
         end
         # go to next text
         next
