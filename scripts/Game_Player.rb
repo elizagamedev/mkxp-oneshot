@@ -31,7 +31,7 @@ class Game_Player < Game_Character
       return false
     end
     # If debug mode is ON and ctrl key was pressed
-    #if $DEBUG and Input.press?(Input::CTRL)
+    #if $debug and Input.press?(Input::CTRL)
     #  # Passable
     #  return true
     #end

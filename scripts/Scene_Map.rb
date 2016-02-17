@@ -161,7 +161,7 @@ class Scene_Map
       end
     end
     # If debug mode is ON and F5 key was pressed
-    if $DEBUG and Input.press?(Input::F5)
+    if $debug and Input.press?(Input::F5)
       # Set transferring player flag
       $game_temp.player_transferring = true
       # Set player move destination
@@ -170,7 +170,7 @@ class Scene_Map
       $game_temp.player_new_y = $data_system.start_y
     end
     # If debug mode is ON and F9 key was pressed
-    if $DEBUG and Input.press?(Input::F9)
+    if $debug and Input.press?(Input::F9)
       # Set debug calling flag
       $game_temp.debug_calling = true
     end

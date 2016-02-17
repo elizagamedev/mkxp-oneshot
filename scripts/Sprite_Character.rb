@@ -52,11 +52,11 @@ class Sprite_Character
         @sprite.bitmap = RPG::Cache.character(@character.character_name,
           @character.character_hue)
         begin
-         @light_sprite.bitmap = RPG::Cache.lightmap(@character.character_name)
-         @light_sprite.visible = true
+          @light_sprite.bitmap = RPG::Cache.lightmap(@character.character_name)
+          @light_sprite.visible = true
         rescue
-         @light_sprite.bitmap = nil
-         @light_sprite.visible = false
+          @light_sprite.bitmap = nil
+          @light_sprite.visible = false
         end
         @cw = @sprite.bitmap.width / 4
         @ch = @sprite.bitmap.height / 4

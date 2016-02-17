@@ -68,8 +68,10 @@ static void APIENTRY arbDebugFunc(GLenum source,
 	(void) source;
 	(void) type;
 	(void) id;
-	(void) severity;
 	(void) length;
+
+	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+		return;
 
 	p->writeTimestamp();
 	p->writeLine(message);

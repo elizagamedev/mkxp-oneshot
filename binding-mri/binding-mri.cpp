@@ -76,6 +76,7 @@ void graphicsBindingInit();
 void fileIntBindingInit();
 
 void oneshotBindingInit();
+void steamBindingInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -114,6 +115,7 @@ static void mriBindingInit()
 
 	fileIntBindingInit();
 	oneshotBindingInit();
+	steamBindingInit();
 
 	if (rgssVer >= 3)
 	{
@@ -405,7 +407,7 @@ static void runRMXPScripts(BacktraceData &btData)
 	}
 
 	/* Set the debug flag */
-	rb_gv_set("$DEBUG", conf.debugMode ? Qtrue : Qfalse);
+	rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
 
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 
