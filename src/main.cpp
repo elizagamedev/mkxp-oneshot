@@ -41,7 +41,12 @@
 #include "binding.h"
 
 #include "icon.png.xxd"
+
+#ifdef STEAM
+#include <steam/steam_api.h>
+#else
 #include "gamecontrollerdb.txt.xxd"
+#endif
 
 static void
 rgssThreadError(RGSSThreadData *rtData, const std::string &msg)
@@ -179,6 +184,14 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+#ifdef STEAM
+	if (!SteamAPI_Init())
+	{
+		showInitError("Could not initialize Steamworks API");
+		return 0;
+	}
+#endif
+
 	if (!EventThread::allocUserEvents())
 	{
 		showInitError("Error allocating SDL user events");
@@ -294,10 +307,12 @@ int main(int argc, char *argv[])
 	RGSSThreadData rtData(&eventThread, argv[0], win,
 	                      alcDev, mode.refresh_rate, conf);
 
+#ifndef STEAM
 	/* Add controller bindings from embedded controller DB */
 	SDL_RWops *controllerDB = SDL_RWFromConstMem(assets_gamecontrollerdb_txt,
 	                                             assets_gamecontrollerdb_txt_len);
 	SDL_GameControllerAddMappingsFromRW(controllerDB, 1);
+#endif
 
 	int winW, winH;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -357,6 +372,10 @@ int main(int argc, char *argv[])
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
+
+#ifdef STEAM
+	SteamAPI_Shutdown();
+#endif
 
 	return 0;
 }

@@ -14,6 +14,13 @@ isEmpty(BINDING) {
 	BINDING = MRI
 }
 
+isEmpty(STEAMWORKS) {
+	STEAMWORKS = /home/mathew/Software/Steamworks
+}
+isEmpty(STEAMARCH) {
+	STEAMARCH = 64
+}
+
 contains(BINDING, MRI) {
 	contains(_HAVE_BINDING, YES) {
 		error("Only one binding may be selected")
@@ -51,10 +58,16 @@ unix {
 		CONFIG -= app_bundle
 		INCLUDEPATH += /System/Library/Frameworks/OpenAL.framework/Headers
 		LIBS += -framework OpenAL
+		STEAM {
+			LIBS += -L$$STEAMWORKS/redistributable_bin/osx32 -lsteam_api
+		}
 	}
 	!macx: {
 		PKGCONFIG += openal
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
+		STEAM {
+			LIBS += -L$$STEAMWORKS/redistributable_bin/linux$$STEAMARCH -lsteam_api
+		}
 	}
 
 	SHARED_FLUID {
@@ -92,6 +105,14 @@ win32 {
 	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
 	LIBS += -lphysfs -lboost_program_options-mt -lsecur32
 
+	STEAM {
+		equals(STEAMARCH, 64) {
+			LIBS += -l$$STEAMWORKS/redistributable_bin/win64/steam_api64.lib
+		} else {
+			LIBS += -l$$STEAMWORKS/redistributable_bin/steam_api.lib
+		}
+	}
+
 	# Deal with boost paths...
 	isEmpty(BOOST_I) {
 	        BOOST_I = $$(BOOST_I)
@@ -117,6 +138,11 @@ win32 {
 	release {
 	    RC_FILE = assets/resources.rc
 	}
+}
+
+STEAM {
+	INCLUDEPATH += $$STEAMWORKS/public
+	DEFINES += STEAM
 }
 
 # Input
@@ -225,7 +251,13 @@ SOURCES += \
 	src/autotilesvx.cpp \
 	src/midisource.cpp \
 	src/fluid-fun.cpp \
-	src/oneshot.cpp
+	src/oneshot.cpp \
+    binding-mri/steam-binding.cpp
+
+STEAM {
+	HEADERS += src/steam.h
+	SOURCES += src/steam.cpp
+}
 
 EMBED = \
 	shader/common.h \

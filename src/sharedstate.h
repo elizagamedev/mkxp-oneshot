@@ -43,6 +43,9 @@ class Graphics;
 class Input;
 class Audio;
 class Oneshot;
+#ifdef STEAM
+class Steam;
+#endif
 class GLState;
 class TexPool;
 class Font;
@@ -73,6 +76,9 @@ struct SharedState
 	Audio &audio() const;
 
 	Oneshot &oneshot() const;
+#ifdef STEAM
+	Steam &steam() const;
+#endif
 
 	GLState &_glState() const;
 
