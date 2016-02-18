@@ -101,17 +101,18 @@ unix {
 win32 {
 	QMAKE_CXXFLAGS += -std=gnu++11
 	QMAKE_LFLAGS += -std=gnu++11
-	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
-	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
-	LIBS += -lphysfs -lboost_program_options-mt -lsecur32
 
 	STEAM {
 		equals(STEAMARCH, 64) {
-			LIBS += -l$$STEAMWORKS/redistributable_bin/win64/steam_api64.lib
+			LIBS += -L$$STEAMWORKS/redistributable_bin/win64 -lsteam_api64
 		} else {
-			LIBS += -l$$STEAMWORKS/redistributable_bin/steam_api.lib
+			LIBS += -L$$STEAMWORKS/redistributable_bin -lsteam_api
 		}
 	}
+
+	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
+	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
+	LIBS += -lphysfs -lboost_program_options-mt -lsecur32
 
 	# Deal with boost paths...
 	isEmpty(BOOST_I) {
