@@ -1,5 +1,5 @@
 def save_file_name
-  Oneshot::SAVE_PATH + '/Save.rxdata'
+  Oneshot::SAVE_PATH + '/save.dat'
 end
 
 def save

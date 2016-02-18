@@ -167,7 +167,7 @@ struct Header
 
 static void buildPath(const std::string &dir, char *out, size_t outSize)
 {
-	snprintf(out, outSize, "%skeybindings", dir.c_str());
+	snprintf(out, outSize, "%skeybindings.dat", dir.c_str());
 }
 
 static bool writeBindings(const BDescVec &d, const std::string &dir)
