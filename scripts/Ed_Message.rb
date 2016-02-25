@@ -214,7 +214,7 @@ class Ed_Message
     end
 
     if visible
-      if Input.trigger?(Input::ACTION)
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
         terminate_message
         @fade_out_text = true
       end

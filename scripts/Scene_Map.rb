@@ -124,8 +124,6 @@ class Scene_Map
     end
     # Hide icon when item menu is visible
     @item_icon.visible = !@item_menu.visible
-    # Update fast travel
-    @fast_travel.update
     # If game over
     if $game_temp.gameover
       # Switch to game over screen
@@ -150,6 +148,8 @@ class Scene_Map
           $game_temp.transition_name)
       end
     end
+    # Update fast travel
+    @fast_travel.update
     # If showing message window
     if $game_temp.message_window_showing || @ed_message.visible
       return
@@ -342,13 +342,13 @@ class Scene_Map
     # Update map (run parallel process event)
     $game_map.update
     @spriteset.update
-    # If processing transition
-    if $game_temp.transition_processing
-      # Clear transition processing flag
-      $game_temp.transition_processing = false
-      # Execute transition
-      Graphics.transition(20)
-    end
+    # # If processing transition
+    # if $game_temp.transition_processing
+    #   # Clear transition processing flag
+    #   $game_temp.transition_processing = false
+    #   # Execute transition
+    #   Graphics.transition(20)
+    # end
     # Run automatic change for BGM and BGS set on the map
     $game_map.autoplay
     # Frame reset

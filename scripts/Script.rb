@@ -122,15 +122,28 @@ def enable_travel
 end
 
 def disable_travel
-  $game_fasttravel.disabled = true
+  $game_fasttravel.enabled = false
 end
 
-def set_zone(zone)
+def unlock_map(zone, map, dir)
+  # Find the coordinate of the calling event
+  e = $game_map.events.values.find { |e| e.name == 'FAST TRAVEL' }
+  raise 'could not find event named FAST TRAVEL' if !e
+  case dir
+  when :down
+    newdir = 2
+  when :left
+    newdir = 4
+  when :right
+    newdir = 6
+  when :up
+    newdir = 8
+  else
+    raise "invalid direction: #{dir}"
+  end
+  $game_fasttravel.enabled = true
   $game_fasttravel.zone = zone
-end
-
-def unlock_map(map)
-  $game_fasttravel.unlock(map)
+  $game_fasttravel.unlock(map, $game_map.map_id, e.x, e.y, newdir)
 end
 
 # Misc

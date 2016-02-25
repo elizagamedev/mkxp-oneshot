@@ -37,7 +37,15 @@ class FastTravel
     self.visible = true
     self.opacity = 0
     @fade_in = true
-    @data = $game_fasttravel.unlocked_maps.sort
+    @data = $game_fasttravel.unlocked_maps.keys.sort
+
+    # Set cursor to current map
+    @data.each_with_index do |map, i|
+      if $game_fasttravel.unlocked_maps[map].id == $game_map.map_id
+        @index = i
+        break
+      end
+    end
     zone = ZONES[$game_fasttravel.zone]
 
     # Create title
@@ -117,6 +125,23 @@ class FastTravel
     if Input.trigger?(Input::DOWN)
       @index = (@index + 1) % @data.size
       $game_system.se_play($data_system.cursor_se)
+    end
+
+    if Input.trigger?(Input::ACTION)
+      $game_system.se_play($data_system.decision_se)
+      choice = $game_fasttravel.unlocked_maps[@data[@index]]
+      if choice.id != $game_map.map_id
+        $game_temp.player_transferring = true
+        $game_temp.player_new_map_id = choice.id
+        $game_temp.player_new_x = choice.x
+        $game_temp.player_new_y = choice.y
+        $game_temp.player_new_direction = choice.dir
+        Graphics.freeze
+        $game_temp.transition_processing = true
+        $game_temp.transition_name = "travel"
+      end
+      @fade_out = true
+      return
     end
 
     if Input.trigger?(Input::CANCEL)

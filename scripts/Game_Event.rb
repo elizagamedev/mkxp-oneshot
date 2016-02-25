@@ -14,6 +14,8 @@ class Game_Event < Game_Character
   attr_reader   :list                     # list of event commands
   attr_reader   :starting                 # starting flag
   attr_reader   :collision                # collision array
+  attr_reader   :x
+  attr_reader   :y
   #--------------------------------------------------------------------------
   # * Object Initialization
   #     map_id : map ID

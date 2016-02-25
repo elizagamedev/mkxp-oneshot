@@ -97,20 +97,6 @@ class Window_MainMenu < Window_Selectable
       return
     end
 
-    # Update subwindows
-    #if @item_window.active
-    #  @item_window.update
-    #  if Input.trigger?(Input::CANCEL)
-    #    $game_system.se_play($data_system.cancel_se)
-    #    self.active = true
-    #    self.opacity = 255
-    #    @item_window.visible = false
-    #    @item_window.active = false
-    #    @item_help_window.visible = false
-    #    return
-    #  end
-    #end
-
     # Don't do anything if not active
     if !self.active
       return

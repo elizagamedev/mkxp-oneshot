@@ -15,6 +15,7 @@ class FastTravel
       :apartments => tr("apartments"),
       :cafe => tr("cafe"),
       :office => tr("office"),
+      :obsdeck => tr("observation deck"),
     }),
     :green => Zone.new(tr("The Glen"), {
       :whatever => tr(""),
