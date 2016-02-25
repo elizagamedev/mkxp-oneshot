@@ -22,6 +22,7 @@ def save
     Marshal.dump($game_map, file)
     Marshal.dump($game_player, file)
     Marshal.dump($game_oneshot, file)
+    Marshal.dump($game_fasttravel, file)
   end
 end
 
@@ -41,6 +42,7 @@ def load
     $game_map           = Marshal.load(file)
     $game_player        = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
+    $game_fasttravel    = Marshal.load(file)
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number

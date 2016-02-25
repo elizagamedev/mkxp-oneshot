@@ -118,15 +118,26 @@ class Window_MainMenu < Window_Selectable
 
     # Select menu item
     if Input.trigger?(Input::ACTION)
-      $game_system.se_play($data_system.decision_se)
       self.active = false
       self.opacity = 127
-      #case @index
-      #else
-        print "oh no you don't"
+      case @index
+      when 0
+        if Input.trigger?(Input::ACTION)
+          if $game_fasttravel.enabled?
+            $game_system.se_play($data_system.decision_se)
+            $game_temp.travel_menu_calling = true
+            @fade_out = true
+          else
+            $game_system.se_play($data_system.buzzer_se)
+            $game_temp.message_ed_text = tr("You cannot fast travel right now.")
+            $game_temp.message_proc = Proc.new { self.active = true; self.opacity = 255 }
+          end
+        end
+      else
+        $game_system.se_play($data_system.buzzer_se)
         self.active = true
         self.opacity = 255
-      #end
+      end
       return
     end
 

@@ -72,6 +72,9 @@ class Translator
 end
 
 # Hacky translation helper function
+# def tr(text)
+#   $tr.script(Kernel.caller.first.split(':', 3)[1], text)
+# end
 def tr(text)
-  $tr.script(Kernel.caller.first.split(':', 3)[1], text)
+  text
 end

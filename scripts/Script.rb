@@ -116,6 +116,23 @@ def green_ambient
   ambient -50, -50, -50
 end
 
+# Travel
+def enable_travel
+  $game_fasttravel.enabled = true
+end
+
+def disable_travel
+  $game_fasttravel.disabled = true
+end
+
+def set_zone(zone)
+  $game_fasttravel.zone = zone
+end
+
+def unlock_map(map)
+  $game_fasttravel.unlock(map)
+end
+
 # Misc
 def watcher_tell_time
   hour = Time.now.hour

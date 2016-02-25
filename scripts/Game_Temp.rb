@@ -38,6 +38,7 @@ class Game_Temp
   attr_accessor :name_calling             # name input: calling flag
   attr_accessor :menu_calling             # menu calling flag
   attr_accessor :item_menu_calling        # item menu calling flag
+  attr_accessor :travel_menu_calling      # fast travel menu calling flag
   attr_accessor :menu_beep                # menu: play sound effect flag
   attr_accessor :save_calling             # save calling flag
   attr_accessor :debug_calling            # debug calling flag
@@ -89,6 +90,7 @@ class Game_Temp
     @name_max_char = 0
     @menu_calling = false
     @item_menu_calling = false
+    @travel_menu_calling = false
     @menu_beep = false
     @save_calling = false
     @debug_calling = false

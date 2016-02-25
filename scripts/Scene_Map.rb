@@ -26,6 +26,8 @@ class Scene_Map
     @item_icon.zoom_x = 2.0
     @item_icon.zoom_y = 2.0
     @item_id = 0
+    # Make fast travel menu
+    @fast_travel = FastTravel.new
     # Transition run
     Graphics.transition
     # Main loop
@@ -51,6 +53,7 @@ class Scene_Map
     # Dispose of menu
     @menu.dispose
     @item_menu.dispose
+    @fast_travel.dispose
     # Dispose of item icon
     @item_icon.dispose
     # If switching to title screen
@@ -72,7 +75,7 @@ class Scene_Map
       # move in an instant)
       $game_map.update
       $game_system.map_interpreter.update
-      $game_player.update if !@menu.visible && !@item_menu.visible
+      $game_player.update if !@menu.visible && !@item_menu.visible && !@fast_travel.visible
       $game_followers.each{|f| f.update}
       # Update system (timer), screen
       $game_system.update
@@ -121,6 +124,8 @@ class Scene_Map
     end
     # Hide icon when item menu is visible
     @item_icon.visible = !@item_menu.visible
+    # Update fast travel
+    @fast_travel.update
     # If game over
     if $game_temp.gameover
       # Switch to game over screen
@@ -150,8 +155,9 @@ class Scene_Map
       return
     end
     # Process menu opening
-    unless $game_system.map_interpreter.running? or
-        $game_system.menu_disabled
+    unless $game_system.map_interpreter.running? ||
+        $game_system.menu_disabled ||
+        @fast_travel.visible
       if !@menu.visible && Input.trigger?(Input::MENU)
         $game_temp.menu_calling = true
         $game_temp.menu_beep = true
@@ -187,6 +193,8 @@ class Scene_Map
         call_menu
       elsif $game_temp.item_menu_calling
         call_item_menu
+      elsif $game_temp.travel_menu_calling
+        call_travel_menu
       elsif $game_temp.save_calling
         call_save
       elsif $game_temp.debug_calling
@@ -269,6 +277,14 @@ class Scene_Map
     $game_player.straighten
     # Open the menu
     @item_menu.open
+  end
+  def call_travel_menu
+    # Clear menu call flag
+    $game_temp.travel_menu_calling = false
+    # Straighten player position
+    $game_player.straighten
+    # Open the menu
+    @fast_travel.open
   end
   #--------------------------------------------------------------------------
   # * Save Call

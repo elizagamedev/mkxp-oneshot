@@ -26,6 +26,7 @@ Game_Player
 Game_Oneshot
 Game_Light
 Game_Follower
+Game_FastTravel
 
 Sprite_Character
 Sprite_Battler
@@ -33,6 +34,8 @@ Sprite_Picture
 Sprite_Timer
 Sprite_Light
 Spriteset_Map
+
+FastTravel
 
 Window_Base
 Window_Selectable
@@ -101,6 +104,7 @@ i18n_Language
 Data_Item
 Data_Footsteps
 Data_SpecialEventData
+Data_FastTravel
 
 # Script Functions
 Script
