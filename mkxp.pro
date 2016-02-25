@@ -50,20 +50,19 @@ contains(BINDING, NULL) {
 
 unix {
 	CONFIG += c++11
-	PKGCONFIG += sigc++-2.0 pixman-1 zlib vorbisfile \
+	PKGCONFIG += sigc++-2.0 pixman-1 vorbisfile \
 	             sdl2 SDL2_image SDL2_ttf SDL_sound
 	LIBS += -ldl -lphysfs
 	macx: {
-		QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
 		CONFIG -= app_bundle
-		INCLUDEPATH += /System/Library/Frameworks/OpenAL.framework/Headers
+		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL
 		STEAM {
 			LIBS += -L$$STEAMWORKS/redistributable_bin/osx32 -lsteam_api
 		}
 	}
 	!macx: {
-		PKGCONFIG += openal
+		PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		STEAM {
 			LIBS += -L$$STEAMWORKS/redistributable_bin/linux$$STEAMARCH -lsteam_api
@@ -73,29 +72,6 @@ unix {
 	SHARED_FLUID {
 		PKGCONFIG += fluidsynth
 	}
-
-	# Deal with boost paths...
-	isEmpty(BOOST_I) {
-		BOOST_I = $$(BOOST_I)
-	}
-	isEmpty(BOOST_I) {}
-	else {
-		INCLUDEPATH += $$BOOST_I
-	}
-
-	isEmpty(BOOST_L) {
-		BOOST_L = $$(BOOST_L)
-	}
-	isEmpty(BOOST_L) {}
-	else {
-		LIBS += -L$$BOOST_L
-	}
-
-	isEmpty(BOOST_LIB_SUFFIX) {
-		BOOST_LIB_SUFFIX = $$(BOOST_LIB_SUFFIX)
-	}
-
-	LIBS += -lboost_program_options$$BOOST_LIB_SUFFIX
 }
 
 win32 {
@@ -112,34 +88,35 @@ win32 {
 
 	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
 	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
-	LIBS += -lphysfs -lboost_program_options-mt -lsecur32
-
-	# Deal with boost paths...
-	isEmpty(BOOST_I) {
-	        BOOST_I = $$(BOOST_I)
-	}
-	isEmpty(BOOST_I) {}
-	else {
-	        INCLUDEPATH += $$BOOST_I
-	}
-
-	isEmpty(BOOST_L) {
-	        BOOST_L = $$(BOOST_L)
-	}
-	isEmpty(BOOST_L) {}
-	else {
-	        LIBS += -L$$BOOST_L
-	}
-
-	# Ruby console bug
-	!console {
-	    DEFINES += NOCONSOLE
-	}
+	LIBS += -lphysfs -lsecur32
 
 	release {
 	    RC_FILE = assets/resources.rc
 	}
 }
+
+# Deal with boost paths...
+isEmpty(BOOST_I) {
+	BOOST_I = $$(BOOST_I)
+}
+isEmpty(BOOST_I) {}
+else {
+	INCLUDEPATH += $$BOOST_I
+}
+
+isEmpty(BOOST_L) {
+	BOOST_L = $$(BOOST_L)
+}
+isEmpty(BOOST_L) {}
+else {
+	LIBS += -L$$BOOST_L
+}
+
+isEmpty(BOOST_LIB_SUFFIX) {
+	BOOST_LIB_SUFFIX = $$(BOOST_LIB_SUFFIX)
+}
+
+LIBS += -lboost_program_options$$BOOST_LIB_SUFFIX
 
 STEAM {
 	INCLUDEPATH += $$STEAMWORKS/public
