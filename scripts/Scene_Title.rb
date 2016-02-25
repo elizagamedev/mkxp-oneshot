@@ -34,7 +34,7 @@ class Scene_Title
     # Make system object
     $game_system = Game_System.new
     # Skip title screen if debug mode
-    if $DEBUG
+    if $debug
       $game_map.update
       $scene = Scene_Map.new
       return
@@ -143,6 +143,7 @@ class Scene_Title
     $game_player        = Game_Player.new
     $game_followers     = []
     $game_oneshot       = Game_Oneshot.new
+    $game_fasttravel    = Game_FastTravel.new
     # Set up initial party
     $game_party.setup_starting_members
     # Set up initial map position
