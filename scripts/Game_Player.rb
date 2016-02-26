@@ -264,7 +264,11 @@ class Game_Player < Game_Character
     return unless $game_temp.footstep_sfx
     tag = $game_map.terrain_tag(@x, @y) - 1
     if tag >= 0 && tag < $game_temp.footstep_sfx.size
-      Audio.se_play("Audio/SE/#{$game_temp.footstep_sfx[tag]}.wav", 50)
+      name = $game_temp.footstep_sfx[tag]
+      if FOOTSTEP_AMT.include? name
+        name += '%02d' % [rand(FOOTSTEP_AMT[name]) + 1]
+      end
+      Audio.se_play("Audio/SE/#{name}.wav", 80)
     end
   end
 end

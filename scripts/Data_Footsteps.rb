@@ -16,8 +16,8 @@ FOOTSTEP_SFX = [
   ['step_grass',
    'step_tile'],
   # Red
-  ['step_metal',
-   'step_metal_light'],
+  ['step_grate',
+   'step_metal'],
   # Red Interior
   ['step_tile',
    'step_wood'],
@@ -28,14 +28,18 @@ FOOTSTEP_SFX = [
   # Blank
   [],
   # Blue Factory Interior
-  ['step_metal_light'],
+  ['step_metal'],
   # Red Ground
   [],
   # Red Factory
   [],
   # Red Factory Interior
-  ['step_metal_light'],
+  ['step_metal'],
   # Red observation deck
-  ['step_metal_light',
+  ['step_metal',
    'step_tile'],
 ]
+
+FOOTSTEP_AMT = {
+  'step_metal' => 4
+}
