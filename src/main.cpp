@@ -81,8 +81,9 @@ int rgssThreadFun(void *userdata)
 	/* Setup GL context */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	if (conf.debugMode)
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#ifndef NDEBUG
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
 
 	glCtx = SDL_GL_CreateContext(win);
 
@@ -113,7 +114,9 @@ int rgssThreadFun(void *userdata)
 	bool vsync = conf.vsync || conf.syncToRefreshrate;
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 
+#ifndef NDEBUG
 	GLDebugLogger dLogger;
+#endif
 
 	/* Setup AL context */
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
