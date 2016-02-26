@@ -28,6 +28,12 @@ class Scene_Map
     @item_id = 0
     # Make fast travel menu
     @fast_travel = FastTravel.new
+    # Fade to black transition
+    @blackfade = Sprite.new
+    @blackfade.bitmap = Bitmap.new(640, 480)
+    @blackfade.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0))
+    @blackfade.visible = false
+    @blackfade.z = 9999
     # Transition run
     Graphics.transition
     # Main loop
@@ -56,6 +62,7 @@ class Scene_Map
     @fast_travel.dispose
     # Dispose of item icon
     @item_icon.dispose
+    @blackfade.dispose
     # If switching to title screen
     if $scene.is_a?(Scene_Title)
       # Fade out screen
@@ -143,6 +150,12 @@ class Scene_Map
       # Execute transition
       if $game_temp.transition_name == ""
         Graphics.transition(20)
+      elsif $game_temp.transition_name == "black"
+        @blackfade.visible = true
+        Graphics.transition(30)
+        Graphics.freeze
+        @blackfade.visible = false
+        Graphics.transition(30)
       else
         Graphics.transition(40, "Graphics/Transitions/" +
           $game_temp.transition_name)

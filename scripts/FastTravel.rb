@@ -22,6 +22,8 @@ class FastTravel
     @index = 0
     @fade_in = false
     @fade_out = false
+
+    @transfer_player = nil
   end
 
   def dispose
@@ -94,6 +96,17 @@ class FastTravel
           spr.dispose
         end
         @data_sprites = []
+
+        if @transfer_player
+          $game_temp.player_transferring = true
+          $game_temp.player_new_map_id = @transfer_player.id
+          $game_temp.player_new_x = @transfer_player.x
+          $game_temp.player_new_y = @transfer_player.y
+          $game_temp.player_new_direction = @transfer_player.dir
+          Graphics.freeze
+          $game_temp.transition_processing = true
+          $game_temp.transition_name = "black"
+        end
       end
       return
     end
@@ -131,14 +144,7 @@ class FastTravel
       $game_system.se_play($data_system.decision_se)
       choice = $game_fasttravel.unlocked_maps[@data[@index]]
       if choice.id != $game_map.map_id
-        $game_temp.player_transferring = true
-        $game_temp.player_new_map_id = choice.id
-        $game_temp.player_new_x = choice.x
-        $game_temp.player_new_y = choice.y
-        $game_temp.player_new_direction = choice.dir
-        Graphics.freeze
-        $game_temp.transition_processing = true
-        $game_temp.transition_name = "travel"
+        @transfer_player = choice
       end
       @fade_out = true
       return
