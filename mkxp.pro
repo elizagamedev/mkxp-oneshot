@@ -6,6 +6,7 @@ TARGET = Game
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
+CONFIG -= qt
 CONFIG += link_pkgconfig
 
 CONFIG(release, debug|release): DEFINES += NDEBUG
