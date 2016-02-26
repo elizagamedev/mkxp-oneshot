@@ -155,9 +155,6 @@ void Config::read(int argc, char *argv[])
 	PO_DESC(allowSymlinks, bool, false) \
 	PO_DESC(iconPath, std::string, "") \
 	PO_DESC(execName, std::string, "Game") \
-	PO_DESC(midi.soundFont, std::string, "") \
-	PO_DESC(midi.chorus, bool, false) \
-	PO_DESC(midi.reverb, bool, false) \
 	PO_DESC(SE.sourceCount, int, 6) \
 	PO_DESC(pathCache, bool, true)
 

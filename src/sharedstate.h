@@ -89,8 +89,6 @@ struct SharedState
 	SharedFontState &fontState() const;
 	Font &defaultFont() const;
 
-	SharedMidiState &midiState() const;
-
 	sigc::signal<void> prepareDraw;
 
 	unsigned int genTimeStamp();

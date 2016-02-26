@@ -65,7 +65,4 @@ ALDataSource *createSDLSource(SDL_RWops &ops,
 ALDataSource *createVorbisSource(SDL_RWops &ops,
                                  bool looped);
 
-ALDataSource *createMidiSource(SDL_RWops &ops,
-                               bool looped);
-
 #endif // ALDATASOURCE_H

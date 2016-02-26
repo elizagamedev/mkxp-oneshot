@@ -68,10 +68,6 @@ unix {
 			LIBS += -L$$STEAMWORKS/redistributable_bin/linux$$STEAMARCH -lsteam_api
 		}
 	}
-
-	SHARED_FLUID {
-		PKGCONFIG += fluidsynth
-	}
 }
 
 win32 {
@@ -180,8 +176,6 @@ HEADERS += \
 	src/windowvx.h \
 	src/tilemapvx.h \
 	src/tileatlasvx.h \
-	src/sharedmidistate.h \
-	src/fluid-fun.h \
 	src/sdl-util.h \
 	src/oneshot.h
 
@@ -227,8 +221,6 @@ SOURCES += \
 	src/tilemapvx.cpp \
 	src/tileatlasvx.cpp \
 	src/autotilesvx.cpp \
-	src/midisource.cpp \
-	src/fluid-fun.cpp \
 	src/oneshot.cpp \
     binding-mri/steam-binding.cpp
 
@@ -266,10 +258,6 @@ EMBED = \
 	assets/liberation.ttf \
 	assets/icon.png \
 	assets/gamecontrollerdb.txt
-
-SHARED_FLUID {
-	DEFINES += SHARED_FLUID
-}
 
 defineReplace(xxdOutput) {
 	return($$basename(1).xxd)

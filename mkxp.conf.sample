@@ -184,22 +184,6 @@
 # rubyLoadpath=/usr/local/share/ruby/site_ruby
 
 
-# SoundFont to use for midi playback (via fluidsynth)
-# (default: none)
-#
-# midi.soundFont=/usr/share/mysoundfont.sf2
-
-
-# Activate "chorus" effect for midi playback
-#
-# midi.chorus=false
-
-
-# Activate "reverb" effect for midi playback
-#
-# midi.reverb=false
-
-
 # Number of OpenAL sources to allocate for SE playback.
 # If there are a lot of sounds playing at the same time
 # and audibly cutting each other off, try increasing
