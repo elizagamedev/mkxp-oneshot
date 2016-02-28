@@ -272,20 +272,6 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_KEYDOWN :
-			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN &&
-			    (event.key.keysym.mod & toggleFSMod))
-			{
-				setFullscreen(win, !fullscreen);
-				if (!fullscreen && havePendingTitle)
-				{
-					SDL_SetWindowTitle(win, pendingTitle);
-					pendingTitle[0] = '\0';
-					havePendingTitle = false;
-				}
-
-				break;
-			}
-
 			if (event.key.keysym.scancode == SDL_SCANCODE_F1)
 			{
 				if (!sMenu)

@@ -29,89 +29,11 @@
 
 #include <fstream>
 #include <stdint.h>
+#include <cstdlib>
 
 #include "debugwriter.h"
 #include "util.h"
 #include "sdl-util.h"
-
-/* http://stackoverflow.com/a/1031773 */
-static bool validUtf8(const char *string)
-{
-	const uint8_t *bytes = (uint8_t*) string;
-
-	while(*bytes)
-	{
-		if( (/* ASCII
-			  * use bytes[0] <= 0x7F to allow ASCII control characters */
-				bytes[0] == 0x09 ||
-				bytes[0] == 0x0A ||
-				bytes[0] == 0x0D ||
-				(0x20 <= bytes[0] && bytes[0] <= 0x7E)
-			)
-		) {
-			bytes += 1;
-			continue;
-		}
-
-		if( (/* non-overlong 2-byte */
-				(0xC2 <= bytes[0] && bytes[0] <= 0xDF) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF)
-			)
-		) {
-			bytes += 2;
-			continue;
-		}
-
-		if( (/* excluding overlongs */
-				bytes[0] == 0xE0 &&
-				(0xA0 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			) ||
-			(/* straight 3-byte */
-				((0xE1 <= bytes[0] && bytes[0] <= 0xEC) ||
-					bytes[0] == 0xEE ||
-					bytes[0] == 0xEF) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			) ||
-			(/* excluding surrogates */
-				bytes[0] == 0xED &&
-				(0x80 <= bytes[1] && bytes[1] <= 0x9F) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			)
-		) {
-			bytes += 3;
-			continue;
-		}
-
-		if( (/* planes 1-3 */
-				bytes[0] == 0xF0 &&
-				(0x90 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			) ||
-			(/* planes 4-15 */
-				(0xF1 <= bytes[0] && bytes[0] <= 0xF3) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			) ||
-			(/* plane 16 */
-				bytes[0] == 0xF4 &&
-				(0x80 <= bytes[1] && bytes[1] <= 0x8F) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			)
-		) {
-			bytes += 4;
-			continue;
-		}
-
-		return false;
-	}
-
-	return true;
-}
 
 static std::string prefPath(const char *org, const char *app)
 {
@@ -129,7 +51,7 @@ static std::string prefPath(const char *org, const char *app)
 typedef std::vector<std::string> StringVec;
 namespace po = boost::program_options;
 
-#define CONF_FILE "mkxp.conf"
+#define CONF_FILE "oneshot.conf"
 
 Config::Config()
 {}
@@ -143,8 +65,6 @@ void Config::read(int argc, char *argv[])
 	PO_DESC(fixedAspectRatio, bool, true) \
 	PO_DESC(smoothScaling, bool, false) \
 	PO_DESC(vsync, bool, false) \
-	PO_DESC(defScreenW, int, 0) \
-	PO_DESC(defScreenH, int, 0) \
 	PO_DESC(fixedFramerate, int, 0) \
 	PO_DESC(frameSkip, bool, true) \
 	PO_DESC(syncToRefreshrate, bool, false) \
@@ -215,8 +135,6 @@ void Config::read(int argc, char *argv[])
 #undef PO_DESC
 #undef PO_DESC_ALL
 
-	rgssVersion = clamp(rgssVersion, 0, 3);
-
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 
 	commonDataPath = prefPath(".", "Oneshot");
@@ -225,18 +143,15 @@ void Config::read(int argc, char *argv[])
 	rgssVersion = 1;
 	game.title = "Oneshot";
 	game.scripts = "Data/xScripts.rxdata";
-	if (defScreenW <= 0)
-		defScreenW = 640;
-	if (defScreenH <= 0)
-		defScreenH = 480;
-}
+	defScreenW = 640;
+	defScreenH = 480;
 
-static std::string baseName(const std::string &path)
-{
-	size_t pos = path.find_last_of("/\\");
-
-	if (pos == path.npos)
-		return path;
-
-	return path.substr(pos + 1);
+#ifdef STEAM
+	/* Override fullscreen config if Big Picture */
+	if (const char *env = std::getenv("SteamTenfoot"))
+	{
+		if (!strcmp(env, "1"))
+			fullscreen = true;
+	}
+#endif
 }

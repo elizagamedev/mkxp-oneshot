@@ -10,8 +10,7 @@
 # encrypted archives.
 
 
-# Create a debug context and log
-# OpenGL debug information to the console
+# Start the game in debug/developer mode
 # (default: disabled)
 #
 # debugMode=false
@@ -25,8 +24,8 @@
 # printFPS=false
 
 
-# Start game in fullscreen (this can
-# always be toggled with Alt-Enter at runtime)
+# Start game in fullscreen mode,
+# i.e. Big Picture/console mode.
 # (default: disabled)
 #
 # fullscreen=false
