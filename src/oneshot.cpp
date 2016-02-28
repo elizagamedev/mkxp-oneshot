@@ -82,6 +82,7 @@ struct OneshotPrivate
 
 	//Alpha texture data for portions of window obscured by screen edges
 	int winX, winY;
+	SDL_mutex *winMutex;
 	bool winPosChanged;
 	std::vector<uint8_t> obscuredMap;
 	bool obscuredCleared;
@@ -100,7 +101,8 @@ struct OneshotPrivate
 #endif
 
 	OneshotPrivate()
-		: window(0)
+		: window(0),
+	      winMutex(SDL_CreateMutex())
 #if defined OS_LINUX
 		  ,libgtk(0)
 #endif
@@ -109,6 +111,7 @@ struct OneshotPrivate
 
 	~OneshotPrivate()
 	{
+		SDL_DestroyMutex(winMutex);
 #ifdef OS_LINUX
 		if (libgtk)
 			dlclose(libgtk);
@@ -355,12 +358,17 @@ void Oneshot::update()
 		p->winPosChanged = false;
 
 		//Map of unobscured pixels in this frame
-		static std::vector<bool> obscuredFrame(p->obscuredMap.size());
+		static std::vector<bool> obscuredFrame;
+		obscuredFrame.resize(p->obscuredMap.size());
+		if (p->obscuredMap.size() != 640 * 480)
+			Debug() << p->obscuredMap.size();
 		std::fill(obscuredFrame.begin(), obscuredFrame.end(), true);
 
 		SDL_Rect screenRect;
+		SDL_LockMutex(p->winMutex);
 		screenRect.x = p->winX;
 		screenRect.y = p->winY;
+		SDL_UnlockMutex(p->winMutex);
 		screenRect.w = 640;
 		screenRect.h = 480;
 
@@ -370,17 +378,24 @@ void Oneshot::update()
 			SDL_Rect bounds;
 			SDL_GetDisplayBounds(i, &bounds);
 
-			//If it's fully within the monitor, it's completely unobscured
-			//and no texture update is necessary
-			if (p->winX >= bounds.x && p->winY >= bounds.y && p->winX + 640 <= bounds.x + bounds.w && p->winY + 480 <= bounds.y + bounds.h)
-				return;
-
-			//Update obscuredFrame otherwise
+			//Get intersection of window and the screen
 			SDL_Rect intersect;
 			if (!SDL_IntersectRect(&screenRect, &bounds, &intersect))
 				continue;
-			intersect.x -= p->winX;
-			intersect.y -= p->winY;
+			intersect.x -= screenRect.x;
+			intersect.y -= screenRect.y;
+
+			//If it's entirely within the bounds of the screen, we don't need to check out
+			//any other monitors
+			if (intersect.x == 0 && intersect.y == 0 && intersect.w == 640 && intersect.h == 480)
+				return;
+
+			if (intersect.x < 0 || intersect.y < 0)
+			{
+				Debug() << i;
+				Debug() << intersect.x << intersect.y << intersect.w << intersect.h;
+				Debug() << p->winX << p->winY;
+			}
 			for (int y = intersect.y; y < intersect.y + intersect.h; ++y)
 			{
 				int start = y * 640 + intersect.x;
@@ -545,13 +560,16 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 void Oneshot::setWindowPos(int x, int y)
 {
+	SDL_LockMutex(p->winMutex);
 	p->winX = x;
 	p->winY = y;
 	p->winPosChanged = true;
+	SDL_UnlockMutex(p->winMutex);
 }
 
 void Oneshot::resetObscured()
 {
 	std::fill(p->obscuredMap.begin(), p->obscuredMap.end(), 255);
 	obscuredDirty = true;
+	p->obscuredCleared = false;
 }
