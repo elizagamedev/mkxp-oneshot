@@ -51,24 +51,6 @@
 # vsync=false
 
 
-# Specify the window width on startup. If set to 0,
-# it will default to the default resolution width
-# specific to  the RGSS version (640 in RGSS1, 544
-# in RGSS2 or higher).
-# (default: 0)
-#
-# defScreenW=640
-
-
-# Specify the window height on startup. If set to 0,
-# it will default to the default resolution height
-# specific to the RGSS version (480 in RGSS1, 416
-# in RGSS2 or higher).
-# (default: 0)
-#
-# defScreenH=480
-
-
 # Enforce a static frame rate
 # (0 = disabled)
 #
@@ -111,13 +93,6 @@
 # (default: executable directory)
 #
 # gameFolder=/path/to/game
-
-
-# Use either right or left Alt + Enter to toggle
-# fullscreen
-# (default: disabled)
-#
-# anyAltToggleFS=false
 
 
 # Allow symlinks for game assets to be followed
