@@ -107,22 +107,10 @@ class Window_Message < Window_Selectable
       x = y = 0
       maxwidth = self.contents.width - 4 - ($game_temp.message_face == nil ? 0 : 96)
       spacewidth = self.contents.text_size(' ').width
-      for i in text.split(' ')
-        # Split each word around newlines
-        newline = false
-        for j in i.split("\n")
-          # Handle newline
-          if newline
-            @text << "\n"
-            x = 0
-            y += 1
-            break if y >= 4
-          else
-            newline = true
-          end
-
-          # Get width of this word and see if it goes out of bounds
-          width = self.contents.text_size(j.gsub(/(\000\[[0-9]+\]|\001|\002)/, '')).width
+      text.split("\n").each do |line|
+        line.split(' ').each do |word|
+          # Get width of this word and insert a newline if it goes out of bounds
+          width = self.contents.text_size(word.gsub(/(\000\[[0-9]+\]|\001|\002)/, '')).width
           if x + width > maxwidth
             @text << "\n"
             x = 0
@@ -132,12 +120,17 @@ class Window_Message < Window_Selectable
 
           # Append word to list
           if x == 0
-            @text << j
+            @text << word
           else
-            @text << ' ' << j
+            @text << ' ' << word
           end
           x += width + spacewidth
         end
+
+        # Newline
+        @text << "\n"
+        x = 0
+        y += 1
         break if y >= 4
       end
     end
