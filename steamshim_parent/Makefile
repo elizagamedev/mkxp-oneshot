@@ -4,7 +4,7 @@ GAME_LAUNCH_NAME	?= oneshot
 CXX			?= clang++
 WINDRES			?= windres
 HOST			?= linux64
-FLAGS			:= -I$(STEAMWORKS)/public -DGAME_LAUNCH_NAME=\"$(GAME_LAUNCH_NAME)\"
+FLAGS			:= -I$(STEAMWORKS)/public -DGAME_LAUNCH_NAME=\"$(GAME_LAUNCH_NAME)\" -Wall
 
 ifeq ($(HOST),w32)
 	FLAGS		+= -L$(STEAMWORKS)/redistributable_bin -mwindows

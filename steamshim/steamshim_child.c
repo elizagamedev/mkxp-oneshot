@@ -65,12 +65,11 @@ static void closePipe(PipeType fd)
     CloseHandle(fd);
 } /* closePipe */
 
-static char *getEnvVar(const char *key, char *buf, const size_t _buflen)
+static char *getEnvVar(const char *key, char *buf, const size_t buflen)
 {
-    const DWORD buflen = (DWORD) _buflen;
     const DWORD rc = GetEnvironmentVariableA(key, buf, buflen);
     /* rc doesn't count null char, hence "<". */
-    return ((rc > 0) && (rc < buflen)) ? NULL : buf;
+    return ((rc > 0) && (rc < buflen)) ? buf : NULL;
 } /* getEnvVar */
 
 #else
@@ -157,21 +156,14 @@ static inline int writeBye(void)
 static int initPipes(void)
 {
     char buf[64];
-    unsigned long long val;
 
     if (!getEnvVar("STEAMSHIM_READHANDLE", buf, sizeof (buf)))
         return 0;
-    else if ((val = strtoull(buf, 0, 10)) == 0)
-        return 0;
-    else
-        GPipeRead = (PipeType) val;
+    GPipeRead = (PipeType) strtoull(buf, 0, 10);
 
     if (!getEnvVar("STEAMSHIM_WRITEHANDLE", buf, sizeof (buf)))
         return 0;
-    else if ((val = strtoull(buf, 0, 10)) == 0)
-        return 0;
-    else
-        GPipeWrite = (PipeType) val;
+    GPipeWrite = (PipeType) strtoull(buf, 0, 10);
 
     return ((GPipeRead != NULLPIPE) && (GPipeWrite != NULLPIPE));
 } /* initPipes */

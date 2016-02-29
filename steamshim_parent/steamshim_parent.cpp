@@ -9,18 +9,21 @@
 typedef PROCESS_INFORMATION ProcessType;
 typedef HANDLE PipeType;
 #define NULLPIPE NULL
+#define LLUFMT "%I64u"
 #else
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 typedef pid_t ProcessType;
 typedef int PipeType;
 #define NULLPIPE -1
+#define LLUFMT "%llu"
 #endif
+#include <stdlib.h>
 
 #include "steam/steam_api.h"
 
@@ -99,11 +102,57 @@ static bool setEnvVar(const char *key, const char *val)
     return (SetEnvironmentVariableA(key, val) != 0);
 } // setEnvVar
 
+static LPWSTR genCommandLine()
+{
+    // Construct a command line with the appropriate filename
+    LPWSTR cmdline = GetCommandLineW();
+
+    // Find the index of the first argument after 0
+    int iFirstArg = -1;
+    bool quote = false;
+    bool whitespace = false;
+    for (int i = 0; cmdline[i]; ++i)
+    {
+        if (cmdline[i] == '"' && (i == 0 || cmdline[i-1] != '\\'))
+        {
+            quote = !quote;
+            whitespace = false;
+        }
+        else if (!quote && (cmdline[i] == ' ' || cmdline[i] == '\t'))
+        {
+            whitespace = true;
+        }
+        else
+        {
+            if (whitespace)
+            {
+                iFirstArg = i;
+                break;
+            }
+            whitespace = false;
+        }
+    }
+
+    // If it doesn't exist, that must mean there are no arguments,
+    // so just return GAME_LAUNCH_NAME
+    if (iFirstArg == -1)
+        return _wcsdup(TEXT("\".\\" GAME_LAUNCH_NAME ".exe\""));
+
+    // Create the new string
+    // (`".\.exe" ` == +9
+    LPWSTR newcmdline = (LPWSTR)malloc(sizeof(TEXT(GAME_LAUNCH_NAME))
+                                       + sizeof(WCHAR) * (wcslen(cmdline) - iFirstArg + 9));
+    wsprintf(newcmdline, TEXT("\".\\" GAME_LAUNCH_NAME ".exe\" %s"), cmdline + iFirstArg);
+    return newcmdline;
+}
+
 static bool launchChild(ProcessType *pid)
 {
-    return (CreateProcessW(TEXT(".\\") TEXT(GAME_LAUNCH_NAME) TEXT(".exe"),
-                           GetCommandLineW(), NULL, NULL, TRUE, 0, NULL,
-                           NULL, NULL, pid) != 0);
+    STARTUPINFOW si;
+    memset(&si, 0, sizeof(si));
+    return CreateProcessW(TEXT(".\\" GAME_LAUNCH_NAME ".exe"),
+                          genCommandLine(), NULL, NULL, TRUE, 0, NULL,
+                          NULL, &si, pid);
 } // launchChild
 
 static int closeProcess(ProcessType *pid)
@@ -153,6 +202,8 @@ static bool createPipes(PipeType *pPipeParentRead, PipeType *pPipeParentWrite,
     int fds[2];
     if (pipe(fds) == -1)
         return 0;
+    fcntl(fds[0], F_SETFL, 0);
+    fcntl(fds[1], F_SETFL, 0);
     *pPipeParentRead = fds[0];
     *pPipeChildWrite = fds[1];
 
@@ -163,6 +214,8 @@ static bool createPipes(PipeType *pPipeParentRead, PipeType *pPipeParentWrite,
         return 0;
     } // if
 
+    fcntl(fds[0], F_SETFL, 0);
+    fcntl(fds[1], F_SETFL, 0);
     *pPipeChildRead = fds[0];
     *pPipeParentWrite = fds[1];
 
@@ -337,7 +390,7 @@ static bool writeAchievementGet(PipeType fd, const char *name, const int status,
 {
     uint8 buf[256];
     uint8 *ptr = buf+1;
-    dbgpipe("Parent sending SHIMEVENT_GETACHIEVEMENT('%s', status %d, time %llu).\n", name, status, (unsigned long long) time);
+    dbgpipe("Parent sending SHIMEVENT_GETACHIEVEMENT('%s', status %d, time " LLUFMT ").\n", name, status, (unsigned long long) time);
     *(ptr++) = (uint8) SHIMEVENT_GETACHIEVEMENT;
     *(ptr++) = (uint8) status;
     memcpy(ptr, &time, sizeof (time));
@@ -601,11 +654,11 @@ static void processCommands(PipeType pipeParentRead, PipeType pipeParentWrite)
 static bool setEnvironmentVars(PipeType pipeChildRead, PipeType pipeChildWrite)
 {
     char buf[64];
-    snprintf(buf, sizeof (buf), "%llu", (unsigned long long) pipeChildRead);
+    snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildRead);
     if (!setEnvVar("STEAMSHIM_READHANDLE", buf))
         return false;
 
-    snprintf(buf, sizeof (buf), "%llu", (unsigned long long) pipeChildWrite);
+    snprintf(buf, sizeof (buf), LLUFMT, (unsigned long long) pipeChildWrite);
     if (!setEnvVar("STEAMSHIM_WRITEHANDLE", buf))
         return false;
 
