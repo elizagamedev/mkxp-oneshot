@@ -5,51 +5,12 @@
 
 struct SteamPrivate;
 
-class Achievement
-{
-public:
-	enum ID
-	{
-		Invalid = -1,
-
-		SaveWorld = 0,
-		SaveNiko,
-
-		MAX
-	};
-
-	static const char *const names[MAX];
-
-	void unlock();
-	void lock();
-	bool isUnlocked() { return unlocked; }
-
-private:
-	const char *name;
-	bool unlocked;
-
-	friend struct SteamPrivate;
-
-	Achievement()
-	    : name(0),
-	      unlocked(false)
-	{}
-	Achievement(const char *name)
-	    : name(name),
-	      unlocked(false)
-	{
-		update();
-	}
-
-	void update();
-};
-
 class Steam
 {
 public:
-	void unlock(Achievement::ID id);
-	void lock(Achievement::ID id);
-	bool isUnlocked(Achievement::ID id);
+	void unlock(const char *name);
+	void lock(const char *name);
+	bool isUnlocked(const char *name);
 
 	const std::string &userName() const;
 

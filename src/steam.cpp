@@ -1,47 +1,81 @@
 #include "steam.h"
 #include "debugwriter.h"
 
-#include <steam/steam_api.h>
+#include <map>
+#include <SDL2/SDL.h>
+#include "steamshim/steamshim_child.h"
 
 /* Achievements */
-const char *const Achievement::names[Achievement::MAX] = {
+static const char *const achievementNames[] = {
     "SaveWorld",
     "SaveNiko",
 };
-
-void Achievement::update()
-{
-	SteamUserStats()->GetAchievement(name, &unlocked);
-}
-
-void Achievement::unlock()
-{
-	unlocked = true;
-	SteamUserStats()->SetAchievement(name);
-	SteamUserStats()->StoreStats();
-}
-
-void Achievement::lock()
-{
-	unlocked = false;
-	SteamUserStats()->ClearAchievement(name);
-	SteamUserStats()->StoreStats();
-}
+#define NUM_ACHIEVEMENTS (sizeof(achievementNames) / sizeof(achievementNames[0]))
 
 /* SteamPrivate */
 struct SteamPrivate
 {
-	Achievement achievements[Achievement::MAX];
+	std::map<std::string, bool> achievements;
 
-	int appid;
 	std::string userName;
 
 	SteamPrivate()
-	    : appid(SteamUtils()->GetAppID()),
-	      userName(SteamFriends()->GetPersonaName())
 	{
-		for (int i = 0; i < Achievement::MAX; ++i)
-			achievements[i] = Achievement(Achievement::names[i]);
+		STEAMSHIM_getPersonaName();
+		STEAMSHIM_getCurrentGameLanguage();
+		for (size_t i = 0; i < NUM_ACHIEVEMENTS; ++i)
+			STEAMSHIM_getAchievement(achievementNames[i]);
+		while (!initialized())
+		{
+			SDL_Delay(100);
+			update();
+		}
+	}
+
+	void setAchievement(const char *name, bool set)
+	{
+		achievements[name] = set;
+		STEAMSHIM_setAchievement(name, set);
+		STEAMSHIM_storeStats();
+	}
+
+	void updateAchievement(const char *name, bool isSet)
+	{
+		achievements[name] = isSet;
+	}
+
+	bool isAchievementSet(const char *name)
+	{
+		return achievements[name];
+	}
+
+	void update()
+	{
+		const STEAMSHIM_Event *e;
+		while ((e = STEAMSHIM_pump()) != 0)
+		{
+			/* Skip erroneous events */
+			if (!e->okay)
+				continue;
+			/* Handle events */
+            switch (e->type)
+			{
+			case SHIMEVENT_GETACHIEVEMENT:
+				updateAchievement(e->name, e->ivalue);
+				break;
+			case SHIMEVENT_GETPERSONANAME:
+				userName = e->name;
+				break;
+			default:
+				break;
+			}
+        }
+	}
+
+	bool initialized()
+	{
+		return !userName.empty()
+		        && achievements.size() == NUM_ACHIEVEMENTS;
 	}
 };
 
@@ -61,17 +95,17 @@ const std::string &Steam::userName() const
 	return p->userName;
 }
 
-void Steam::unlock(Achievement::ID id)
+void Steam::unlock(const char *name)
 {
-	p->achievements[id].unlock();
+	p->setAchievement(name, true);
 }
 
-void Steam::lock(Achievement::ID id)
+void Steam::lock(const char *name)
 {
-	p->achievements[id].lock();
+	p->setAchievement(name, false);
 }
 
-bool Steam::isUnlocked(Achievement::ID id)
+bool Steam::isUnlocked(const char *name)
 {
-	return p->achievements[id].isUnlocked();
+	return p->isAchievementSet(name);
 }

@@ -43,7 +43,7 @@
 #include "icon.png.xxd"
 
 #ifdef STEAM
-#include <steam/steam_api.h>
+#include "steamshim/steamshim_child.h"
 #else
 #include "gamecontrollerdb.txt.xxd"
 #endif
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 	}
 
 #ifdef STEAM
-	if (!SteamAPI_Init())
+	if (!STEAMSHIM_init())
 	{
 		showInitError("Could not initialize Steamworks API");
 		return 0;
@@ -377,7 +377,7 @@ int main(int argc, char *argv[])
 	SDL_Quit();
 
 #ifdef STEAM
-	SteamAPI_Shutdown();
+	STEAMSHIM_deinit();
 #endif
 
 	return 0;

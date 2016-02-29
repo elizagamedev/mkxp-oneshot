@@ -2,11 +2,12 @@
 *.pro.*
 *.bak
 *.xxd
+*.exe
 
-Makefile*
+/Makefile*
 
-Game
-Game.exe
+/oneshot
+/steamshim_parent/steamshim
 
 /build
 

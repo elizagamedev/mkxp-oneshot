@@ -595,6 +595,7 @@ struct GraphicsPrivate
 	void swapGLBuffer()
 	{
 		fpsLimiter.delay();
+		FBO::unbind();
 		SDL_GL_SwapWindow(threadData->window);
 
 		++frameCount;

@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 QT =
-TARGET = Game
+TARGET = oneshot
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
@@ -13,13 +13,6 @@ CONFIG(release, debug|release): DEFINES += NDEBUG
 
 isEmpty(BINDING) {
 	BINDING = MRI
-}
-
-isEmpty(STEAMWORKS) {
-	STEAMWORKS = /home/mathew/Software/Steamworks
-}
-isEmpty(STEAMARCH) {
-	STEAMARCH = 64
 }
 
 contains(BINDING, MRI) {
@@ -58,30 +51,16 @@ unix {
 		CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL
-		STEAM {
-			LIBS += -L$$STEAMWORKS/redistributable_bin/osx32 -lsteam_api
-		}
 	}
 	!macx: {
 		PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
-		STEAM {
-			LIBS += -L$$STEAMWORKS/redistributable_bin/linux$$STEAMARCH -lsteam_api
-		}
 	}
 }
 
 win32 {
 	QMAKE_CXXFLAGS += -std=gnu++11
 	QMAKE_LFLAGS += -std=gnu++11
-
-	STEAM {
-		equals(STEAMARCH, 64) {
-			LIBS += -L$$STEAMWORKS/redistributable_bin/win64 -lsteam_api64
-		} else {
-			LIBS += -L$$STEAMWORKS/redistributable_bin -lsteam_api
-		}
-	}
 
 	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
 	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
@@ -116,7 +95,6 @@ isEmpty(BOOST_LIB_SUFFIX) {
 LIBS += -lboost_program_options$$BOOST_LIB_SUFFIX
 
 STEAM {
-	INCLUDEPATH += $$STEAMWORKS/public
 	DEFINES += STEAM
 }
 
@@ -226,8 +204,8 @@ SOURCES += \
     binding-mri/steam-binding.cpp
 
 STEAM {
-	HEADERS += src/steam.h
-	SOURCES += src/steam.cpp
+	HEADERS += src/steam.h steamshim/steamshim_child.h
+	SOURCES += src/steam.cpp steamshim/steamshim_child.c
 }
 
 EMBED = \
