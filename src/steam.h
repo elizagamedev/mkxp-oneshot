@@ -13,6 +13,7 @@ public:
 	bool isUnlocked(const char *name);
 
 	const std::string &userName() const;
+	const std::string &lang() const;
 
 private:
 	Steam();

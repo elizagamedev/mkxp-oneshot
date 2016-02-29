@@ -47,7 +47,7 @@ void oneshotBindingInit()
     //Constants
     rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->oneshot().userName().c_str()));
     rb_const_set(module, rb_intern("SAVE_PATH"), rb_str_new2(shState->oneshot().savePath().c_str()));
-    rb_const_set(module, rb_intern("LANG"), ID2SYM(rb_intern(shState->oneshot().lang().c_str())));
+    rb_const_set(module, rb_intern("LANG"), rb_str_new2(shState->oneshot().lang().c_str()));
     rb_const_set(msg, rb_intern("INFO"), INT2FIX(Oneshot::MSG_INFO));
     rb_const_set(msg, rb_intern("YESNO"), INT2FIX(Oneshot::MSG_YESNO));
     rb_const_set(msg, rb_intern("WARN"), INT2FIX(Oneshot::MSG_WARN));

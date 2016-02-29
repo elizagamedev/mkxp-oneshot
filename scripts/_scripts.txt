@@ -96,6 +96,9 @@ Scene_Battle 4
 Scene_Name
 Scene_Debug
 
+# Persistent data
+Persistent
+
 # Internationalization
 i18n_Translator
 i18n_Language

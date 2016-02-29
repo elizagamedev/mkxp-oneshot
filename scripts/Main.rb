@@ -8,6 +8,9 @@ begin
   Graphics.frame_rate = 60
   Font.default_size = 20
 
+  # Load persistent data
+  Persistent.load
+
   # Prepare for transition
   Graphics.freeze
   # Make scene object (title screen)

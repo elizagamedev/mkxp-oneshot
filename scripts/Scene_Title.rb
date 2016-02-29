@@ -29,8 +29,6 @@ class Scene_Title
     # Load save game/initialize data
     $game_temp = Game_Temp.new
     new_game unless load
-    # Translate database items
-    $tr.translate_database
     # Make system object
     $game_system = Game_System.new
     # Skip title screen if debug mode

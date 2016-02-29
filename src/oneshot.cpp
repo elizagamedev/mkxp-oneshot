@@ -227,7 +227,9 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 	//Get language code
 	WCHAR wlang[9];
 	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
-	p->lang = w32_fromWide(wlang);
+	p->lang = w32_fromWide(wlang) + "_";
+	GetLocaleInfoW(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, wlang, sizeof(wlang) / sizeof(WCHAR));
+	p->lang += w32_fromWide(wlang);
 
 	//Get user's name
 	ULONG size = 0;
@@ -260,9 +262,9 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 	const char *code = (lc_all ? lc_all : lang);
 	if (code)
 	{
-		//find first non alphanumeric character, copy language code
+		//find first dot, copy language code
 		int end = 0;
-		for (; code[end] && (code[end] >= 'a' && code[end] <= 'z'); ++end) {}
+		for (; code[end] && code[end] != '.'; ++end) {}
 		p->lang = std::string(code, end);
 	}
 	else

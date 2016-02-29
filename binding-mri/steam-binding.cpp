@@ -65,8 +65,13 @@ void steamBindingInit()
 	/* Constants */
 #ifdef STEAM
 	rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->steam().userName().c_str()));
+	if (shState->steam().lang().empty())
+		rb_const_set(module, rb_intern("LANG"), Qnil);
+	else
+		rb_const_set(module, rb_intern("LANG"), rb_str_new2(shState->steam().lang().c_str()));
 #else
 	rb_const_set(module, rb_intern("USER_NAME"), Qnil);
+	rb_const_set(module, rb_intern("LANG"), Qnil);
 #endif
 
 	/* Functions */

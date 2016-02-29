@@ -1,9 +1,7 @@
-def save_file_name
-  Oneshot::SAVE_PATH + '/save.dat'
-end
+SAVE_FILE_NAME = Oneshot::SAVE_PATH + '/save.dat'
 
 def save
-  File.open(save_file_name, 'wb') do |file|
+  File.open(SAVE_FILE_NAME, 'wb') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
     # Increase save count by 1
@@ -27,8 +25,8 @@ def save
 end
 
 def load
-  return false unless FileTest.exist?(save_file_name)
-  File.open(save_file_name, 'rb') do |file|
+  return false unless FileTest.exist?(SAVE_FILE_NAME)
+  File.open(SAVE_FILE_NAME, 'rb') do |file|
     # Read frame count for measuring play time
     Graphics.frame_count = Marshal.load(file)
     # Read each type of game object

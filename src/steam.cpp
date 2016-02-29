@@ -5,6 +5,45 @@
 #include <SDL2/SDL.h>
 #include "steamshim/steamshim_child.h"
 
+/* Language map */
+static const std::map<std::string, std::string> langToCode = {
+    {"brazilian", "pt_BR"},
+    {"bulgarian", "bg"},
+    {"czech", "cz"},
+    {"danish", "da"},
+    {"dutch", "nl"},
+    {"english", "en"},
+    {"finnish", "fi"},
+    {"french", "fr"},
+    {"german", "de"},
+    {"greek", "el"},
+    {"hungarian", "hu"},
+    {"italian", "it"},
+    {"japanese", "ja"},
+    {"koreana", "ko"},
+    {"korean", "ko"},
+    {"norwegian", "no"},
+    {"polish", "pl"},
+    {"portuguese", "pt"},
+    {"romanian", "ro"},
+    {"russian", "ru"},
+    {"schinese", "zh_CN"},
+    {"spanish", "es"},
+    {"swedish", "sv"},
+    {"tchinese", "zh_TW"},
+    {"thai", "th"},
+    {"turkish", "tr"},
+    {"ukrainian", "uk"},
+};
+
+static std::string steamToIsoLang(const char *steamLang)
+{
+	auto it = langToCode.find(steamLang);
+	if (it != langToCode.end())
+		return it->second;
+	return "en";
+}
+
 /* Achievements */
 static const char *const achievementNames[] = {
     "SaveWorld",
@@ -18,6 +57,7 @@ struct SteamPrivate
 	std::map<std::string, bool> achievements;
 
 	std::string userName;
+	std::string lang;
 
 	SteamPrivate()
 	{
@@ -66,6 +106,8 @@ struct SteamPrivate
 			case SHIMEVENT_GETPERSONANAME:
 				userName = e->name;
 				break;
+			case SHIMEVENT_GETCURRENTGAMELANGUAGE:
+				lang = steamToIsoLang(e->name);
 			default:
 				break;
 			}
@@ -75,6 +117,7 @@ struct SteamPrivate
 	bool initialized()
 	{
 		return !userName.empty()
+		        && !lang.empty()
 		        && achievements.size() == NUM_ACHIEVEMENTS;
 	}
 };
@@ -93,6 +136,11 @@ Steam::~Steam()
 const std::string &Steam::userName() const
 {
 	return p->userName;
+}
+
+const std::string &Steam::lang() const
+{
+	return p->lang;
 }
 
 void Steam::unlock(const char *name)

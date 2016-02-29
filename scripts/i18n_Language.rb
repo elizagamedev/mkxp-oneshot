@@ -9,13 +9,16 @@ class Language
     @character_table_height = character_table_height
   end
 
-  def self.get(code = :en)
-    return LANGUAGES[code] || LANGUAGES[:en]
+  def self.get(lc)
+    return LANGUAGES[lc.full] || LANGUAGES[lc.lang] || LANGUAGES[:en]
   end
+
+  FONT_WESTERN = 'Terminus (TTF)'
+  FONT_CJK = 'WenQuanYi Micro Hei'
 
   LANGUAGES = {
     :en => Language.new(
-      'Terminus (TTF)', [
+      FONT_WESTERN, [
         "A","B","C","D","E",
         "F","G","H","I","J",
         "K","L","M","N","O",
@@ -36,7 +39,7 @@ class Language
       ], 8
     ),
     :es => Language.new(
-      'Terminus (TTF)', [
+      FONT_WESTERN, [
         "A","B","C","D","E",
         "F","G","H","I","J",
         "K","L","M","N","O",
@@ -59,7 +62,7 @@ class Language
       ], 9
     ),
     :ja => Language.new(
-      'WenQuanYi Micro Hei', [
+      FONT_CJK, [
         "あ","い","う","え","お",
         "か","き","く","け","こ",
         "さ","し","す","せ","そ",
@@ -102,7 +105,7 @@ class Language
       ], 9
     ),
     :ko => Language.new(
-      'WenQuanYi Micro Hei', [
+      FONT_CJK, [
         "가","개","갸","거","게",
         "겨","고","교","구","규",
         "그","기","나","내","냐",

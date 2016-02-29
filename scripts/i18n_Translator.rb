@@ -11,14 +11,13 @@ end
 # Translator class: translate text to another language
 class Translator
   # Create Translator object
-  def initialize(code = :en)
-    if code == :en
-      @data = nil
-    else
+  def initialize(lc)
+    @data = nil
+    [lc.full.to_s, lc.lang.to_s].each do |name|
       begin
-        @data = load_data("Languages/#{code.to_s}.rxdata")
+        @data = load_data("Langauges/#{name}.rxdata")
+        break
       rescue
-        @data = nil
       end
     end
   end
@@ -71,10 +70,18 @@ class Translator
   end
 end
 
-# Hacky translation helper function
-# def tr(text)
-#   $tr.script(Kernel.caller.first.split(':', 3)[1], text)
-# end
+# Translatable string
+class TrString
+  def initialize(str)
+    @str = str
+  end
+
+  def to_str
+    @str
+  end
+  alias :to_s :to_str
+end
+
 def tr(text)
-  text
+  TrString.new(text)
 end

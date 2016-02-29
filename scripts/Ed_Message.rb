@@ -61,7 +61,7 @@ class Ed_Message
     widths = []
 
     # Pre-process text
-    text_raw = $game_temp.message_ed_text
+    text_raw = $game_temp.message_ed_text.to_str
 
     # Substitute variables, actors, player name, newlines, etc
     text_raw.gsub!(/\\v\[([0-9]+)\]/) do
