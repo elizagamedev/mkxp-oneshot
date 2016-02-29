@@ -336,7 +336,6 @@ struct ShaderSet
 	BltShader blt;
 	SimpleMatrixShader simpleMatrix;
 	BlurShader blur;
-	TilemapVXShader tilemapVX;
 	ObscuredShader obscured;
 };
 

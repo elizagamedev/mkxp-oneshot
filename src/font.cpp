@@ -33,27 +33,7 @@
 
 #include <SDL_ttf.h>
 
-#define BUNDLED_FONT liberation
-
-#define BUNDLED_FONT_DECL(FONT) \
-	extern unsigned char assets_##FONT##_ttf[]; \
-	extern unsigned int assets_##FONT##_ttf_len;
-
-BUNDLED_FONT_DECL(liberation)
-
-#define BUNDLED_FONT_D(f) assets_## f ##_ttf
-#define BUNDLED_FONT_L(f) assets_## f ##_ttf_len
-
-// Go fuck yourself CPP
-#define BNDL_F_D(f) BUNDLED_FONT_D(f)
-#define BNDL_F_L(f) BUNDLED_FONT_L(f)
-
 typedef std::pair<std::string, int> FontKey;
-
-static SDL_RWops *openBundledFont()
-{
-	return SDL_RWFromConstMem(BNDL_F_D(BUNDLED_FONT), BNDL_F_L(BUNDLED_FONT));
-}
 
 struct FontSet
 {
@@ -157,8 +137,7 @@ _TTF_Font *SharedFontState::getFont(std::string family,
 
 	if (family.empty())
 	{
-		/* Built-in font */
-		ops = openBundledFont();
+		throw Exception(Exception::RGSSError, "font does not exist");
 	}
 	else
 	{
@@ -190,13 +169,6 @@ bool SharedFontState::fontPresent(std::string family) const
 	const FontSet &set = p->sets[family];
 
 	return !(set.regular.empty() && set.other.empty());
-}
-
-_TTF_Font *SharedFontState::openBundled(int size)
-{
-	SDL_RWops *ops = openBundledFont();
-
-	return TTF_OpenFontRW(ops, 1, size);
 }
 
 void pickExistingFontName(const std::vector<std::string> &names,

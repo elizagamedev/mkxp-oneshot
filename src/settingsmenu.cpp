@@ -33,6 +33,7 @@
 #include "input.h"
 #include "etc-internal.h"
 #include "util.h"
+#include "sharedstate.h"
 
 #include <algorithm>
 #include <assert.h>
@@ -44,8 +45,8 @@ const uint8_t cBgDark = 20;
 const uint8_t cLine = 0;
 const uint8_t cText = 255;
 
-const uint8_t frameWidth = 4;
-const uint8_t fontSize = 15;
+const char *const fontFamily = "Terminus (TTF)";
+const uint8_t fontSize = 12;
 
 static bool pointInRect(const SDL_Rect &r, int x, int y)
 {
@@ -1032,7 +1033,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
 
-	p->font = SharedFontState::openBundled(fontSize);
+	p->font = shState->fontState().getFont(fontFamily, fontSize);
 
 	p->rgb = p->winSurf->format;
 
@@ -1099,7 +1100,6 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 
 SettingsMenu::~SettingsMenu()
 {
-	TTF_CloseFont(p->font);
 	SDL_DestroyWindow(p->window);
 
 	delete p;

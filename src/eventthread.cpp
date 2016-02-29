@@ -123,7 +123,6 @@ void EventThread::process(RGSSThreadData &rtData)
 #endif
 
 	fullscreen = rtData.config.fullscreen;
-	int toggleFSMod = rtData.config.anyAltToggleFS ? KMOD_ALT : KMOD_LALT;
 
 	fps.lastFrame = SDL_GetPerformanceCounter();
 	fps.displayCounter = 0;

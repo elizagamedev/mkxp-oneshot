@@ -71,7 +71,6 @@ void Config::read(int argc, char *argv[])
 	PO_DESC(solidFonts, bool, false) \
 	PO_DESC(subImageFix, bool, false) \
 	PO_DESC(gameFolder, std::string, ".") \
-	PO_DESC(anyAltToggleFS, bool, false) \
 	PO_DESC(allowSymlinks, bool, false) \
 	PO_DESC(iconPath, std::string, "") \
 	PO_DESC(execName, std::string, "Game") \

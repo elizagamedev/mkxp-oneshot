@@ -49,7 +49,6 @@ struct Config
 	bool subImageFix;
 
 	std::string gameFolder;
-	bool anyAltToggleFS;
 	bool allowSymlinks;
 	bool pathCache;
 

@@ -52,8 +52,6 @@ public:
 
 	bool fontPresent(std::string family) const;
 
-	static _TTF_Font *openBundled(int size);
-
 private:
 	SharedFontStatePrivate *p;
 };

@@ -152,9 +152,6 @@ HEADERS += \
 	src/alstream.h \
 	src/audiostream.h \
 	src/rgssad.h \
-	src/windowvx.h \
-	src/tilemapvx.h \
-	src/tileatlasvx.h \
 	src/sdl-util.h \
 	src/oneshot.h
 
@@ -194,12 +191,7 @@ SOURCES += \
 	src/alstream.cpp \
 	src/audiostream.cpp \
 	src/rgssad.cpp \
-	src/bundledfont.cpp \
 	src/vorbissource.cpp \
-	src/windowvx.cpp \
-	src/tilemapvx.cpp \
-	src/tileatlasvx.cpp \
-	src/autotilesvx.cpp \
 	src/oneshot.cpp \
     binding-mri/steam-binding.cpp
 
@@ -233,8 +225,6 @@ EMBED = \
 	shader/blurH.vert \
 	shader/blurV.vert \
 	shader/simpleMatrix.vert \
-	shader/tilemapvx.vert \
-	assets/liberation.ttf \
 	assets/icon.png \
 	assets/gamecontrollerdb.txt
 
@@ -254,47 +244,6 @@ QMAKE_EXTRA_COMPILERS += xxd
 
 BINDING_NULL {
 	SOURCES += binding-null/binding-null.cpp
-}
-
-BINDING_MRUBY {
-	LIBS += mruby/build/host/lib/libmruby.a
-	INCLUDEPATH += mruby/include
-	DEPENDPATH += mruby/include
-	DEFINES += BINDING_MRUBY
-
-	HEADERS += \
-	binding-mruby/binding-util.h \
-	binding-mruby/disposable-binding.h \
-	binding-mruby/flashable-binding.h \
-	binding-mruby/binding-types.h \
-	binding-mruby/sceneelement-binding.h \
-	binding-mruby/viewportelement-binding.h \
-	binding-mruby/serializable-binding.h \
-	binding-mruby/mrb-ext/file.h \
-	binding-mruby/mrb-ext/rwmem.h \
-	binding-mruby/mrb-ext/marshal.h
-
-	SOURCES += \
-	binding-mruby/binding-mruby.cpp \
-	binding-mruby/binding-util.cpp \
-	binding-mruby/window-binding.cpp \
-	binding-mruby/bitmap-binding.cpp \
-	binding-mruby/sprite-binding.cpp \
-	binding-mruby/font-binding.cpp \
-	binding-mruby/viewport-binding.cpp \
-	binding-mruby/plane-binding.cpp \
-	binding-mruby/audio-binding.cpp \
-	binding-mruby/tilemap-binding.cpp \
-	binding-mruby/etc-binding.cpp \
-	binding-mruby/graphics-binding.cpp \
-	binding-mruby/input-binding.cpp \
-	binding-mruby/table-binding.cpp \
-	binding-mruby/module_rpg.c \
-	binding-mruby/mrb-ext/file.cpp \
-	binding-mruby/mrb-ext/marshal.cpp \
-	binding-mruby/mrb-ext/rwmem.cpp \
-	binding-mruby/mrb-ext/kernel.cpp \
-	binding-mruby/mrb-ext/time.cpp
 }
 
 BINDING_MRI {
@@ -339,8 +288,6 @@ BINDING_MRI {
 	binding-mri/audio-binding.cpp \
 	binding-mri/module_rpg.cpp \
 	binding-mri/filesystem-binding.cpp \
-	binding-mri/windowvx-binding.cpp \
-	binding-mri/tilemapvx-binding.cpp \
 	binding-mri/oneshot-binding.cpp
 }
 
