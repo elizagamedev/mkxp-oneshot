@@ -5,51 +5,56 @@
 #include <SDL2/SDL.h>
 #include "steamshim/steamshim_child.h"
 
-/* Language map */
-static const std::map<std::string, std::string> langToCode = {
-    {"brazilian", "pt_BR"},
-    {"bulgarian", "bg"},
-    {"czech", "cz"},
-    {"danish", "da"},
-    {"dutch", "nl"},
-    {"english", "en"},
-    {"finnish", "fi"},
-    {"french", "fr"},
-    {"german", "de"},
-    {"greek", "el"},
-    {"hungarian", "hu"},
-    {"italian", "it"},
-    {"japanese", "ja"},
-    {"koreana", "ko"},
-    {"korean", "ko"},
-    {"norwegian", "no"},
-    {"polish", "pl"},
-    {"portuguese", "pt"},
-    {"romanian", "ro"},
-    {"russian", "ru"},
-    {"schinese", "zh_CN"},
-    {"spanish", "es"},
-    {"swedish", "sv"},
-    {"tchinese", "zh_TW"},
-    {"thai", "th"},
-    {"turkish", "tr"},
-    {"ukrainian", "uk"},
-};
-
-static std::string steamToIsoLang(const char *steamLang)
-{
-	auto it = langToCode.find(steamLang);
-	if (it != langToCode.end())
-		return it->second;
-	return "en";
-}
-
 /* Achievements */
 static const char *const achievementNames[] = {
     "SaveWorld",
     "SaveNiko",
 };
 #define NUM_ACHIEVEMENTS (sizeof(achievementNames) / sizeof(achievementNames[0]))
+
+/* Language map */
+static inline std::map<std::string, std::string> gen_langToCode()
+{
+	std::map<std::string, std::string> map;
+	map["brazilian"] = "pt_BR";
+	map["brazilian"] = "pt_BR";
+	map["bulgarian"] = "bg";
+	map["czech"] = "cz";
+	map["danish"] = "da";
+	map["dutch"] = "nl";
+	map["english"] = "en";
+	map["finnish"] = "fi";
+	map["french"] = "fr";
+	map["german"] = "de";
+	map["greek"] = "el";
+	map["hungarian"] = "hu";
+	map["italian"] = "it";
+	map["japanese"] = "ja";
+	map["koreana"] = "ko";
+	map["korean"] = "ko";
+	map["norwegian"] = "no";
+	map["polish"] = "pl";
+	map["portuguese"] = "pt";
+	map["romanian"] = "ro";
+	map["russian"] = "ru";
+	map["schinese"] = "zh_CN";
+	map["spanish"] = "es";
+	map["swedish"] = "sv";
+	map["tchinese"] = "zh_TW";
+	map["thai"] = "th";
+	map["turkish"] = "tr";
+	map["ukrainian"] = "uk";
+	return map;
+}
+static const std::map<std::string, std::string> langToCode = gen_langToCode();
+
+static std::string steamToIsoLang(const char *steamLang)
+{
+	std::map<std::string, std::string>::const_iterator it = langToCode.find(steamLang);
+	if (it != langToCode.end())
+		return it->second;
+	return "en";
+}
 
 /* SteamPrivate */
 struct SteamPrivate
