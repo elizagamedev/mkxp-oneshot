@@ -99,9 +99,6 @@ struct SteamPrivate
 		const STEAMSHIM_Event *e;
 		while ((e = STEAMSHIM_pump()) != 0)
 		{
-			/* Skip erroneous events */
-			if (!e->okay)
-				continue;
 			/* Handle events */
             switch (e->type)
 			{

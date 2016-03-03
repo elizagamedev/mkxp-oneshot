@@ -461,6 +461,8 @@ void Oneshot::setYesNo(const char *yes, const char *no)
 
 bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
+	if (!title)
+		title = "";
 #if defined OS_W32
 	//Get native window handle
 	SDL_SysWMinfo wminfo;
