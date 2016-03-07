@@ -45,8 +45,8 @@ contains(BINDING, NULL) {
 unix {
 	CONFIG += c++11
 	PKGCONFIG += sigc++-2.0 pixman-1 vorbisfile \
-	             sdl2 SDL2_image SDL2_ttf SDL_sound
-	LIBS += -ldl -lphysfs
+                 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
+    LIBS += -ldl
 	macx: {
 		CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers

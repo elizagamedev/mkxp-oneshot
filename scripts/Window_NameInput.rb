@@ -16,8 +16,8 @@ class Window_NameInput < Window_Base
     @index = 0
 
     # Create dimension information
-    @character_table = $language.character_table
-    @group_height = $language.character_table_height
+    @character_table = $lang.character_table
+    @group_height = $lang.character_table_height
     @group_size = @group_height * GROUP_WIDTH
     @num_groups = @character_table.length / @group_size
     @start_x = ((width - 32) - @num_groups * 152 + 12) / 2

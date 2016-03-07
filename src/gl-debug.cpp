@@ -70,7 +70,7 @@ static void APIENTRY arbDebugFunc(GLenum source,
 	(void) id;
 	(void) length;
 
-	if (severity == 0x826B) // GL_DEBUG_SEVERITY_NOTIFICATION
+	if (severity != GL_DEBUG_SEVERITY_HIGH_ARB)
 		return;
 
 	p->writeTimestamp();
