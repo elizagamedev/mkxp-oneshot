@@ -106,6 +106,7 @@ class FastTravel
           Graphics.freeze
           $game_temp.transition_processing = true
           $game_temp.transition_name = "black"
+          @transfer_player = nil
         end
       end
       return
