@@ -31,8 +31,8 @@ class Scene_Title
     new_game unless load
     # Make system object
     $game_system = Game_System.new
-    # Skip title screen if debug mode
-    if $debug
+    # Skip title screen if debug mode (or demo, but not GDC)
+    if $debug || ($demo && !$GDC)
       $game_map.update
       $scene = Scene_Map.new
       return
@@ -45,7 +45,9 @@ class Scene_Title
     @menu.z += 1
     @menu.bitmap = Bitmap.new(640, 480)
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 28, 150, 24, tr("Exit"))
+    if !$GDC
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 28, 150, 24, tr("Exit"))
+    end
     # Make cursor graphic
     @cursor = Sprite.new
     @cursor.zoom_x = @cursor.zoom_y = 2
@@ -53,7 +55,7 @@ class Scene_Title
     @cursor.z += 2
     @cursor.bitmap = RPG::Cache.menu('cursor')
     @cursor.x = MENU_X - 12
-    @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2
+    @cursor.y = MENU_Y + (22 - @cursor.bitmap.height) / 2
     # Initialize cursor position
     @cursor_pos = 0
     # Play title BGM
@@ -95,21 +97,23 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def update
     # Handle cursor movement
-    update_cursor = false
-    if Input.trigger?(Input::UP)
-      if @cursor_pos > 0
-        @cursor_pos -= 1
-        update_cursor = true
+    if !$GDC
+      update_cursor = false
+      if Input.trigger?(Input::UP)
+        if @cursor_pos > 0
+          @cursor_pos -= 1
+          update_cursor = true
+        end
+      elsif Input.trigger?(Input::DOWN)
+        if @cursor_pos < 1
+          @cursor_pos += 1
+          update_cursor = true
+        end
       end
-    elsif Input.trigger?(Input::DOWN)
-      if @cursor_pos < 1
-        @cursor_pos += 1
-        update_cursor = true
+      if update_cursor
+        Audio.se_play('Audio/SE/title_cursor.wav')
+        @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 24 * @cursor_pos
       end
-    end
-    if update_cursor
-      Audio.se_play('Audio/SE/title_cursor.wav')
-      @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 24 * @cursor_pos
     end
 
     # Handle confirmation
@@ -156,7 +160,7 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def command_continue
     # Play decision SE
-    $game_system.se_play($data_system.decision_se)
+    Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
     $game_map.update
     # Switch to map screen
@@ -167,7 +171,7 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def command_shutdown
     # Play decision SE
-    $game_system.se_play($data_system.decision_se)
+    Audio.se_play('Audio/SE/title_decision.wav')
     # Fade out BGM, BGS, and ME
     Audio.bgm_fade(800)
     Audio.bgs_fade(800)
