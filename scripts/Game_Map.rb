@@ -31,6 +31,7 @@ class Game_Map
   attr_accessor :clamped_x                # panorama is horizontally clamped?
   attr_accessor :clamped_y                # panorama is vertically clamped?
   attr_accessor :wrapping                 # map is wrapping?
+  attr_accessor :pan_offset_y             # offset of y-coord of panorama
   attr_accessor :ambient                  # ambient light
   attr_reader   :passages                 # passage table
   attr_reader   :priorities               # prioroty table
@@ -139,6 +140,7 @@ class Game_Map
     end
     # Unwrap map
     @wrapping = false
+    @pan_offset_y = 0
     # Full bright ambient light
     @ambient = Tone.new(0, 0, 0, 0)
 
@@ -306,11 +308,11 @@ class Game_Map
     end
     # Loop searches in order from top of layer
     blank = 0
-    for i in [2, 1, 0]
+    [2, 1, 0].each do |i|
       # Get tile ID
       tile_id = data[x, y, i]
       # Tile ID acquistion failure
-      return false if tile_id == nil
+      next if tile_id == nil
 
       # Only handle blank if all three layers are blank
       if tile_id < 48 && i > 0

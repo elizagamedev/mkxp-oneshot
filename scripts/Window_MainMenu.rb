@@ -70,6 +70,7 @@ class Window_MainMenu < Window_Selectable
   # Update
   def update
     super
+
     # Handle fade-in effect
     if @fade_in
       if Input.trigger?(Input::ITEMS)
@@ -98,7 +99,7 @@ class Window_MainMenu < Window_Selectable
     end
 
     # Don't do anything if not active
-    if !self.active
+    if !self.active || $game_system.map_interpreter.running?
       return
     end
 
@@ -108,17 +109,18 @@ class Window_MainMenu < Window_Selectable
       self.opacity = 127
       case @index
       when 0
-        if Input.trigger?(Input::ACTION)
-          if $game_fasttravel.enabled?
-            $game_system.se_play($data_system.decision_se)
-            $game_temp.travel_menu_calling = true
-            @fade_out = true
-          else
-            $game_system.se_play($data_system.buzzer_se)
-            $game_temp.message_ed_text = tr("You cannot fast travel right now.")
-            $game_temp.message_proc = Proc.new { self.active = true; self.opacity = 255 }
-          end
+        if $game_fasttravel.enabled?
+          $game_system.se_play($data_system.decision_se)
+          $game_temp.travel_menu_calling = true
+          @fade_out = true
+        else
+          $game_system.se_play($data_system.buzzer_se)
+          $game_temp.message_ed_text = tr("You cannot fast travel right now.")
+          $game_temp.message_proc = Proc.new { self.active = true; self.opacity = 255 }
         end
+      when 1
+        $game_temp.common_event_id = 15
+        @fade_out = true
       else
         $game_system.se_play($data_system.buzzer_se)
         self.active = true

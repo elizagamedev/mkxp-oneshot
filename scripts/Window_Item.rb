@@ -49,11 +49,12 @@ class Window_Item < Window_Selectable
     # If item count is not 0, make a bit map and draw all items
     @item_max = @data.size
     if @item_max > 0
-      self.index = 0 if self.index == -1
       self.contents = Bitmap.new(width - 32, row_max * 32)
       for i in 0...@item_max
         draw_item(i)
       end
+      self.index = 0 if self.index == -1
+      self.index = @item_max - 1 if self.index >= @item_max
     else
       self.index = -1
     end
@@ -129,7 +130,7 @@ class Window_Item < Window_Selectable
     end
 
     # Don't do anything if not active
-    if !self.active
+    if !self.active || $game_system.map_interpreter.running?
       return
     end
 

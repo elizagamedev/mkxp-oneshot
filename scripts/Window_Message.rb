@@ -365,7 +365,7 @@ class Window_Message < Window_Selectable
         self.pause = true
 
         # Advance/Close message
-        if Input.trigger?(Input::ACTION)
+        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
           terminate_message
         end
       end

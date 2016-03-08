@@ -205,7 +205,7 @@ class Spriteset_Map
       y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height - 480)
       @panorama.oy = y < 0.0 ? 0.0 : y
     else
-      @panorama.oy = $game_map.display_y / 8
+      @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / 8
     end
     # Update fog plane
     @fog.zoom_x = $game_map.fog_zoom / 100.0

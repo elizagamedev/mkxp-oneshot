@@ -5,6 +5,7 @@ module Item
     [32, 36] => 33, # button + magnets => magnetized button
     [37, 38] => 32, # tin + scissors => button
     [36, 37] => 100, # tin + magnets => can't combine
+    [41, 43] => 42, # clippers + oil => oiled clippers
   }
 
   def self.combine(item_a, item_b)

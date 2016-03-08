@@ -111,6 +111,10 @@ def wrap_map
   $game_map.wrapping = true
 end
 
+def pan_offset_y(val)
+  $game_map.pan_offset_y = val
+end
+
 # Map specific settings
 def green_ambient
   ambient -50, -50, -50
@@ -170,4 +174,10 @@ end
 
 def quit
   $scene = nil
+end
+
+def activate_balcony?(ypos)
+  $game_player.y == ypos &&
+    $game_player.direction == 8 &&
+    Input.trigger?(Input::ACTION)
 end

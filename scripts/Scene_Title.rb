@@ -40,6 +40,8 @@ class Scene_Title
     # Make title graphic
     @sprite = Sprite.new
     @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+    @sprite.zoom_x = 2.0
+    @sprite.zoom_y = 2.0
     # Create/render menu options
     @menu = Sprite.new
     @menu.z += 1

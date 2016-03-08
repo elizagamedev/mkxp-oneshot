@@ -44,7 +44,7 @@ class Game_System
   def bgm_play(bgm)
     @playing_bgm = bgm
     if bgm != nil and bgm.name != ""
-      Audio.bgm_play("Audio/BGM/" + bgm.name, bgm.volume, bgm.pitch)
+      Audio.bgm_play("Audio/BGM/" + bgm.name, bgm.volume * 0.8, bgm.pitch)
     else
       Audio.bgm_stop
     end

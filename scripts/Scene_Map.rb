@@ -193,6 +193,9 @@ class Scene_Map
       # Set debug calling flag
       $game_temp.debug_calling = true
     end
+    if $GDC && Input.press?(Input::F8)
+      $game_temp.to_title = true
+    end
     # If player is not moving
     unless $game_player.moving?
       # Run calling of each screen
