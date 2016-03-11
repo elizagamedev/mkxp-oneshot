@@ -96,11 +96,7 @@ viewportElementBindingInit(VALUE klass)
 	sceneElementBindingInit<C>(klass);
 
 	_rb_define_method(klass, "viewport", viewportElementGetViewport<C>);
-
-	if (rgssVer >= 2)
-	{
 	_rb_define_method(klass, "viewport=", viewportElementSetViewport<C>);
-	}
 }
 
 #endif // VIEWPORTELEMENTBINDING_H

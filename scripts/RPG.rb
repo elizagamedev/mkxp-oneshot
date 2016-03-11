@@ -25,4 +25,8 @@ class Tone
   def *(s)
     Tone.new(self.red * s, self.green * s, self.blue * s, self.gray * s)
   end
+
+  def blank?
+    self.red == 0 && self.green == 0 && self.blue == 0 && self.gray == 0
+  end
 end
