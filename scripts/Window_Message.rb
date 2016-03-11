@@ -36,6 +36,9 @@ class Window_Message < Window_Selectable
     @number_start = -1
     # skip message proc if we have choices/numbers buffered
     @skip_message_proc = false
+
+    # Text blip sound
+    @blipsound = nil
   end
   #--------------------------------------------------------------------------
   # * Dispose
@@ -89,6 +92,9 @@ class Window_Message < Window_Selectable
     # Pre-process text
     if $game_temp.message_text != nil && !$game_temp.message_text.empty?
       text = $game_temp.message_text
+
+      # Determine blip sound
+      @blipsound = text.start_with?('[') ? 'text_robot' : 'text'
 
       # Substitute variables, actors, player name, newlines, etc
       text.gsub!(/\\v\[([0-9]+)\]/) do
@@ -322,7 +328,7 @@ class Window_Message < Window_Selectable
         @text_pause -= 1
       else
         if @blip >= BLIP_TIME
-          Audio.se_play('Audio/SE/text.wav') unless @text.empty?
+          Audio.se_play("Audio/SE/#{@blipsound}.wav", 50) unless @text.empty?
           @blip = 0
         else
           @blip += 1

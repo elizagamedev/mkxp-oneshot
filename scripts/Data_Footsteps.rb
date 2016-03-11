@@ -1,7 +1,6 @@
 FOOTSTEP_SFX = [
   # Start
-  ['step_wood',
-   'step_carpet'],
+  ['step_wood'],
   # Blue
   ['step_gravel',
    'step_wood'],
@@ -41,5 +40,6 @@ FOOTSTEP_SFX = [
 ]
 
 FOOTSTEP_AMT = {
-  'step_metal' => 4
+  'step_metal' => 4,
+  'step_tile' => 4,
 }

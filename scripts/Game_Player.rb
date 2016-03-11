@@ -63,7 +63,6 @@ class Game_Player < Game_Character
   #--------------------------------------------------------------------------
   def increase_steps
     super
-    emit_footstep
     # If move route is not forcing
     unless @move_route_forcing
       # Increase steps
@@ -219,6 +218,16 @@ class Game_Player < Game_Character
     last_real_x = @real_x
     last_real_y = @real_y
     super
+    # Emit footsteps
+    if moving? || last_real_x != @real_x || last_real_y != @real_y
+      @footstep_timer += 1
+      if (@move_speed <= 3 && @footstep_timer >= 16) || (@move_speed >= 4 && @footstep_timer >= 12)
+        emit_footstep
+        @footstep_timer = 0
+      end
+    else
+      @footstep_timer = 8
+    end
     # If character moves down and is positioned lower than the center
     # of the screen
     if @real_y > last_real_y and @real_y - $game_map.display_y > CENTER_Y
