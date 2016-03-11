@@ -46,9 +46,9 @@
 
 
 # Sync screen redraws to the monitor refresh rate
-# (default: disabled)
+# (default: enabled)
 #
-# vsync=false
+# vsync=true
 
 
 # Enforce a static frame rate

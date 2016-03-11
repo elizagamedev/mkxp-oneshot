@@ -86,20 +86,20 @@ struct GcBindingData
 /* Common */
 static const KbBindingData defaultKbBindings[] =
 {
-    { SDL_SCANCODE_LEFT,   Input::Left       },
+	{ SDL_SCANCODE_LEFT,   Input::Left       },
 	{ SDL_SCANCODE_RIGHT,  Input::Right      },
 	{ SDL_SCANCODE_UP,     Input::Up         },
 	{ SDL_SCANCODE_DOWN,   Input::Down       },
 	{ SDL_SCANCODE_Z,      Input::Action     },
-    { SDL_SCANCODE_SPACE,  Input::Action     },
+	{ SDL_SCANCODE_SPACE,  Input::Action     },
 	{ SDL_SCANCODE_X,      Input::Cancel     },
-    { SDL_SCANCODE_ESCAPE, Input::Cancel     },
+	{ SDL_SCANCODE_ESCAPE, Input::Cancel     },
 	{ SDL_SCANCODE_A,      Input::Menu       },
-    { SDL_SCANCODE_RETURN, Input::Menu       },
+	{ SDL_SCANCODE_RETURN, Input::Menu       },
 	{ SDL_SCANCODE_S,      Input::Items      },
-    { SDL_SCANCODE_LSHIFT, Input::Run        },
-	{ SDL_SCANCODE_LCTRL,  Input::Deactivate },
-    { SDL_SCANCODE_Q,      Input::L          },
+	{ SDL_SCANCODE_LSHIFT, Input::Run        },
+	{ SDL_SCANCODE_C,      Input::Deactivate },
+	{ SDL_SCANCODE_Q,      Input::L          },
 	{ SDL_SCANCODE_W,      Input::R          },
 };
 

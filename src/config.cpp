@@ -64,7 +64,7 @@ void Config::read(int argc, char *argv[])
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
 	PO_DESC(smoothScaling, bool, false) \
-	PO_DESC(vsync, bool, false) \
+	PO_DESC(vsync, bool, true) \
 	PO_DESC(fixedFramerate, int, 0) \
 	PO_DESC(frameSkip, bool, true) \
 	PO_DESC(syncToRefreshrate, bool, false) \
@@ -140,7 +140,7 @@ void Config::read(int argc, char *argv[])
 
 	//Hardcode some ini/version settings
 	rgssVersion = 1;
-	game.title = "Oneshot";
+	game.title = "OneShot";
 	game.scripts = "Data/xScripts.rxdata";
 	defScreenW = 640;
 	defScreenH = 480;

@@ -158,17 +158,6 @@ int rgssThreadFun(void *userdata)
 	return 0;
 }
 
-static void printRgssVersion(int ver)
-{
-	const char *const makers[] =
-		{ "", "XP", "VX", "VX Ace" };
-
-	char buf[128];
-	snprintf(buf, sizeof(buf), "RGSS version %d (%s)", ver, makers[ver]);
-
-	Debug() << buf;
-}
-
 static void showInitError(const std::string &msg)
 {
 	Debug() << msg;
@@ -223,10 +212,7 @@ int main(int argc, char *argv[])
 			return 0;
 		}
 
-	assert(conf.rgssVersion >= 1 && conf.rgssVersion <= 3);
-	printRgssVersion(conf.rgssVersion);
-
-	int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+	int imgFlags = IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
 		showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
