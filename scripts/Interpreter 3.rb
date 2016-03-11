@@ -276,7 +276,7 @@ class Interpreter
     when 11  # button
       result = (Input.press?(@parameters[1]))
     when 12  # script
-      result = eval(@parameters[1])
+      result = !!eval(@parameters[1])
     end
     # Store determinant results in hash
     @branch[@list[@index].indent] = result

@@ -172,10 +172,6 @@ def plight_update_timer
   Script.tmp_v1 = ((Time.now - $game_oneshot.plight_timer) / 60).to_i
 end
 
-def quit
-  $scene = nil
-end
-
 def activate_balcony?(ypos)
   $game_player.y == ypos &&
     $game_player.direction == 8 &&
