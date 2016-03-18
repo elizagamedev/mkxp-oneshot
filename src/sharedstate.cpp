@@ -122,16 +122,6 @@ struct SharedStatePrivate
 		if (gl.ReleaseShaderCompiler)
 			gl.ReleaseShaderCompiler();
 
-		std::string archPath = config.execName + gameArchExt();
-
-		/* Check if a game archive exists */
-		FILE *tmp = fopen(archPath.c_str(), "rb");
-		if (tmp)
-		{
-			fileSystem.addPath(archPath.c_str());
-			fclose(tmp);
-		}
-
 		fileSystem.addPath(".");
 
 		if (config.pathCache)
