@@ -26,6 +26,7 @@ class Scene_Title
     $data_tilesets      = load_data("Data/Tilesets.rxdata")
     $data_common_events = load_data("Data/CommonEvents.rxdata")
     $data_system        = load_data("Data/System.rxdata")
+    Language.initialize_database
     # Load save game/initialize data
     $game_temp = Game_Temp.new
     new_game unless load

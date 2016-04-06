@@ -100,8 +100,8 @@ Scene_Debug
 Persistent
 
 # Internationalization
-i18n_Translator
 i18n_Language
+i18n_English
 
 # Data
 Data_Item

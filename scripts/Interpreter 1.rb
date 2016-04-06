@@ -235,7 +235,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def setup_choices(parameters)
     # Set choices
-    $game_temp.choices = parameters[0].map{|s| $tr.event(@event_name, s.strip)}
+    $game_temp.choices = parameters[0].map{|s| Language.tr(s.strip)}
     # Set cancel processing
     $game_temp.choice_cancel_type = parameters[1]
     # Set callback

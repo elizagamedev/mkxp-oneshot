@@ -49,19 +49,6 @@ SharedState *SharedState::instance = 0;
 int SharedState::rgssVersion = 0;
 static GlobalIBO *_globalIBO = 0;
 
-static const char *gameArchExt()
-{
-	if (rgssVer == 1)
-		return ".rgssad";
-	else if (rgssVer == 2)
-		return ".rgss2a";
-	else if (rgssVer == 3)
-		return ".rgss3a";
-
-	assert(!"unreachable");
-	return 0;
-}
-
 struct SharedStatePrivate
 {
 	void *bindingData;

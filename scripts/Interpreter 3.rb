@@ -45,7 +45,7 @@ class Interpreter
     text.strip!
 
     # Translate text
-    text = $tr.event(@event_name, text).clone
+    text = Language.tr(text).clone
 
     # Parse first line for portrait specifier
     if text[0,1] == '@'

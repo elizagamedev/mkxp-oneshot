@@ -12,7 +12,6 @@ class Sprite_Timer < Sprite
   def initialize
     super
     self.bitmap = Bitmap.new(88, 48)
-    self.bitmap.font.name = "Terminus (TTF)"
     self.bitmap.font.size = 32
     self.x = 640 - self.bitmap.width
     self.y = 0

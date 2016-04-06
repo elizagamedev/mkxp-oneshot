@@ -87,7 +87,6 @@ class Window_Message < Window_Selectable
     # Initialize
     @blip = BLIP_TIME
     @text = ''
-    y = -1
 
     # Pre-process text
     if $game_temp.message_text != nil && !$game_temp.message_text.empty?
@@ -140,6 +139,8 @@ class Window_Message < Window_Selectable
         break if y >= 4
       end
     end
+    @text.rstrip!
+    lines = @text.empty? ? 0 : @text.count("\n") + 1
 
     # Prepare renderer
     self.contents.clear
@@ -154,8 +155,8 @@ class Window_Message < Window_Selectable
 
     if $game_temp.choices != nil
       # Prepare choices, if they fit
-      if $game_temp.choices.size + y < 4
-        @choice_start = y + 1
+      if lines + $game_temp.choices.size <= 4
+        @choice_start = lines
         @item_max = $game_temp.choices.size
       else
         # Don't call the message callback till we can show all the choices
@@ -163,8 +164,8 @@ class Window_Message < Window_Selectable
       end
     elsif $game_temp.num_input_variable_id > 0
       # Prepare number input, if it fits
-      if y < 3
-        @number_start = y + 1
+      if lines < 3
+        @number_start = lines
       else
         # Don't call the message callback till we get a number
         @skip_message_proc = true

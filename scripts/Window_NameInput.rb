@@ -4,8 +4,38 @@
 #  This window is used to select text characters on the input name screen.
 #==============================================================================
 
+class NameInputMode
+  attr_reader :names
+  attr_reader :size
+  attr_accessor :index
+  attr_accessor :count
+
+  def initialize(names, bitmap)
+    @names = names
+    @size = names.map { |n| bitmap.text_size(n).width }.max
+    @index = 0
+    @count = 0
+  end
+
+  def cycle
+    @index = (@index + 1) % @count
+  end
+
+  def label
+    @names[(@index + 1) % @count]
+  end
+end
+
 class Window_NameInput < Window_Base
-  GROUP_WIDTH = 5
+  BUTTON_BUFFER = 8
+  BUTTON_PADDING = 16
+
+  attr_accessor :index
+  attr_accessor :ok_text
+  attr_accessor :character_tables
+  attr_accessor :table_height
+  attr_accessor :char_w
+  attr_accessor :char_h
 
   #--------------------------------------------------------------------------
   # * Object Initialization
@@ -14,51 +44,123 @@ class Window_NameInput < Window_Base
     super(0, 128, 640, 352)
     self.contents = Bitmap.new(width - 32, height - 32)
     @index = 0
-
+    @ok_text = "OK"
+    @char_w = 28
+    @char_h = 32
+  end
+  def init
     # Create dimension information
-    @character_table = $lang.character_table
-    @group_height = $lang.character_table_height
-    @group_size = @group_height * GROUP_WIDTH
-    @num_groups = @character_table.length / @group_size
-    @start_x = ((width - 32) - @num_groups * 152 + 12) / 2
-    @ok_text = tr("OK")
+    @table_size = @character_tables.values.first.size
+    @table_width = @table_size / @table_height
+    @start_x = ((width - 32) - @table_width * @char_w) / 2
+    @start_y = ((height - 32) - (@table_height + 1) * @char_h + BUTTON_BUFFER) / 2
     @ok_text_size = self.contents.text_size(@ok_text).width
+
+    # Initialize mode information
+    @character_tables.each_key do |key|
+      key.each_with_index do |new_max, i|
+        @modes[i].count = new_max + 1 if @modes[i].count < new_max + 1
+      end
+    end
 
     refresh
     update_cursor_rect
+    self
+  end
+  #--------------------------------------------------------------------------
+  # * Properties
+  #--------------------------------------------------------------------------
+  def set_mode_buttons(buttons)
+    @modes = buttons.map { |n| NameInputMode.new(n, self.contents) }
   end
   #--------------------------------------------------------------------------
   # * Text Character Acquisition
   #--------------------------------------------------------------------------
   def character
-    return @character_table[@index]
+    return current_table[@index]
+  end
+  #--------------------------------------------------------------------------
+  # * Mode Button Cursor Positioning
+  #--------------------------------------------------------------------------
+  def mode_button_slot
+    pos = @index % @table_width
+    x = 0
+    @modes.each_with_index do |mode, i|
+      size = mode.size + BUTTON_PADDING * 2
+      if pos * @char_w >= x && pos * @char_w <= x + size
+        if (pos + 1) * @char_w - BUTTON_PADDING <= x + size || i < @modes.size - 1
+          return i
+        end
+      end
+      x += size
+    end
+    return -1
+  end
+  #--------------------------------------------------------------------------
+  # * Cycle Current Mode
+  #--------------------------------------------------------------------------
+  def cycle_mode(slot)
+    @modes[slot].cycle
+    refresh
+  end
+  #--------------------------------------------------------------------------
+  # * Get Character Table for Mode
+  #--------------------------------------------------------------------------
+  def current_table
+    @character_tables[@modes.map { |m| m.index }]
   end
   #--------------------------------------------------------------------------
   # * Refresh
   #--------------------------------------------------------------------------
   def refresh
     self.contents.clear
-    for i in 0...@character_table.length
-      x = @start_x + i / GROUP_WIDTH / @group_height * 152 + i % GROUP_WIDTH * 28
-      y = i / GROUP_WIDTH % @group_height * 32
-      self.contents.draw_text(x, y, 28, 32, @character_table[i], 1)
+    table = current_table
+    @table_size.times do |i|
+      x = @start_x + (i % @table_width) * @char_w
+      y = @start_y + (i / @table_width) * @char_h
+      self.contents.draw_text(x, y, @char_w, @char_h, table[i], 1)
     end
-    self.contents.draw_text(@start_x + @num_groups * 152 - 12 - @ok_text_size - 16,
-                            9 * 32, @ok_text_size, 32, @ok_text, 1)
+    # OK button
+    self.contents.draw_text(@start_x + @table_width * @char_w - @ok_text_size - BUTTON_PADDING,
+                            @start_y + @table_height * @char_h + BUTTON_BUFFER,
+                            @ok_text_size, @char_h, @ok_text, 1)
+    # Mode buttons
+    x = @start_x + BUTTON_PADDING
+    @modes.each do |mode|
+      self.contents.draw_text(x, @start_y + @table_height * @char_h + BUTTON_BUFFER,
+                              mode.size, @char_h, mode.label, 1)
+      x += BUTTON_PADDING * 2 + mode.size
+    end
   end
   #--------------------------------------------------------------------------
   # * Cursor Rectangle Update
   #--------------------------------------------------------------------------
   def update_cursor_rect
-    # If cursor is positioned on [OK]
-    if @index >= @character_table.length
-      self.cursor_rect.set(@start_x + @num_groups * 152 - 12 - @ok_text_size - 32,
-                           9 * 32, @ok_text_size + 32, 32)
-    # If cursor is positioned on anything other than [OK]
+    if @index >= @table_size
+      # Cursor is positioned on OK or mode buttons
+      slot = mode_button_slot
+      if slot >= 0
+        # Cursor is positioned on mode button
+        x = @start_x
+        @modes.each_with_index do |mode, i|
+          if slot == i
+            self.cursor_rect.set(x, @start_y + @table_height * @char_h + BUTTON_BUFFER,
+                                 mode.size + BUTTON_PADDING * 2, @char_h)
+            break
+          end
+          x += BUTTON_PADDING * 2 + mode.size
+        end
+      else
+        # Cursor is positioned on OK button
+        self.cursor_rect.set(@start_x + @table_width * @char_w - @ok_text_size - BUTTON_PADDING * 2,
+                             @start_y + @table_height * @char_h + BUTTON_BUFFER,
+                             @ok_text_size + 32, @char_h)
+      end
     else
-      x = @start_x + @index / GROUP_WIDTH / @group_height * 152 + @index % GROUP_WIDTH * 28
-      y = @index / GROUP_WIDTH % @group_height * 32
-      self.cursor_rect.set(x, y, 28, 32)
+      # Cursor is not positioned on OK or mode buttons
+      x = @start_x + (@index % @table_width) * @char_w
+      y = @start_y + (@index / @table_width) * @char_h
+      self.cursor_rect.set(x, y, @char_w, @char_h)
     end
   end
   #--------------------------------------------------------------------------
@@ -66,77 +168,87 @@ class Window_NameInput < Window_Base
   #--------------------------------------------------------------------------
   def update
     super
-    # If cursor is positioned on [OK]
-    if @index >= @character_table.length
-      # Cursor down
-      if Input.trigger?(Input::DOWN)
-        $game_system.se_play($data_system.cursor_se)
-        @index -= @character_table.length
-      end
-      # Cursor up
-      if Input.repeat?(Input::UP)
-        $game_system.se_play($data_system.cursor_se)
-        @index -= @character_table.length - (@group_size - GROUP_WIDTH)
-      end
-    # If cursor is positioned on anything other than [OK]
-    else
-      # If right directional button is pushed
-      if Input.repeat?(Input::RIGHT)
-        # If directional button pressed down is not a repeat, or
-        # cursor is not positioned on the right edge
-        if Input.trigger?(Input::RIGHT) or
-           @index / @group_size < 3 or @index % GROUP_WIDTH < 4
-          # Move cursor to right
-          $game_system.se_play($data_system.cursor_se)
-          if @index % GROUP_WIDTH < 4
-            @index += 1
-          else
-            @index += @group_size - 4
-          end
-          if @index >= @character_table.length
-            @index -= @character_table.length
-          end
-        end
-      end
-      # If left directional button is pushed
+    if @index >= @table_size
+      # Cursor is positioned on OK or mode buttons
       if Input.repeat?(Input::LEFT)
         # If directional button pressed down is not a repeat, or
         # cursor is not positioned on the left edge
-        if Input.trigger?(Input::LEFT) or
-           @index / @group_size > 0 or @index % GROUP_WIDTH > 0
-          # Move cursor to left
+        old_slot = mode_button_slot
+        if Input.trigger?(Input::LEFT) || old_slot != 0
           $game_system.se_play($data_system.cursor_se)
-          if @index % GROUP_WIDTH > 0
+          if old_slot == 0
+            @index = @table_size + @table_width - 1
+          else
+            loop do
+              @index -= 1
+              break if old_slot != mode_button_slot
+            end
+          end
+        end
+      end
+      if Input.repeat?(Input::RIGHT)
+        # If directional button pressed down is not a repeat, or
+        # cursor is not positioned on the right edge
+        old_slot = mode_button_slot
+        if Input.trigger?(Input::RIGHT) || old_slot != -1
+          $game_system.se_play($data_system.cursor_se)
+          if old_slot == -1
+            @index = @table_size
+          else
+            loop do
+              @index += 1
+              break if old_slot != mode_button_slot
+            end
+          end
+        end
+      end
+      if Input.trigger?(Input::DOWN)
+        $game_system.se_play($data_system.cursor_se)
+        @index -= @table_size
+      end
+      if Input.repeat?(Input::UP)
+        $game_system.se_play($data_system.cursor_se)
+        @index -= @table_width
+      end
+    else
+      # Cursor is not positioned on OK or mode buttons
+      if Input.repeat?(Input::RIGHT)
+        # If directional button pressed down is not a repeat, or
+        # cursor is not positioned on the right edge
+        if Input.trigger?(Input::RIGHT) || @index % @table_width < @table_width - 1
+          $game_system.se_play($data_system.cursor_se)
+          if @index % @table_width < @table_width - 1
+            @index += 1
+          else
+            @index -= @table_width - 1
+          end
+        end
+      end
+      if Input.repeat?(Input::LEFT)
+        # If directional button pressed down is not a repeat, or
+        # cursor is not positioned on the left edge
+        if Input.trigger?(Input::LEFT) || @index % @table_width > 0
+          $game_system.se_play($data_system.cursor_se)
+          if @index % @table_width > 0
             @index -= 1
           else
-            @index -= @group_size - 4
-          end
-          if @index < 0
-            @index += @character_table.length
+            @index += @table_width - 1
           end
         end
       end
-      # If down directional button is pushed
       if Input.repeat?(Input::DOWN)
-        # Move cursor down
         $game_system.se_play($data_system.cursor_se)
-        if @index % @group_size < @group_size - GROUP_WIDTH
-          @index += GROUP_WIDTH
-        else
-          @index += @character_table.length - (@group_size - GROUP_WIDTH)
-        end
+        @index += @table_width
       end
-      # If up directional button is pushed
       if Input.repeat?(Input::UP)
         # If directional button pressed down is not a repeat, or
         # cursor is not positioned on the upper edge
-        if Input.trigger?(Input::UP) or @index % @group_size >= GROUP_WIDTH
-          # Move cursor up
+        if Input.trigger?(Input::UP) || @index >= @table_width
           $game_system.se_play($data_system.cursor_se)
-          if @index % @group_size >= GROUP_WIDTH
-            @index -= GROUP_WIDTH
+          if @index >= @table_width
+            @index -= @table_width
           else
-            @index += @character_table.length
+            @index += @table_size
           end
         end
       end

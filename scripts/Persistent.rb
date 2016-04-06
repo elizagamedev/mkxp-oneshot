@@ -28,11 +28,15 @@ class Persistent
 
   # Members
   def lang=(val)
-    @lang = val
-    $tr = Translator.new(@lang)
-    $lang = Language.get(@lang)
-    Font.default_name = $lang.font
-    Oneshot.set_yes_no(tr('Yes'), tr('No'))
+    case val
+    when String
+      @lang = LanguageCode.new(val)
+    when LanguageCode
+      @lang = val
+    else
+      raise 'value passed to Persistent.lang neither String nor LanguageCode'
+    end
+    Language.set(@lang)
   end
 
   # MARSHAL

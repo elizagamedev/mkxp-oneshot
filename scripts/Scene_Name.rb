@@ -11,7 +11,7 @@ class Scene_Name
   def main
     # Make windows
     @edit_window = Window_NameEdit.new
-    @input_window = Window_NameInput.new
+    @input_window = Language.create_input
     # Execute transition
     Graphics.transition
     # Main loop
@@ -56,26 +56,35 @@ class Scene_Name
     if Input.trigger?(Input::ACTION)
       # If cursor position is at [OK]
       if @input_window.character == nil
-        # If name is empty
-        if @edit_window.name == ""
-          # Return to default name
-          @edit_window.restore_default
+        # Cursor is at OK or mode buttons
+        slot = @input_window.mode_button_slot
+        if slot == -1
+          # Cursor is at OK
           # If name is empty
           if @edit_window.name == ""
-            # Play buzzer SE
-            $game_system.se_play($data_system.buzzer_se)
+            # Return to default name
+            @edit_window.restore_default
+            # If name is empty
+            if @edit_window.name == ""
+              # Play buzzer SE
+              $game_system.se_play($data_system.buzzer_se)
+              return
+            end
+            # Play decision SE
+            $game_system.se_play($data_system.decision_se)
             return
           end
+          # Change actor name
+          $game_oneshot.player_name = @edit_window.name
           # Play decision SE
           $game_system.se_play($data_system.decision_se)
+          # Switch to map screen
+          $scene = Scene_Map.new
           return
         end
-        # Change actor name
-        $game_oneshot.player_name = @edit_window.name
-        # Play decision SE
+        # Cursor is on mode buttons
         $game_system.se_play($data_system.decision_se)
-        # Switch to map screen
-        $scene = Scene_Map.new
+        @input_window.cycle_mode(slot)
         return
       end
       # If cursor position is at maximum
