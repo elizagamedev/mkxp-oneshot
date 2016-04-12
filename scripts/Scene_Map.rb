@@ -406,4 +406,7 @@ class Scene_Map
   #--------------------------------------------------------------------------
   # * Misc operations
   #--------------------------------------------------------------------------
+  def new_footprint(direction, x, y)
+    @spriteset.new_footprint(direction, x, y)
+  end
 end

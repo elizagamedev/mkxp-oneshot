@@ -117,7 +117,11 @@ end
 
 # Map specific settings
 def green_ambient
-  ambient -40, -40, -40
+  ambient(-40, -40, -40)
+end
+
+def blue_ambient
+  ambient(-40, -40, -40)
 end
 
 # Travel

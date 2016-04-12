@@ -11,6 +11,8 @@ class Game_Character
   #     turn_enabled : a flag permits direction change on that spot
   #--------------------------------------------------------------------------
   def move_down(turn_enabled = true)
+    # Only emit footprint if already facing down
+    emit = @direction == 2
     # Turn down
     if turn_enabled
       turn_down
@@ -19,6 +21,8 @@ class Game_Character
     if passable?(@x, @y, 2)
       # Turn down
       turn_down
+      # Emit footprint
+      emit_footprint(2) if emit
       # Update coordinates
       @y += 1
       # Increase steps
@@ -42,6 +46,8 @@ class Game_Character
     if passable?(@x, @y, 4)
       # Turn left
       turn_left
+      # Emit footprint
+      emit_footprint(4)
       # Update coordinates
       @x -= 1
       # Increase steps
@@ -65,6 +71,8 @@ class Game_Character
     if passable?(@x, @y, 6)
       # Turn right
       turn_right
+      # Emit footprint
+      emit_footprint(6)
       # Update coordinates
       @x += 1
       # Increase steps
@@ -88,6 +96,8 @@ class Game_Character
     if passable?(@x, @y, 8)
       # Turn up
       turn_up
+      # Emit footprint
+      emit_footprint(8)
       # Update coordinates
       @y -= 1
       # Increase steps
@@ -480,5 +490,11 @@ class Game_Character
       # Turn up or down away from player
       sy > 0 ? turn_down : turn_up
     end
+  end
+  #--------------------------------------------------------------------------
+  # * Emit Footprint
+  #--------------------------------------------------------------------------
+  def emit_footprint(direction)
+    $scene.new_footprint(direction, @x, @y)
   end
 end

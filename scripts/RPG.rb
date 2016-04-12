@@ -14,6 +14,9 @@ module RPG
     def self.light(filename)
       self.load_bitmap("Graphics/Lights/", filename)
     end
+    def self.misc(filename)
+      self.load_bitmap("Graphics/Misc/", filename)
+    end
   end
 end
 

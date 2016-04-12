@@ -30,6 +30,9 @@ class Game_Map
   attr_accessor :particles_type           # particles name
   attr_accessor :clamped_x                # panorama is horizontally clamped?
   attr_accessor :clamped_y                # panorama is vertically clamped?
+  attr_accessor :pan_onetoone             # panorama is 1:1
+  attr_accessor :pan_animate              # panorama is animated
+  attr_accessor :pan_zoom                 # panorama zoom
   attr_accessor :wrapping                 # map is wrapping?
   attr_accessor :pan_offset_y             # offset of y-coord of panorama
   attr_accessor :ambient                  # ambient light
@@ -51,6 +54,16 @@ class Game_Map
   ]
   CLAMPED_Y = [
     'red_obsdesk',
+  ]
+  ANIMATED = [
+    'blue_water',
+  ]
+  ONETOONE = [
+    'blue_water',
+    'dark_water',
+  ]
+  NOZOOM = [
+    'dark_water',
   ]
   #--------------------------------------------------------------------------
   # * Object Initialization
@@ -138,6 +151,10 @@ class Game_Map
       @clamped_x = false
       @clamped_y = false
     end
+    # Animated/One-to-one/zoom
+    @pan_animate = ANIMATED.include? @panorama_name
+    @pan_onetoone = ONETOONE.include? @panorama_name
+    @pan_zoom = NOZOOM.include?(@panorama_name) ? 1 : 2
     # Unwrap map
     @wrapping = false
     @pan_offset_y = 0

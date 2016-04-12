@@ -37,7 +37,7 @@ class Spriteset_Map
     @tilemap.map_data = $game_map.data
     @tilemap.priorities = $game_map.priorities
     # Make panorama plane
-    @panorama = Plane.new(@viewport)
+    @panorama = Plane.new(@viewport_bg)
     @panorama.z = -1000
     # Make fog plane
     @fog = Plane.new(@viewport)
@@ -52,6 +52,8 @@ class Spriteset_Map
       @character_sprites.push(Sprite_Character.new(@viewport, @viewport_lights, follower))
     end
     @character_sprites.push(Sprite_Character.new(@viewport, @viewport_lights, $game_player))
+    # Make footprints
+    @footprint_sprites = []
     # Make weather
     @weather = RPG::Weather.new(@viewport)
     # Make picture sprites
@@ -66,6 +68,8 @@ class Spriteset_Map
     @bulb = Sprite.new(@viewport_lights)
     @bulb.bitmap = RPG::Cache.light('bulb')
     @bulb.opacity = has_lightbulb? ? 255 : 0
+    # Panorama animation timer
+    @pan_animate_timer = 0
     # Frame update
     update
   end
@@ -84,7 +88,11 @@ class Spriteset_Map
     # Dispose of fog plane
     @fog.dispose
     # Dispose of character sprites
-    for sprite in @character_sprites
+    @character_sprites.each do |sprite|
+      sprite.dispose
+    end
+    # Dispose of footprints
+    @footprint_sprites.each do |sprite|
       sprite.dispose
     end
     # Dispose of weather
@@ -180,32 +188,45 @@ class Spriteset_Map
           klass = Particle_Firefly
           count = 30
           layer = :front
+        when :shrimp
+          klass = Particle_Shrimp
+          count = 80
+          layer = :back
         else
           raise 'invalid particle type'
         end
         @particles = ParticleLayer.new(@viewport_particles, klass, count)
-        @viewport_particles.z = (layer == :front) ? 500 : 50
+        @viewport_particles.z = (layer == :front) ? 500 : -400
       end
     end
     # Update bg plane
-    @viewport_bg.ox = $game_map.display_x / 4
-    @viewport_bg.oy = $game_map.display_y / 4
+    @bg.ox = $game_map.display_x / 4
+    @bg.oy = $game_map.display_y / 4
     # Update tilemap
     @tilemap.ox = $game_map.display_x / 4
     @tilemap.oy = $game_map.display_y / 4
     @tilemap.update
     # Update panorama plane
     if $game_map.clamped_x
-      x = ($game_player.real_x.to_f / (($game_map.width - 1) * 128)) * (@panorama.bitmap.width - 640)
+      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - 640)
       @panorama.ox = x < 0.0 ? 0.0 : x
     else
-      @panorama.ox = $game_map.display_x / 8
+      @panorama.ox = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
     end
     if $game_map.clamped_y
-      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height - 480)
+      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - 480)
       @panorama.oy = y < 0.0 ? 0.0 : y
     else
-      @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / 8
+      @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
+    end
+    @panorama.zoom_x = @panorama.zoom_y = $game_map.pan_zoom
+    # Animate panorama
+    if $game_map.pan_animate
+      @pan_animate_timer = (@pan_animate_timer + 1) % 16
+      @panorama.src_rect.width = @panorama.src_rect.height
+      if @pan_animate_timer == 0
+        @panorama.src_rect.x = (@panorama.src_rect.x + @panorama.src_rect.height) % @panorama.bitmap.width
+      end
     end
     # Update fog plane
     @fog.zoom_x = $game_map.fog_zoom / 100.0
@@ -216,8 +237,13 @@ class Spriteset_Map
     @fog.oy = $game_map.display_y / 4 + $game_map.fog_oy
     @fog.tone = $game_map.fog_tone
     # Update character sprites
-    for sprite in @character_sprites
+    @character_sprites.each do |sprite|
       sprite.update
+    end
+    # Update footprints
+    @footprint_sprites.delete_if do |sprite|
+      sprite.update
+      sprite.disposed?
     end
     # Update weather graphic
     @weather.type = $game_screen.weather_type
@@ -254,5 +280,11 @@ class Spriteset_Map
     @viewport.update
     @viewport_flash.update
     @viewport_lights.update
+  end
+  #--------------------------------------------------------------------------
+  # * Misc operations
+  #--------------------------------------------------------------------------
+  def new_footprint(direction, x, y)
+    @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y)
   end
 end

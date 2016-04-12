@@ -24,6 +24,7 @@
 #include "sharedstate.h"
 #include "bitmap.h"
 #include "etc.h"
+#include "etc-internal.h"
 #include "util.h"
 
 #include "gl-util.h"
@@ -46,6 +47,8 @@ struct PlanePrivate
 {
 	Bitmap *bitmap;
 
+	Rect *srcRect;
+
 	NormValue opacity;
 	BlendType blendType;
 	Color *color;
@@ -63,9 +66,11 @@ struct PlanePrivate
 	EtcTemps tmp;
 
 	sigc::connection prepareCon;
+	sigc::connection srcRectCon;
 
 	PlanePrivate()
 	    : bitmap(0),
+	      srcRect(&tmp.rect),
 	      opacity(255),
 	      blendType(BlendNormal),
 	      color(&tmp.color),
@@ -74,6 +79,7 @@ struct PlanePrivate
 	      zoomX(1), zoomY(1),
 	      quadSourceDirty(false)
 	{
+		updateSrcRectCon();
 		prepareCon = shState->prepareDraw.connect
 		        (sigc::mem_fun(this, &PlanePrivate::prepare));
 
@@ -82,12 +88,30 @@ struct PlanePrivate
 
 	~PlanePrivate()
 	{
+		srcRectCon.disconnect();
 		prepareCon.disconnect();
+	}
+
+	void onSrcRectChange()
+	{
+		quadSourceDirty = true;
+	}
+
+	void updateSrcRectCon()
+	{
+		/* Cut old connection */
+		srcRectCon.disconnect();
+		/* Create new one */
+		srcRectCon = srcRect->valueChanged.connect
+				(sigc::mem_fun(this, &PlanePrivate::onSrcRectChange));
 	}
 
 	void updateQuadSource()
 	{
-		if (gl.npot_repeat)
+		if (nullOrDisposed(bitmap))
+			return;
+
+		if (gl.npot_repeat && srcRect->toIntRect() == bitmap->rect())
 		{
 			FloatRect srcRect;
 			srcRect.x = (sceneGeo.orig.x + ox) / zoomX;
@@ -101,12 +125,9 @@ struct PlanePrivate
 			return;
 		}
 
-		if (nullOrDisposed(bitmap))
-			return;
-
 		/* Scaled (zoomed) bitmap dimensions */
-		float sw = bitmap->width()  * zoomX;
-		float sh = bitmap->height() * zoomY;
+		float sw = srcRect->width  * zoomX;
+		float sh = srcRect->height * zoomY;
 
 		/* Plane offset wrapped by scaled bitmap dims */
 		float wox = fwrap(ox, sw);
@@ -120,7 +141,7 @@ struct PlanePrivate
 		size_t tilesX = ceil((vpw - sw + wox) / sw) + 1;
 		size_t tilesY = ceil((vph - sh + woy) / sh) + 1;
 
-		FloatRect tex = bitmap->rect();
+		FloatRect tex = srcRect->toFloatRect();
 
 		qArray.resize(tilesX * tilesY);
 
@@ -161,6 +182,7 @@ DEF_ATTR_RD_SIMPLE(Plane, ZoomX,     float,   p->zoomX)
 DEF_ATTR_RD_SIMPLE(Plane, ZoomY,     float,   p->zoomY)
 DEF_ATTR_RD_SIMPLE(Plane, BlendType, int,     p->blendType)
 
+DEF_ATTR_SIMPLE(Plane, SrcRect,   Rect&,  *p->srcRect)
 DEF_ATTR_SIMPLE(Plane, Opacity,   int,     p->opacity)
 DEF_ATTR_SIMPLE(Plane, Color,     Color&, *p->color)
 DEF_ATTR_SIMPLE(Plane, Tone,      Tone&,  *p->tone)
@@ -180,6 +202,9 @@ void Plane::setBitmap(Bitmap *value)
 		return;
 
 	value->ensureNonMega();
+
+	*p->srcRect = value->rect();
+	p->onSrcRectChange();
 }
 
 void Plane::setOX(int value)
@@ -247,8 +272,11 @@ void Plane::setBlendType(int value)
 
 void Plane::initDynAttribs()
 {
+	p->srcRect = new Rect;
 	p->color = new Color;
 	p->tone = new Tone;
+
+	p->updateSrcRectCon();
 }
 
 void Plane::draw()

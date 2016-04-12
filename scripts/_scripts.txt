@@ -33,6 +33,7 @@ Sprite_Battler
 Sprite_Picture
 Sprite_Timer
 Sprite_Light
+Sprite_Footprint
 Spriteset_Map
 
 FastTravel

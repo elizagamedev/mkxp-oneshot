@@ -38,6 +38,7 @@ public:
 	~Plane();
 
 	DECL_ATTR( Bitmap,    Bitmap* )
+	DECL_ATTR( SrcRect,   Rect&   )
 	DECL_ATTR( OX,        int     )
 	DECL_ATTR( OY,        int     )
 	DECL_ATTR( ZoomX,     float   )

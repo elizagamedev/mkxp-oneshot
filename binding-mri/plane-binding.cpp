@@ -35,15 +35,17 @@ RB_METHOD(planeInitialize)
 
 	p->initDynAttribs();
 
+	wrapProperty(self, &p->getSrcRect(), "src_rect", RectType);
 	wrapProperty(self, &p->getColor(), "color", ColorType);
 	wrapProperty(self, &p->getTone(), "tone", ToneType);
 
 	return self;
 }
 
-DEF_PROP_OBJ_REF(Plane, Bitmap, Bitmap, "bitmap")
-DEF_PROP_OBJ_VAL(Plane, Color,  Color,  "color")
-DEF_PROP_OBJ_VAL(Plane, Tone,   Tone,   "tone")
+DEF_PROP_OBJ_REF(Plane, Bitmap, Bitmap,  "bitmap")
+DEF_PROP_OBJ_VAL(Plane, Rect,   SrcRect, "src_rect")
+DEF_PROP_OBJ_VAL(Plane, Color,  Color,   "color")
+DEF_PROP_OBJ_VAL(Plane, Tone,   Tone,    "tone")
 
 DEF_PROP_I(Plane, OX)
 DEF_PROP_I(Plane, OY)
@@ -66,6 +68,7 @@ planeBindingInit()
 	_rb_define_method(klass, "initialize", planeInitialize);
 
 	INIT_PROP_BIND( Plane, Bitmap,    "bitmap"     );
+	INIT_PROP_BIND( Plane, SrcRect,   "src_rect"   );
 	INIT_PROP_BIND( Plane, OX,        "ox"         );
 	INIT_PROP_BIND( Plane, OY,        "oy"         );
 	INIT_PROP_BIND( Plane, ZoomX,     "zoom_x"     );

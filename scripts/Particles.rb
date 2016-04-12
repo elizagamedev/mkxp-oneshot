@@ -107,3 +107,34 @@ class ParticleLayer
     @particles = nil
   end
 end
+
+class Particle_Shrimp < Particle
+  @@bitmap = RPG::Cache.picture('shrimp')
+  TAU = Math::PI * 2
+
+  def initialize(viewport)
+    super(viewport, @@bitmap)
+    @angle = rand(0..TAU)
+    @speed = rand(0.2..4.0)
+    self.scale = rand(0.04..0.08)
+  end
+
+  def update
+    case rand(0..10)
+    when 0..1
+      @angle += rand(-TAU / 8..TAU / 8)
+    when 2
+      @speed += rand(1.0..5.0)
+      @speed = 5.0 if @speed > 5.0
+    when 3..4
+      @speed -= rand(1.0..2.0)
+      @speed = 0.2 if @speed < 0.2
+    else
+      # no-op
+    end
+    vx = Math.cos(@angle) * @speed
+    vy = Math.sin(@angle) * @speed
+    self.x += vx
+    self.y += vy
+  end
+end
