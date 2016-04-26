@@ -37,6 +37,11 @@ FOOTSTEP_SFX = [
   # Red observation deck
   ['step_metal',
    'step_tile'],
+  # Red alley
+  [],
+  # Blue outpost
+  ['step_tile',
+   'step_wood'],
 ]
 
 FOOTSTEP_AMT = {
