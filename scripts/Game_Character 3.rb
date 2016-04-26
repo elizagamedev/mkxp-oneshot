@@ -11,8 +11,6 @@ class Game_Character
   #     turn_enabled : a flag permits direction change on that spot
   #--------------------------------------------------------------------------
   def move_down(turn_enabled = true)
-    # Only emit footprint if already facing down
-    emit = @direction == 2
     # Turn down
     if turn_enabled
       turn_down
@@ -22,7 +20,7 @@ class Game_Character
       # Turn down
       turn_down
       # Emit footprint
-      emit_footprint(2) if emit
+      emit_footprint(2)
       # Update coordinates
       @y += 1
       # Increase steps

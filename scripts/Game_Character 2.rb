@@ -161,7 +161,7 @@ class Game_Character
     abs_sx = sx > 0 ? sx : -sx
     abs_sy = sy > 0 ? sy : -sy
     # If separated by 20 or more tiles matching up horizontally and vertically
-    if sx + sy >= 20
+    if abs_sx + abs_sy >= 20
       # Random
       move_random
       return
@@ -326,11 +326,8 @@ class Game_Character
           @tile_id = 0
           @character_name = command.parameters[0]
           @character_hue = command.parameters[1]
-          if @original_direction != command.parameters[2]
-            @direction = command.parameters[2]
-            @original_direction = @direction
-            @prelock_direction = 0
-          end
+          @direction = command.parameters[2]
+          @prelock_direction = 0
           if @original_pattern != command.parameters[3]
             @pattern = command.parameters[3]
             @original_pattern = @pattern
@@ -342,7 +339,7 @@ class Game_Character
         when 44  # Play SE
           $game_system.se_play(command.parameters[0])
         when 45  # Script
-          result = eval(command.parameters[0])
+          eval(command.parameters[0])
         end
         @move_route_index += 1
       end

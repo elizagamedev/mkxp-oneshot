@@ -45,7 +45,6 @@ class Game_Character
     @through = false
     @animation_id = 0
     @transparent = false
-    @original_direction = 2
     @original_pattern = 0
     @move_type = 0
     @move_speed = 4
