@@ -177,7 +177,8 @@ def plight_update_timer
 end
 
 def activate_balcony?(ypos)
-  $game_player.y == ypos &&
+  !$scene.menu_open? &&
+    $game_player.y == ypos &&
     $game_player.direction == 8 &&
     Input.trigger?(Input::ACTION)
 end
