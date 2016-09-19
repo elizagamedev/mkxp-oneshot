@@ -62,6 +62,147 @@
 		GTK_RESPONSE_APPLY = -10,
 		GTK_RESPONSE_HELP = -11
 	} GtkResponseType;
+
+	/**
+	 * xdg_user_dir_lookup_with_fallback:
+	 * @type: a string specifying the type of directory
+	 * @fallback: value to use if the directory isn't specified by the user
+	 * @returns: a newly allocated absolute pathname
+	 *
+	 * Looks up a XDG user directory of the specified type.
+	 * Example of types are "DESKTOP" and "DOWNLOAD".
+	 *
+	 * In case the user hasn't specified any directory for the specified
+	 * type the value returned is @fallback.
+	 *
+	 * The return value is newly allocated and must be freed with
+	 * free(). The return value is never NULL if @fallback != NULL, unless
+	 * out of memory.
+	 **/
+	static char *
+	xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback)
+	{
+	  FILE *file;
+	  char *home_dir, *config_home, *config_file;
+	  char buffer[512];
+	  char *user_dir;
+	  char *p, *d;
+	  int len;
+	  int relative;
+
+	  home_dir = getenv ("HOME");
+
+	  if (home_dir == NULL)
+	    goto error;
+
+	  config_home = getenv ("XDG_CONFIG_HOME");
+	  if (config_home == NULL || config_home[0] == 0)
+	    {
+	      config_file = (char*) malloc (strlen (home_dir) + strlen ("/.config/user-dirs.dirs") + 1);
+	      if (config_file == NULL)
+	        goto error;
+
+	      strcpy (config_file, home_dir);
+	      strcat (config_file, "/.config/user-dirs.dirs");
+	    }
+	  else
+	    {
+	      config_file = (char*) malloc (strlen (config_home) + strlen ("/user-dirs.dirs") + 1);
+	      if (config_file == NULL)
+	        goto error;
+
+	      strcpy (config_file, config_home);
+	      strcat (config_file, "/user-dirs.dirs");
+	    }
+
+	  file = fopen (config_file, "r");
+	  free (config_file);
+	  if (file == NULL)
+	    goto error;
+
+	  user_dir = NULL;
+	  while (fgets (buffer, sizeof (buffer), file))
+	    {
+	      /* Remove newline at end */
+	      len = strlen (buffer);
+	      if (len > 0 && buffer[len-1] == '\n')
+		buffer[len-1] = 0;
+
+	      p = buffer;
+	      while (*p == ' ' || *p == '\t')
+		p++;
+
+	      if (strncmp (p, "XDG_", 4) != 0)
+		continue;
+	      p += 4;
+	      if (strncmp (p, type, strlen (type)) != 0)
+		continue;
+	      p += strlen (type);
+	      if (strncmp (p, "_DIR", 4) != 0)
+		continue;
+	      p += 4;
+
+	      while (*p == ' ' || *p == '\t')
+		p++;
+
+	      if (*p != '=')
+		continue;
+	      p++;
+
+	      while (*p == ' ' || *p == '\t')
+		p++;
+
+	      if (*p != '"')
+		continue;
+	      p++;
+
+	      relative = 0;
+	      if (strncmp (p, "$HOME/", 6) == 0)
+		{
+		  p += 6;
+		  relative = 1;
+		}
+	      else if (*p != '/')
+		continue;
+
+	      if (relative)
+		{
+		  user_dir = (char*) malloc (strlen (home_dir) + 1 + strlen (p) + 1);
+	          if (user_dir == NULL)
+	            goto error2;
+
+		  strcpy (user_dir, home_dir);
+		  strcat (user_dir, "/");
+		}
+	      else
+		{
+		  user_dir = (char*) malloc (strlen (p) + 1);
+	          if (user_dir == NULL)
+	            goto error2;
+
+		  *user_dir = 0;
+		}
+
+	      d = user_dir + strlen (user_dir);
+	      while (*p && *p != '"')
+		{
+		  if ((*p == '\\') && (*(p+1) != 0))
+		    p++;
+		  *d++ = *p++;
+		}
+	      *d = 0;
+	    }
+	error2:
+	  fclose (file);
+
+	  if (user_dir)
+	    return user_dir;
+
+	 error:
+	  if (fallback)
+	    return strdup (fallback);
+	  return NULL;
+	}
 #else
     #error "Operating system not detected."
 #endif
@@ -75,10 +216,14 @@ struct OneshotPrivate
 	std::string lang;
 	std::string userName;
 	std::string savePath;
+	std::string docsPath;
 
 	//Dialog text
 	std::string txtYes;
 	std::string txtNo;
+
+	//Allow exiting game
+	bool allowExit;
 
 	//Alpha texture data for portions of window obscured by screen edges
 	int winX, winY;
@@ -209,7 +354,8 @@ static WCHAR *w32_toWide(const char *str)
 }
 #endif
 
-Oneshot::Oneshot(const RGSSThreadData &threadData)
+Oneshot::Oneshot(RGSSThreadData &threadData) :
+    threadData(threadData)
 {
 	p = new OneshotPrivate();
 	p->window = threadData.window;
@@ -219,9 +365,10 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 	p->winX = 0;
 	p->winY = 0;
 	p->winPosChanged = false;
+	p->allowExit = true;
 
 	/********************
-	 * USERNAME/SAVE PATH
+	 * USERNAME/DOCS PATH
 	 ********************/
 #if defined OS_W32
 	//Get language code
@@ -255,6 +402,11 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 			delete [] name;
 		}
 	}
+
+	//Get documents path
+	WCHAR path[MAX_PATH];
+	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
+	p->docsPath = w32_fromWide(path);
 #else
 	//Get language code
 	const char *lc_all = getenv("LC_ALL");
@@ -284,6 +436,14 @@ Oneshot::Oneshot(const RGSSThreadData &threadData)
 		else
 			p->userName = pwd->pw_name;
 	}
+
+#ifdef OS_LINUX
+	//Get documents path
+	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
+	p->docsPath = path;
+	free(path);
+#elif OS_OSX
+#endif
 #endif
 
 	/**********
@@ -362,8 +522,6 @@ void Oneshot::update()
 		//Map of unobscured pixels in this frame
 		static std::vector<bool> obscuredFrame;
 		obscuredFrame.resize(p->obscuredMap.size());
-		if (p->obscuredMap.size() != 640 * 480)
-			Debug() << p->obscuredMap.size();
 		std::fill(obscuredFrame.begin(), obscuredFrame.end(), true);
 
 		SDL_Rect screenRect;
@@ -392,12 +550,6 @@ void Oneshot::update()
 			if (intersect.x == 0 && intersect.y == 0 && intersect.w == 640 && intersect.h == 480)
 				return;
 
-			if (intersect.x < 0 || intersect.y < 0)
-			{
-				Debug() << i;
-				Debug() << intersect.x << intersect.y << intersect.w << intersect.h;
-				Debug() << p->winX << p->winY;
-			}
 			for (int y = intersect.y; y < intersect.y + intersect.h; ++y)
 			{
 				int start = y * 640 + intersect.x;
@@ -443,6 +595,11 @@ const std::string &Oneshot::savePath() const
 	return p->savePath;
 }
 
+const std::string &Oneshot::docsPath() const
+{
+	return p->docsPath;
+}
+
 const std::vector<uint8_t> &Oneshot::obscuredMap() const
 {
 	return p->obscuredMap;
@@ -453,10 +610,27 @@ bool Oneshot::obscuredCleared() const
 	return p->obscuredCleared;
 }
 
+bool Oneshot::allowExit() const
+{
+	return p->allowExit;
+}
+
 void Oneshot::setYesNo(const char *yes, const char *no)
 {
 	p->txtYes = yes;
 	p->txtNo = no;
+}
+
+void Oneshot::setAllowExit(bool allowExit)
+{
+	if (p->allowExit != allowExit) {
+		p->allowExit = allowExit;
+		if (allowExit) {
+			threadData.allowExit.set();
+		} else {
+			threadData.allowExit.clear();
+		}
+	}
 }
 
 bool Oneshot::msgbox(int type, const char *body, const char *title)

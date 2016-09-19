@@ -14,6 +14,7 @@ class Scene_Map
     # Make message window
     @message_window = Window_Message.new
     @ed_message = Ed_Message.new
+    @doc_message = Doc_Message.new
     # Make menus
     @menu = Window_MainMenu.new
     @item_menu = Window_Item.new
@@ -56,6 +57,7 @@ class Scene_Map
     # Dispose of message window
     @message_window.dispose
     @ed_message.dispose
+    @doc_message.dispose
     # Dispose of menu
     @menu.dispose
     @item_menu.dispose
@@ -74,6 +76,9 @@ class Scene_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    if Input.quit? && $game_map.map_id == 97
+      $game_temp.common_event_id = 33
+    end
     # Loop
     loop do
       # Update map, interpreter, and player order
@@ -103,6 +108,7 @@ class Scene_Map
     # Update message window
     @message_window.update
     @ed_message.update
+    @doc_message.update
     # Deactivate item
     if Input.trigger?(Input::DEACTIVATE) && $game_variables[1] > 0
       $game_system.se_play($data_system.cancel_se)
@@ -110,7 +116,7 @@ class Scene_Map
     end
 
     # Update the menu
-    if @message_window.visible || @ed_message.visible
+    if @message_window.visible || @ed_message.visible || @doc_message.visible
       @item_menu_refresh = true
     else
       if @item_menu_refresh
@@ -164,7 +170,7 @@ class Scene_Map
     # Update fast travel
     @fast_travel.update
     # If showing message window
-    if $game_temp.message_window_showing || @ed_message.visible
+    if $game_temp.message_window_showing || @ed_message.visible || @doc_message.visible
       return
     end
     # Process menu opening

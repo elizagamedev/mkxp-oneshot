@@ -11,7 +11,6 @@ class Game_System
   # * Public Instance Variables
   #--------------------------------------------------------------------------
   attr_reader   :map_interpreter          # map event interpreter
-  attr_reader   :battle_interpreter       # battle event interpreter
   attr_accessor :timer                    # timer
   attr_accessor :timer_working            # timer working flag
   attr_accessor :save_disabled            # save forbidden
@@ -26,7 +25,6 @@ class Game_System
   #--------------------------------------------------------------------------
   def initialize
     @map_interpreter = Interpreter.new(0, true)
-    @battle_interpreter = Interpreter.new(0, false)
     @timer = 0
     @timer_working = false
     @save_disabled = false

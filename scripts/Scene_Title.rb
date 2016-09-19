@@ -35,6 +35,7 @@ class Scene_Title
     # Skip title screen if debug mode (or demo, but not GDC)
     if $debug || ($demo && !$GDC)
       $game_map.update
+      $game_map.autoplay
       $scene = Scene_Map.new
       return
     end

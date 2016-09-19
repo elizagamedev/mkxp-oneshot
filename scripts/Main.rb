@@ -4,6 +4,10 @@
 #  After defining each class, actual processing begins here.
 #==============================================================================
 
+at_exit do
+  save unless $game_system.map_interpreter.running?
+end
+
 begin
   $console = Graphics.fullscreen
   Graphics.frame_rate = 60

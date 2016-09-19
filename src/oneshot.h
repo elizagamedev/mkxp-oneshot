@@ -10,7 +10,7 @@ struct RGSSThreadData;
 class Oneshot
 {
 public:
-	Oneshot(const RGSSThreadData &threadData);
+	Oneshot(RGSSThreadData &threadData);
 	~Oneshot();
 
 	//msgbox type codes
@@ -48,12 +48,15 @@ public:
 	const std::string &lang() const;
 	const std::string &userName() const;
 	const std::string &savePath() const;
+	const std::string &docsPath() const;
 	const std::vector<uint8_t> &obscuredMap() const;
 	bool obscuredCleared() const;
+	bool allowExit() const;
 
 	//Mutators
 	void setYesNo(const char *yes, const char *no);
 	void setWindowPos(int x, int y);
+	void setAllowExit(bool allowExit);
 	void resetObscured();
 
 	//Functions
@@ -64,6 +67,7 @@ public:
 
 private:
 	OneshotPrivate *p;
+	RGSSThreadData &threadData;
 };
 
 #endif // ONESHOT_H

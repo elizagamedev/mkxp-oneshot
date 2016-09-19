@@ -151,11 +151,7 @@ class Game_Character
     # Loop all events
     for event in $game_map.events.values
       next if event.through || event.character_name.empty?
-      event.collision.each do |ox, oy|
-        if event.x + ox == new_x && event.y + oy == new_y
-          return false
-        end
-      end
+      return false if event.intersects?(new_x, new_y)
     end
     # If player coordinates are consistent with move destination
     if $game_player.x == new_x and $game_player.y == new_y

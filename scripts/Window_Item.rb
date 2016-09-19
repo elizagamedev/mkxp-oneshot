@@ -6,12 +6,13 @@
 
 class Window_Item < Window_Selectable
   COLUMN_MAX = 2
+  SPECIAL_COLOR = Color.new(128, 255, 128)
 
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
-    super(16, 96, 608, 368)
+    super(16, 96, 608, 224)
     @column_max = 2
     refresh
     self.index = 0
@@ -67,8 +68,10 @@ class Window_Item < Window_Selectable
     item = @data[index]
 
     # Font color
-    if $game_variables[1] == @data[index].id
+    if $game_variables[1] == item.id
       self.contents.font.color = active_item_color
+    elsif item.common_event_id > 0
+      self.contents.font.color = SPECIAL_COLOR
     else
       self.contents.font.color = normal_color
     end
@@ -95,6 +98,13 @@ class Window_Item < Window_Selectable
   # * Update
   #--------------------------------------------------------------------------
   def update
+    if $game_system.map_interpreter.running?
+      was_active = self.active
+      self.active = false
+      super
+      self.active = was_active
+      return
+    end
     super
 
     # Handle fade-in effect
@@ -130,7 +140,7 @@ class Window_Item < Window_Selectable
     end
 
     # Don't do anything if not active
-    if !self.active || $game_system.map_interpreter.running?
+    if !self.active
       return
     end
 
@@ -146,7 +156,6 @@ class Window_Item < Window_Selectable
       if item.common_event_id > 0
         $game_temp.common_event_id = item.common_event_id
         $game_system.se_play($data_system.decision_se)
-        @fade_out = true
         return
       end
 

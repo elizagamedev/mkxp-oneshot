@@ -168,7 +168,11 @@ class Spriteset_Map
     # If BG is different than current BG
     if @bg_name != $game_map.bg_name
       @bg_name = $game_map.bg_name
-      @bg = Sprite.new(@viewport_bg) if !@bg
+      if !@bg
+        @bg = Sprite.new(@viewport_bg)
+        @bg.zoom_x = 2
+        @bg.zoom_y = 2
+      end
       if @bg_name.empty?
         @bg.bitmap = nil
       else
@@ -200,8 +204,8 @@ class Spriteset_Map
       end
     end
     # Update bg plane
-    @bg.ox = $game_map.display_x / 4
-    @bg.oy = $game_map.display_y / 4
+    @bg.x = -$game_map.display_x / 4
+    @bg.y = -$game_map.display_y / 4
     # Update tilemap
     @tilemap.ox = $game_map.display_x / 4
     @tilemap.oy = $game_map.display_y / 4

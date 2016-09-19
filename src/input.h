@@ -62,6 +62,8 @@ public:
 	int mouseX();
 	int mouseY();
 
+	bool hasQuit();
+
 private:
 	Input(const RGSSThreadData &rtData);
 	~Input();

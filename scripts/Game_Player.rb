@@ -132,8 +132,7 @@ class Game_Player < Game_Character
     # All event loops
     for event in $game_map.events.values
       # If event coordinates and triggers are consistent
-      if event.x == new_x and event.y == new_y and
-         triggers.include?(event.trigger)
+      if event.intersects?(new_x, new_y) && triggers.include?(event.trigger)
         # If starting determinant is front event (other than jumping)
         if not event.jumping? and not event.over_trigger?
           event.start
@@ -274,10 +273,15 @@ class Game_Player < Game_Character
     tag = $game_map.terrain_tag(@x, @y) - 1
     if tag >= 0 && tag < $game_temp.footstep_sfx.size
       name = $game_temp.footstep_sfx[tag]
+      if name.kind_of?(Array)
+        name, volume = name
+      else
+        volume = 1.0
+      end
       if FOOTSTEP_AMT.include? name
         name += '%02d' % [rand(FOOTSTEP_AMT[name]) + 1]
       end
-      Audio.se_play("Audio/SE/#{name}.wav", 80)
+      Audio.se_play("Audio/SE/#{name}.wav", (80 * volume).to_i)
     end
   end
 end

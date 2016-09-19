@@ -6,7 +6,8 @@ FOOTSTEP_SFX = [
    'step_wood'],
   # Blue Interior
   ['step_tile',
-   'step_wood'],
+   'step_wood',
+   'step_metal'],
   # Green
   ['step_grass',
    'step_wood',
@@ -27,7 +28,7 @@ FOOTSTEP_SFX = [
   # Blank
   [],
   # Blue Factory Interior
-  ['step_metal'],
+  [['step_metal', 0.5]],
   # Red Ground
   [],
   # Red Factory

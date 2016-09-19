@@ -193,7 +193,8 @@ SOURCES += \
 	src/rgssad.cpp \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
-    binding-mri/steam-binding.cpp
+    binding-mri/steam-binding.cpp \
+    src/xdg-user-dir-lookup.c
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h

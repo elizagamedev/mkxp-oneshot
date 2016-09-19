@@ -330,6 +330,8 @@ struct InputPrivate
 	Input::ButtonCode repeating;
 	unsigned int repeatCount;
 
+	bool triedExit;
+
 	struct
 	{
 		int active;
@@ -365,6 +367,8 @@ struct InputPrivate
 		dir4Data.previous = Input::None;
 
 		dir8Data.active = 0;
+
+		triedExit = false;
 	}
 
 	inline ButtonState &getStateCheck(int code)
@@ -703,6 +707,10 @@ void Input::update()
 	}
 
 	p->repeating = None;
+
+	RGSSThreadData &rtData = shState->rtData();
+	p->triedExit = rtData.triedExit;
+	rtData.triedExit.clear();
 }
 
 bool Input::isPressed(int button)
@@ -748,6 +756,11 @@ int Input::mouseY()
 		return -20;
 
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
+}
+
+bool Input::hasQuit()
+{
+	return p->triedExit;
 }
 
 Input::~Input()

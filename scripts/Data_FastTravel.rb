@@ -18,18 +18,22 @@ class FastTravel
       :obsdeck => tr("observation deck"),
     }),
     :green => Zone.new(tr("The Glen"), {
-      :whatever => tr(""),
+      :village => tr("village"),
+      :ruins => tr("ruins"),
+      :forest => tr("forest"),
+      :wall => tr("the gate"),
+      :dock => tr("dock"),
     }),
     :blue => Zone.new(tr("The Barrens"), {
       :entrance => tr("entrance"),
       :outpost => tr("outpost"),
       :cliffs => tr("cliffs"),
-      :quarry => tr("quarry"),
       :mineshaft => tr("mineshaft entrance"),
       :factory => tr("old factory"),
       :dorms => tr("dormitories"),
       :swamp => tr("shrimp swamp"),
       :docks => tr("docks"),
+      :quarry => tr("quarry"),
     }),
   }
 end

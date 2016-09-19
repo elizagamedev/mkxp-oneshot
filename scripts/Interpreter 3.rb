@@ -11,19 +11,35 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_101
     # If other text has been set to message_text
-    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil
+    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil
       # End
       return false
     end
 
     # Create full text string
     choices = false
-    text = @list[@index].parameters[0].rstrip
+    text = @list[@index].parameters[0].strip
+    if text.start_with?('$')
+      is_doc = true
+      text.slice!(0)
+    else
+      is_doc = false
+    end
     loop do
       # 401: another line of text
       if @list[@index+1].code == 401
         @index += 1
         text << " " << @list[@index].parameters[0].rstrip
+      elsif @list[@index+1].code == 101 && is_doc
+        # 101: Another message box
+        # Tack on if we're a doc
+        new_text = @list[@index+1].parameters[0].strip
+        if new_text.start_with?('$')
+          text << "\n\n" << new_text[1..-1]
+          @index += 1
+        else
+          break
+        end
       else
         # 102: show choices
         if @list[@index+1].code == 102
@@ -73,6 +89,8 @@ class Interpreter
     unless text.empty?
       if is_ed
         $game_temp.message_ed_text = text
+      elsif is_doc
+        $game_temp.message_doc_text = text
       else
         $game_temp.message_text = text
       end

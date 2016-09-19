@@ -124,6 +124,10 @@ def blue_ambient
   ambient(-40, -40, -40)
 end
 
+def house_ambient
+  ambient(-30, -30, -30)
+end
+
 # Travel
 def enable_travel
   $game_fasttravel.enabled = true

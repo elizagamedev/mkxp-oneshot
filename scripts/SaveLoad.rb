@@ -19,13 +19,14 @@ def save
     Marshal.dump($game_party, file)
     Marshal.dump($game_map, file)
     Marshal.dump($game_player, file)
+    Marshal.dump($game_followers, file)
     Marshal.dump($game_oneshot, file)
     Marshal.dump($game_fasttravel, file)
   end
 end
 
 def load
-  return false unless FileTest.exist?(SAVE_FILE_NAME)
+  return false if !FileTest.exist?(SAVE_FILE_NAME) || $debug
   File.open(SAVE_FILE_NAME, 'rb') do |file|
     # Read frame count for measuring play time
     Graphics.frame_count = Marshal.load(file)
@@ -39,6 +40,7 @@ def load
     $game_party         = Marshal.load(file)
     $game_map           = Marshal.load(file)
     $game_player        = Marshal.load(file)
+    $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
     # If magic number is different from when saving

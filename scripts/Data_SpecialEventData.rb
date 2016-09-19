@@ -48,5 +48,13 @@ class SpecialEventData
       [:bottom],
       [[0, 0], [0, -1]],
     ),
+    :vendor => SpecialEventData.new(
+      [],
+      [[-1, 0], [0, 0], [1, 0]],
+    ),
+    :lens => SpecialEventData.new(
+      [],
+      [[0, -1], [0, 0]],
+    ),
   }
 end

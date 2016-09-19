@@ -14,6 +14,7 @@ class Game_Temp
   attr_accessor :message_face             # face graphic
   attr_accessor :message_proc             # message callback (Proc)
   attr_accessor :message_ed_text          # Ed message text
+  attr_accessor :message_doc_text         # Text message text
   attr_accessor :choices                  # show choices: text
   attr_accessor :choice_cancel_type       # show choices: cancel
   attr_accessor :choice_proc              # show choices: callback (Proc)

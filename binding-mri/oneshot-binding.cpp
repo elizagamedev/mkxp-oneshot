@@ -39,6 +39,15 @@ RB_METHOD(oneshotObscuredCleared)
 	return shState->oneshot().obscuredCleared() ? Qtrue : Qfalse;
 }
 
+RB_METHOD(oneshotAllowExit)
+{
+	RB_UNUSED_PARAM;
+	bool allowExit;
+	rb_get_args(argc, argv, "b", &allowExit RB_ARG_END);
+	shState->oneshot().setAllowExit(allowExit);
+	return Qnil;
+}
+
 void oneshotBindingInit()
 {
     VALUE module = rb_define_module("Oneshot");
@@ -47,6 +56,7 @@ void oneshotBindingInit()
     //Constants
     rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->oneshot().userName().c_str()));
     rb_const_set(module, rb_intern("SAVE_PATH"), rb_str_new2(shState->oneshot().savePath().c_str()));
+	rb_const_set(module, rb_intern("DOCS_PATH"), rb_str_new2(shState->oneshot().docsPath().c_str()));
     rb_const_set(module, rb_intern("LANG"), rb_str_new2(shState->oneshot().lang().c_str()));
     rb_const_set(msg, rb_intern("INFO"), INT2FIX(Oneshot::MSG_INFO));
     rb_const_set(msg, rb_intern("YESNO"), INT2FIX(Oneshot::MSG_YESNO));
@@ -58,4 +68,5 @@ void oneshotBindingInit()
     _rb_define_module_function(module, "msgbox", oneshotMsgBox);
 	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
+	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
 }

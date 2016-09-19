@@ -45,6 +45,15 @@ class Game_Event < Game_Character
     refresh
   end
   #--------------------------------------------------------------------------
+  # * Return true if intersects with specified tile
+  #--------------------------------------------------------------------------
+  def intersects?(x, y)
+    @collision.each do |ox, oy|
+      return true if @x + ox == x && @y + oy == y
+    end
+    return false
+  end
+  #--------------------------------------------------------------------------
   # * Return name
   #--------------------------------------------------------------------------
   def name

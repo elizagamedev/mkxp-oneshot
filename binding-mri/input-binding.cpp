@@ -115,6 +115,13 @@ RB_METHOD(inputMouseY)
 	return rb_fix_new(shState->input().mouseY());
 }
 
+RB_METHOD(inputQuit)
+{
+	RB_UNUSED_PARAM;
+
+	return rb_bool_new(shState->input().hasQuit());
+}
+
 
 struct
 {
@@ -165,6 +172,8 @@ inputBindingInit()
 
 	_rb_define_module_function(module, "mouse_x", inputMouseX);
 	_rb_define_module_function(module, "mouse_y", inputMouseY);
+
+	_rb_define_module_function(module, "quit?", inputQuit);
 
 	if (rgssVer >= 3)
 	{

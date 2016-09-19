@@ -232,6 +232,12 @@ struct RGSSThreadData
 	/* Set when F12 is released */
 	AtomicFlag rqResetFinish;
 
+	/* True if exiting is allowed */
+	AtomicFlag allowExit;
+
+	/* Set when attempting to exit and allowExit is false */
+	AtomicFlag triedExit;
+
 	EventThread *ethread;
 	UnidirMessage<Vec2i> windowSizeMsg;
 	UnidirMessage<BDescVec> bindingUpdateMsg;
@@ -256,7 +262,8 @@ struct RGSSThreadData
 	               ALCdevice *alcDev,
 	               int refreshRate,
 	               const Config& newconf)
-	    : ethread(ethread),
+	    : allowExit(true),
+	      ethread(ethread),
 	      argv0(argv0),
 	      window(window),
 	      alcDev(alcDev),
