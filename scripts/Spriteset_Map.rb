@@ -244,10 +244,16 @@ class Spriteset_Map
     @character_sprites.each do |sprite|
 	  if !sprite.character.is_a?(Game_Event)
 	    sprite.update
+	  elsif
+
 	  # this is just a check to make sure the sprite is onscreen for game events
 	  # based on its current width and height
 	  # no point in updating the sprite if offscreen
 	  # this greatly increases performance on larger maps
+
+	    ((sprite.character.real_x + (sprite.ox*4) > $game_map.display_x - 128) &&
+		(sprite.character.real_x - (sprite.ox*4) < $game_map.display_x + (21 * 128)) &&
+		(sprite.character.real_y + (sprite.oy*4) > ($game_map.display_y) - 128) &&
 		(sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (17 * 128)))
           sprite.update
 	  end
