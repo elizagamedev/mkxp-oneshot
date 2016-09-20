@@ -22,6 +22,7 @@ def save
     Marshal.dump($game_followers, file)
     Marshal.dump($game_oneshot, file)
     Marshal.dump($game_fasttravel, file)
+    Marshal.dump($game_temp.footstep_sfx , file)
   end
 end
 
@@ -43,6 +44,7 @@ def load
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
+	$game_temp.footstep_sfx = Marshal.load(file)
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number

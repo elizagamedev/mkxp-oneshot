@@ -80,6 +80,9 @@ class Scene_Save < Scene_File
     Marshal.dump($game_troop, file)
     Marshal.dump($game_map, file)
     Marshal.dump($game_player, file)
+    Marshal.dump($game_followers, file)
     Marshal.dump($game_oneshot, file)
+    Marshal.dump($game_fasttravel, file)
+    Marshal.dump($game_temp.footstep_sfx , file)
   end
 end

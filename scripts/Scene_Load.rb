@@ -80,7 +80,11 @@ class Scene_Load < Scene_File
     $game_troop         = Marshal.load(file)
     $game_map           = Marshal.load(file)
     $game_player        = Marshal.load(file)
+    $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
+    $game_fasttravel    = Marshal.load(file)
+	$game_temp.footstep_sfx = Marshal.load(file)
+
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number
