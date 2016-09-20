@@ -242,7 +242,15 @@ class Spriteset_Map
     @fog.tone = $game_map.fog_tone
     # Update character sprites
     @character_sprites.each do |sprite|
-      sprite.update
+	  if !sprite.character.is_a?(Game_Event)
+	    sprite.update
+	  # this is just a check to make sure the sprite is onscreen for game events
+	  # based on its current width and height
+	  # no point in updating the sprite if offscreen
+	  # this greatly increases performance on larger maps
+		(sprite.character.real_y - (sprite.oy*4) < ($game_map.display_y) + (17 * 128)))
+          sprite.update
+	  end
     end
     # Update footprints
     @footprint_sprites.delete_if do |sprite|
