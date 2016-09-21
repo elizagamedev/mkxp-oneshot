@@ -94,6 +94,15 @@ class Sprite_Character
     end
   end
   #--------------------------------------------------------------------------
+  # * Frame Update Fast (only position)
+  #--------------------------------------------------------------------------
+  def update_fast
+    # Set sprite coordinates
+    self.x = @character.screen_x
+    self.y = @character.screen_y
+    self.z = @character.screen_z(@ch)
+  end
+  #--------------------------------------------------------------------------
   # * Sprite attribute wrapper
   #--------------------------------------------------------------------------
   def self.sprite_attr(*args)
