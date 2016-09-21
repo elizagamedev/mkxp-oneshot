@@ -33,7 +33,7 @@ class FastTravel
       :dorms => tr("dormitories"),
       :swamp => tr("shrimp swamp"),
       :docks => tr("docks"),
-      :quarry => tr("quarry"),
+      :quarry => tr("lookout point"),
     }),
   }
 end
