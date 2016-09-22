@@ -11,7 +11,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_101
     # If other text has been set to message_text
-    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil
+    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil || $game_temp.message_desktop_text != nil
       # End
       return false
     end
@@ -69,8 +69,13 @@ class Interpreter
       space = text.index(' ') || text.size
       face = text[1..space-1]
       if face == 'ed'
+        is_desktop = false
         is_ed = true
+      elsif face == 'desktop'
+        is_desktop = true
+        is_ed = false
       else
+        is_desktop = false
         is_ed = false
         $game_temp.message_face = face
       end
@@ -91,6 +96,8 @@ class Interpreter
         $game_temp.message_ed_text = text
       elsif is_doc
         $game_temp.message_doc_text = text
+      elsif is_desktop
+        $game_temp.message_desktop_text = text
       else
         $game_temp.message_text = text
       end

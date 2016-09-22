@@ -119,6 +119,7 @@ Puzzle_Safe
 SaveLoad
 Ed_Message
 Doc_Message
+Desktop_Message
 Particles
 
 Demo
