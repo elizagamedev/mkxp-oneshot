@@ -87,8 +87,23 @@ class Window_InputNumber < Window_Base
     self.contents.clear
     self.contents.font.color = normal_color
     s = sprintf("%0*d", @digits_max, @number)
-    for i in 0...@digits_max
-      self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
+    if($game_switches[179] == true)
+      for i in 0...@digits_max
+        case i
+        when 0
+          self.contents.font.color = Window_Base.text_color(1)
+        when 1
+          self.contents.font.color = Window_Base.text_color(2)
+        when 2
+          self.contents.font.color = Window_Base.text_color(4)
+        when 3
+          self.contents.font.color = Window_Base.text_color(3)
+        end
+        self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
+      end
+      for i in 0...@digits_max
+        self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
+      end
     end
   end
 end
