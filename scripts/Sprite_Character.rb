@@ -30,7 +30,7 @@ class Sprite_Character
   #--------------------------------------------------------------------------
   def update
     # Choose the appropriate light sprite
-    @light_sprite.viewport = ($game_map.ambient.blank? && $game_screen.tone.blank?) ? @viewport : @light_viewport
+    @light_sprite.viewport = ($game_screen.tone.blank?) ? @viewport : @light_viewport
     # Update sprites
     @sprite.update
     @light_sprite.update
