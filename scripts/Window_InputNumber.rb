@@ -101,6 +101,7 @@ class Window_InputNumber < Window_Base
         end
         self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
       end
+    else
       for i in 0...@digits_max
         self.contents.draw_text(i * @cursor_width + 4, 0, 32, 32, s[i,1])
       end
