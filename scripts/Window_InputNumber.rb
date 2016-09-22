@@ -91,11 +91,11 @@ class Window_InputNumber < Window_Base
       for i in 0...@digits_max
         case i
         when 0
-          self.contents.font.color = Window_Base.text_color(1)
+          self.contents.font.color = Window_Base.text_color(4)
         when 1
           self.contents.font.color = Window_Base.text_color(2)
         when 2
-          self.contents.font.color = Window_Base.text_color(4)
+          self.contents.font.color = Window_Base.text_color(1)
         when 3
           self.contents.font.color = Window_Base.text_color(3)
         end
