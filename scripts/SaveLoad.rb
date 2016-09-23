@@ -57,3 +57,14 @@ def load
   end
   return true
 end
+
+def real_load
+    load
+    # Restore BGM and BGS
+    $game_system.bgm_play($game_system.playing_bgm)
+    $game_system.bgs_play($game_system.playing_bgs)
+    # Update map (run parallel process event)
+    $game_map.update
+    # Switch to map screen
+    $scene = Scene_Map.new
+end
