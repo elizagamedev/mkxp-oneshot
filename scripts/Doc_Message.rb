@@ -112,7 +112,7 @@ class Doc_Message
 
     # Prepare renderer
     @contents.clear
-    @contents.font.color = Color.new(255, 255, 255, 255)
+    @contents.font.color = Color.new(55, 46, 190, 255)
     x = 0
     y = 0
 
@@ -148,9 +148,11 @@ class Doc_Message
   def update
     # Handle fade-out effect
     if @fade_out
-      @sprite_text.opacity -= 20
-      @sprite_bg.opacity -= 20
-      if @sprite_text.opacity == 0
+      @sprite_text.opacity -= 15
+      @sprite_bg.opacity -= 17
+      if @sprite_text.opacity <= 0
+        @sprite_text.opacity = 0
+        @sprite_bg.opacity = 0
         @fade_out = false
         @viewport.visible = false
         $game_temp.message_window_showing = false
@@ -160,9 +162,11 @@ class Doc_Message
 
     # Handle fade-in effect
     if @fade_in
-      @sprite_text.opacity += 20
-      @sprite_bg.opacity += 20
-      if @sprite_text.opacity == 255
+      @sprite_text.opacity += 15
+      @sprite_bg.opacity += 17
+      if @sprite_text.opacity >= 150
+        @sprite_text.opacity = 150
+        @sprite_bg.opacity = 170
         @fade_in = false
         $game_temp.message_window_showing = true
       end
