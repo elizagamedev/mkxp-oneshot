@@ -105,6 +105,10 @@ class Window_Message < Window_Selectable
       text.gsub!(/\\c\[([0-9]+)\]/, "\0[\\1]")
       text.gsub!("\\.", "\001")
       text.gsub!("\\|", "\002")
+      text.gsub!("\\>", "\004")
+
+
+      text.gsub!("\\@", "\003")
       # Finally convert the backslash back
       text.gsub!("\\\\", "\\")
 
@@ -114,6 +118,10 @@ class Window_Message < Window_Selectable
       spacewidth = self.contents.text_size(' ').width
       text.split("\n").each do |line|
         line.split(' ').each do |word|
+          if word.start_with?('\003')
+            #ignore new facepics
+            next
+          end
           # Get width of this word and insert a newline if it goes out of bounds
           width = self.contents.text_size(word.gsub(/(\000\[[0-9]+\]|\001|\002)/, '')).width
           if x + width > maxwidth
@@ -209,6 +217,24 @@ class Window_Message < Window_Selectable
       if c == "\002"
         # Pause
         @text_pause = 10*4
+        return
+      end
+      if c == "\003"
+        # new facepic
+        face_name = ""
+        c2 = @text.slice!(0)
+        while c2 != " "
+          face_name += c2
+          c2 = @text.slice!(0)
+        end
+        self.contents.fill_rect(self.contents.width - 96, 0, 96, 96, Color.new(0,0,0,0))
+        $game_temp.message_face = face_name
+        face = RPG::Cache.face($game_temp.message_face)
+        self.contents.blt(self.contents.width - 96, 0, face, Rect.new(0, 0, 96, 96))
+        return
+      end
+      if c == "\004"
+        @drawing_text = false
         return
       end
       # Draw text
@@ -373,7 +399,11 @@ class Window_Message < Window_Selectable
 
         # Advance/Close message
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
-          terminate_message
+          if @text.length <= 0
+            terminate_message
+          else
+            @drawing_text = true
+          end
         end
       end
     end
