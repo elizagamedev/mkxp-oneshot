@@ -281,7 +281,8 @@ class Game_Player < Game_Character
       if FOOTSTEP_AMT.include? name
         name += '%02d' % [rand(FOOTSTEP_AMT[name]) + 1]
       end
-      Audio.se_play("Audio/SE/#{name}.wav", (80 * volume).to_i)
+      pitch = 85 + rand(30)
+      Audio.se_play("Audio/SE/#{name}.wav", (80 * volume).to_i, pitch.to_i)
     end
   end
 end

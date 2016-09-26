@@ -44,7 +44,7 @@ def load
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	$game_temp.footstep_sfx = Marshal.load(file)
+	  $game_temp.footstep_sfx = Marshal.load(file)
     # If magic number is different from when saving
     # (if editing was added with editor)
     if $game_system.magic_number != $data_system.magic_number
@@ -61,10 +61,26 @@ end
 def real_load
     load
     # Restore BGM and BGS
-    $game_system.bgm_play($game_system.playing_bgm)
-    $game_system.bgs_play($game_system.playing_bgs)
+    # switch 181 means its time for a dream, so no BGM
+
+    if !$game_switches[181]
+      $game_system.bgm_play($game_system.playing_bgm)
+      $game_system.bgs_play($game_system.playing_bgs)
+    end
     # Update map (run parallel process event)
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new
+    $game_temp.common_event_id = 42
+end
+
+def save_exists
+  return FileTest.exist?(SAVE_FILE_NAME)
+end
+
+def quit_game_bed
+  $game_system.map_interpreter.index += 1
+  save
+  Oneshot.allow_exit true
+  exit
 end

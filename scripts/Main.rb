@@ -5,7 +5,7 @@
 #==============================================================================
 
 at_exit do
-  save unless $game_system.map_interpreter.running?
+  save unless ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 end
 
 begin
@@ -19,6 +19,9 @@ begin
 
   # Prepare for transition
   Graphics.freeze
+  $debug = false
+  $demo = false
+  $GDC = false
   # Make scene object (title screen)
   $scene = Scene_Title.new
   # Call main method as long as $scene is effective

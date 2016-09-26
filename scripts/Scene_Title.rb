@@ -29,11 +29,11 @@ class Scene_Title
     Language.initialize_database
     # Load save game/initialize data
     $game_temp = Game_Temp.new
-    new_game unless load
+    new_game #unless load
     # Make system object
     $game_system = Game_System.new
     # Skip title screen if debug mode (or demo, but not GDC)
-    if $debug || ($demo && !$GDC)
+    if $debug || ($demo && !$GDC) || save_exists
       $game_map.update
       $game_map.autoplay
       $scene = Scene_Map.new
@@ -115,7 +115,7 @@ class Scene_Title
         end
       end
       if update_cursor
-        Audio.se_play('Audio/SE/title_cursor.wav')
+        Audio.se_play('Audio/SE/title_cursor.wav', 40)
         @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 24 * @cursor_pos
       end
     end
