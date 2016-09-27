@@ -39,6 +39,14 @@ class Spriteset_Map
     # Make panorama plane
     @panorama = Plane.new(@viewport_bg)
     @panorama.z = -1000
+
+    if $game_map.pan_fade_animate
+      @panorama2 = Plane.new(@viewport_bg)
+      @panorama2.z = -999
+      @panorama2.opacity = 0
+      @pan_frame_index = 0
+    end
+
     # Make fog plane
     @fog = Plane.new(@viewport)
     @fog.z = 3000
@@ -85,6 +93,9 @@ class Spriteset_Map
     @tilemap.dispose
     # Dispose of panorama plane
     @panorama.dispose
+    if @panorama2 != nil
+      @panorama2.dispose
+    end
     # Dispose of fog plane
     @fog.dispose
     # Dispose of character sprites
@@ -147,8 +158,23 @@ class Spriteset_Map
         @panorama.bitmap.dispose
         @panorama.bitmap = nil
       end
+      if @panorama2 != nil && @panorama2.bitmap != nil
+        @panorama2.bitmap.dispose
+        @panorama2.bitmap = nil
+      end
       if @panorama_name != ""
-        @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
+        if $game_map.pan_fade_animate
+          if @panorama2 == nil
+            @panorama2 = Plane.new(@viewport_bg)
+            @panorama2.z = -999
+            @panorama2.opacity = 0
+            @pan_frame_index = 0
+          end
+          @panorama.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+          @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
+        else
+          @panorama.bitmap = RPG::Cache.panorama(@panorama_name, @panorama_hue)
+        end
       end
       Graphics.frame_reset
     end
@@ -230,6 +256,24 @@ class Spriteset_Map
       @panorama.src_rect.width = @panorama.src_rect.height
       if @pan_animate_timer == 0
         @panorama.src_rect.x = (@panorama.src_rect.x + @panorama.src_rect.height) % @panorama.bitmap.width
+      end
+    end
+
+    if $game_map.pan_fade_animate
+      @panorama2.opacity += 3
+      @panorama2.ox = @panorama.ox
+      @panorama2.oy = @panorama.oy
+      @panorama2.zoom_x = @panorama2.zoom_y = $game_map.pan_zoom
+      if @panorama2.opacity >= 255
+        @panorama2.opacity = 255
+        @panorama.dispose
+        @panorama = @panorama2
+        @panorama.z = -1000
+        @panorama2 = Plane.new(@viewport_bg)
+        @panorama2.z = -999
+        @panorama2.opacity = 0
+        @pan_frame_index = (@pan_frame_index + 1) % 3
+        @panorama2.bitmap = RPG::Cache.panorama(@panorama_name + (1 + @pan_frame_index).to_s, @panorama_hue)
       end
     end
     # Update fog plane

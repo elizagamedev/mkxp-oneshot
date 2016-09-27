@@ -32,6 +32,7 @@ class Game_Map
   attr_accessor :clamped_y                # panorama is vertically clamped?
   attr_accessor :pan_onetoone             # panorama is 1:1
   attr_accessor :pan_animate              # panorama is animated
+  attr_accessor :pan_fade_animate         # panorama is fade animated
   attr_accessor :pan_zoom                 # panorama zoom
   attr_accessor :wrapping                 # map is wrapping?
   attr_accessor :pan_offset_y             # offset of y-coord of panorama
@@ -58,12 +59,18 @@ class Game_Map
   ANIMATED = [
     'blue_water',
   ]
+  FADE_ANIMATION_PANORAMA = [
+    'dark_water',
+    'green_water',
+  ]
   ONETOONE = [
     'blue_water',
+    'green_water',
     'dark_water',
   ]
   NOZOOM = [
     'dark_water',
+    #'green_water',
   ]
   #--------------------------------------------------------------------------
   # * Object Initialization
@@ -153,6 +160,7 @@ class Game_Map
     end
     # Animated/One-to-one/zoom
     @pan_animate = ANIMATED.include? @panorama_name
+    @pan_fade_animate = FADE_ANIMATION_PANORAMA.include? @panorama_name
     @pan_onetoone = ONETOONE.include? @panorama_name
     @pan_zoom = NOZOOM.include?(@panorama_name) ? 1 : 2
     # Unwrap map
