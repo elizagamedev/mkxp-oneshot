@@ -282,7 +282,8 @@ class Game_Player < Game_Character
         name += '%02d' % [rand(FOOTSTEP_AMT[name]) + 1]
       end
       pitch = 85 + rand(30)
-      Audio.se_play("Audio/SE/#{name}.wav", (80 * volume).to_i, pitch.to_i)
+      vol = 70 + rand(20)
+      Audio.se_play("Audio/SE/#{name}.wav", (vol * volume).to_i, pitch.to_i)
     end
   end
 end
