@@ -7,6 +7,24 @@ module Script
     logpos($game_player.y, $game_player.real_y, $game_player.direction == 2)
   end
 
+  def self.eve_x(name)
+    for event in $game_map.events.values
+      if event.name == name
+        return logpos(event.x, event.real_x, event.direction == 6)
+      end
+    end
+    return 0
+  end
+
+  def self.eve_y(name)
+    for event in $game_map.events.values
+      if event.name == name
+        return logpos(event.y, event.real_y, event.direction == 2)
+      end
+    end
+    return 0
+  end
+
   # Temporary switch assignment
   def self.tmp_s1=(val)
     $game_switches[TMP_INDEX+0] = val
@@ -43,6 +61,11 @@ module Script
       return pos + 1 if positive
     end
     return pos
+  end
+
+  def self.set_cam(x, y)
+    $game_map.display_x = x
+    $game_map.display_y = y
   end
 end
 
