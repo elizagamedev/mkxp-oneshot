@@ -61,9 +61,9 @@ end
 def real_load
     load
     # Restore BGM and BGS
-    # switch 181 means its time for a dream, so no BGM
+    # switch 181 or 183 means its time for a dream, so no BGM
 
-    if !$game_switches[181]
+    if !($game_switches[181] || $game_switches[183])
       $game_system.bgm_play($game_system.playing_bgm)
       $game_system.bgs_play($game_system.playing_bgs)
     end
