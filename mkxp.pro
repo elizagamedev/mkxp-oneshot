@@ -153,7 +153,8 @@ HEADERS += \
 	src/audiostream.h \
 	src/rgssad.h \
 	src/sdl-util.h \
-	src/oneshot.h
+	src/oneshot.h \
+    src/pipe.h
 
 SOURCES += \
 	src/main.cpp \
@@ -194,7 +195,9 @@ SOURCES += \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
     binding-mri/steam-binding.cpp \
-    src/xdg-user-dir-lookup.c
+    src/xdg-user-dir-lookup.c \
+    src/screen.cpp \
+    binding-mri/screen-binding.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h

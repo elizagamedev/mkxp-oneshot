@@ -161,7 +161,7 @@ int rgssThreadFun(void *userdata)
 static void showInitError(const std::string &msg)
 {
 	Debug() << msg;
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "mkxp", msg.c_str(), 0);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot", msg.c_str(), 0);
 }
 
 int main(int argc, char *argv[])
@@ -211,6 +211,10 @@ int main(int argc, char *argv[])
 			showInitError(std::string("Unable to switch into gameFolder ") + conf.gameFolder);
 			return 0;
 		}
+
+	extern int screenMain(Config &conf);
+	if (conf.screenMode)
+		return screenMain(conf);
 
 	int imgFlags = IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)

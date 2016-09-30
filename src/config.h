@@ -30,6 +30,7 @@ struct Config
 	int rgssVersion;
 
 	bool debugMode;
+	bool screenMode;
 	bool printFPS;
 
 	bool fullscreen;
