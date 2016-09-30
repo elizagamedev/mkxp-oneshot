@@ -54,6 +54,11 @@ def load
     end
     # Refresh party members
     $game_party.refresh
+
+    for f in $game_followers
+      f.leader = $game_player
+      f.moveto($game_player.x, $game_player.y)
+    end
   end
   return true
 end
