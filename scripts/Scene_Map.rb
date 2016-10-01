@@ -28,6 +28,16 @@ class Scene_Map
     @item_icon.zoom_x = 2.0
     @item_icon.zoom_y = 2.0
     @item_id = 0
+    # Make item flash (for clover)
+    @item_icon_flash = Sprite.new
+    @item_icon_flash.x = 640 - 64
+    @item_icon_flash.y = 480 - 64
+    @item_icon_flash.z = 10000
+    @item_icon_flash.zoom_x = 2.0
+    @item_icon_flash.zoom_y = 2.0
+    @item_icon_flash.opacity = 0
+    @item_icon_flash_fadein = true
+    @item_icon_flash_wait = 100
     # Make fast travel menu
     @fast_travel = FastTravel.new
     # Fade to black transition
@@ -66,6 +76,7 @@ class Scene_Map
     @fast_travel.dispose
     # Dispose of item icon
     @item_icon.dispose
+    @item_icon_flash.dispose
     @blackfade.dispose
     # If switching to title screen
     if $scene.is_a?(Scene_Title)
@@ -134,12 +145,42 @@ class Scene_Map
       @item_id = $game_variables[1]
       if @item_id == 0
         @item_icon.bitmap = nil
+        @item_icon_flash.bitmap = nil
       else
         @item_icon.bitmap = RPG::Cache.icon($data_items[@item_id].icon_name)
+        if @item_id == 58 #clover
+          @item_icon_flash.bitmap = RPG::Cache.icon($data_items[@item_id].icon_name + "2")
+          @item_icon_flash.opacity = 0
+          @item_icon_flash_fadein = true
+          @item_icon_flash_wait = 80
+        else
+          @item_icon_flash.bitmap = nil
+        end
       end
     end
     # Hide icon when item menu is visible
     @item_icon.visible = !@item_menu.visible
+    @item_icon_flash.visible = @item_icon.visible
+
+    if @item_icon_flash_wait > 0
+      @item_icon_flash_wait -= 1
+    else
+      if @item_icon_flash_fadein
+        @item_icon_flash.opacity += 6
+        if @item_icon_flash.opacity >= 255
+          @item_icon_flash.opacity = 255
+          @item_icon_flash_fadein = false
+          @item_icon_flash_wait = 40
+        end
+      else
+        @item_icon_flash.opacity -= 6
+        if @item_icon_flash.opacity <= 0
+          @item_icon_flash.opacity = 0
+          @item_icon_flash_fadein = true
+          @item_icon_flash_wait = 160
+        end
+      end
+    end
     # If game over
     if $game_temp.gameover
       # Switch to game over screen
