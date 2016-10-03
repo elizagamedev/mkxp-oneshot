@@ -30,16 +30,21 @@ FOOTSTEP_SFX = [
   # Blue Factory Interior
   [['step_metal', 0.5]],
   # Red Ground
-  [],
+  ['step_tile',
+   'step_wood'],
   # Red Factory
-  [],
+  ['step_tile',
+   'step_wood',
+   'step_grate'],
   # Red Factory Interior
   ['step_metal'],
   # Red observation deck
   ['step_metal',
    'step_tile'],
   # Red alley
-  [],
+  ['step_tile',
+   'step_wood',
+   'step_grate'],
   # Blue outpost
   ['step_tile',
    'step_wood'],
