@@ -19,7 +19,7 @@ begin
 
   # Prepare for transition
   Graphics.freeze
-  $debug = false
+  #$debug = false
   $demo = false
   $GDC = false
   # Make scene object (title screen)
