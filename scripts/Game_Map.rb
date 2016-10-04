@@ -50,6 +50,7 @@ class Game_Map
   CLAMPED = [
     'red',
     'red_distort',
+    'codebg'
   ]
   CLAMPED_X = [
   ]
