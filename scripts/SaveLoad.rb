@@ -50,7 +50,9 @@ def load
     if $game_system.magic_number != $data_system.magic_number
       # Load map
       $game_map.setup($game_map.map_id)
-      $game_player.center($game_player.x, $game_player.y)
+      if !$game_switches[100]
+        $game_player.center($game_player.x, $game_player.y)
+      end
     end
     # Refresh party members
     $game_party.refresh
