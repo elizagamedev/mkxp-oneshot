@@ -22,7 +22,7 @@ FOOTSTEP_SFX = [
   ['step_tile',
    'step_wood'],
   # Tower
-  [],
+  ['step_splash'],
   # Tower Start
   [],
   # Blank
@@ -48,6 +48,10 @@ FOOTSTEP_SFX = [
   # Blue outpost
   ['step_tile',
    'step_wood'],
+  # Blue mineshaft
+  [],
+  # Tower
+  [],
 ]
 
 FOOTSTEP_AMT = {
