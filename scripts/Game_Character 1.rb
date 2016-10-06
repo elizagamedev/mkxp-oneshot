@@ -10,17 +10,17 @@ class Game_Character
   # * Public Instance Variables
   #--------------------------------------------------------------------------
   attr_reader   :id                       # ID
-  attr_reader   :x                        # map x-coordinate (logical)
-  attr_reader   :y                        # map y-coordinate (logical)
-  attr_reader   :real_x                   # map x-coordinate (real * 128)
-  attr_reader   :real_y                   # map y-coordinate (real * 128)
+  attr_accessor   :x                        # map x-coordinate (logical)
+  attr_accessor   :y                        # map y-coordinate (logical)
+  attr_accessor   :real_x                   # map x-coordinate (real * 128)
+  attr_accessor   :real_y                   # map y-coordinate (real * 128)
   attr_reader   :tile_id                  # tile ID (invalid if 0)
   attr_reader   :character_name           # character file name
   attr_reader   :character_hue            # character hue
   attr_reader   :opacity                  # opacity level
   attr_reader   :blend_type               # blending method
-  attr_reader   :direction                # direction
-  attr_reader   :pattern                  # pattern
+  attr_accessor   :direction                # direction
+  attr_accessor   :pattern                  # pattern
   attr_reader   :move_route_forcing       # forced move route flag
   attr_reader   :through                  # through
   attr_accessor :animation_id             # animation ID

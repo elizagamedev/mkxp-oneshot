@@ -25,6 +25,32 @@ module Script
     return 0
   end
 
+  def self.niko_reflection_update
+    for event in $game_map.events.values
+      if event.name == "niko reflection"
+        event.real_y = 14*128 - ($game_player.real_y - 14*128)
+        event.real_x = $game_player.real_x
+        event.y = 14 - ($game_player.y - 14)
+        event.x = $game_player.x
+        if event.y > 13
+          event.y = 13
+        end
+        if event.real_y > 13*128
+          event.real_y = 13*128
+        end
+        event.direction = $game_player.direction
+        event.pattern = $game_player.pattern
+        case event.direction
+          when 2
+            event.direction = 8
+          when 8
+            event.direction = 2
+        end
+        return
+      end
+    end
+  end
+
   # Temporary switch assignment
   def self.tmp_s1=(val)
     $game_switches[TMP_INDEX+0] = val
