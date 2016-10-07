@@ -7,6 +7,30 @@ module Script
     logpos($game_player.y, $game_player.real_y, $game_player.direction == 2)
   end
 
+  def self.is_name_swear
+    test_string = $game_oneshot.player_name.downcase
+    if ["fuck", "shit", "ass", "cock", "damn", "penis", "tiddy", "titty", "cunt", "fag", "whore"].any? { |swear| test_string.include? swear }
+      return true
+    end
+    return false
+  end
+
+  def self.is_name_niko
+    test_string = $game_oneshot.player_name.downcase
+    if test_string == "niko"
+      return true
+    end
+    return false
+  end
+
+  def self.is_name_like_niko
+    test_string = $game_oneshot.player_name.downcase
+    if ["nico", "nikko", "nicco", "nikoh", "nicoh"].any? { |name| test_string.include? name }
+      return true
+    end
+    return false
+  end
+
   def self.eve_x(name)
     for event in $game_map.events.values
       if event.name == name
