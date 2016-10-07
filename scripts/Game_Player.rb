@@ -142,27 +142,6 @@ class Game_Player < Game_Character
         end
       end
     end
-    # If fitting event is not found
-    if result == false
-      # If front tile is a counter
-      if $game_map.counter?(new_x, new_y)
-        # Calculate 1 tile inside coordinates
-        new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-        new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
-        # All event loops
-        for event in $game_map.events.values
-          # If event coordinates and triggers are consistent
-          if event.x == new_x and event.y == new_y and
-             triggers.include?(event.trigger)
-            # If starting determinant is front event (other than jumping)
-            if not event.jumping? and not event.over_trigger?
-              event.start
-              result = true
-            end
-          end
-        end
-      end
-    end
     return result
   end
   #--------------------------------------------------------------------------
