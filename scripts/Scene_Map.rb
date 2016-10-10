@@ -94,6 +94,7 @@ class Scene_Map
     end
     # Loop
     loop do
+      $game_temp.bgm_fadein($game_system)
       # Update map, interpreter, and player order
       # (this update order is important for when conditions are fulfilled
       # to run any event, and the player isn't provided the opportunity to

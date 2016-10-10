@@ -117,6 +117,11 @@ module Script
     $game_map.display_x = x
     $game_map.display_y = y
   end
+
+  def self.fadein_bgm(target, speed)
+    $game_temp.target_bgm_vol_level = target
+    $game_temp.bgm_fadein_speed = speed
+  end
 end
 
 def has_lightbulb?

@@ -20,6 +20,7 @@ class Game_System
   attr_accessor :message_frame            # text option: window frame
   attr_accessor :save_count               # save count
   attr_accessor :magic_number             # magic number
+  attr_accessor :playing_bgm
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------

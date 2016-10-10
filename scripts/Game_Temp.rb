@@ -9,6 +9,9 @@ class Game_Temp
   #--------------------------------------------------------------------------
   # * Public Instance Variables
   #--------------------------------------------------------------------------
+  attr_accessor :target_bgm_vol_level     # volume we want to reach when fading in music
+  attr_accessor :bgm_fadein_speed         # speed at which we will reach target bgm vol_level
+  attr_accessor :bgm_fadein_timer         # used so we aren't changing the volume every frame
   attr_accessor :map_bgm                  # map music (for battle memory)
   attr_accessor :message_text             # message text
   attr_accessor :message_face             # face graphic
@@ -62,6 +65,9 @@ class Game_Temp
   # * Object Initialization
   #--------------------------------------------------------------------------
   def initialize
+    @target_bgm_vol_level = -1
+    @bgm_fadein_speed = 0
+    @bgm_fadein_timer = 0
     @map_bgm = nil
     @message_text = nil
     @message_face = nil
@@ -110,5 +116,21 @@ class Game_Temp
     @debug_index = 0
     @footstep_sfx = nil
     @filmsprite = nil
+  end
+
+  def bgm_fadein(game_system)
+    if @target_bgm_vol_level > 0
+      @bgm_fadein_timer += 1
+      if @bgm_fadein_timer > 14
+        @bgm_fadein_timer = 0
+        game_system.playing_bgm.volume += @bgm_fadein_speed
+        if game_system.playing_bgm.volume >= @target_bgm_vol_level
+          game_system.playing_bgm.volume = @target_bgm_vol_level
+          @target_bgm_vol_level = -1
+          @bgm_fadein_speed = 1
+        end
+        game_system.bgm_play(game_system.playing_bgm)
+      end
+    end
   end
 end
