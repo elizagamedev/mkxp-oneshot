@@ -52,15 +52,15 @@ module Script
   def self.niko_reflection_update
     for event in $game_map.events.values
       if event.name == "niko reflection"
-        event.real_y = 14*128 - ($game_player.real_y - 14*128)
+        event.real_y = 27*128/2 - ($game_player.real_y - 27*128/2)
         event.real_x = $game_player.real_x
-        event.y = 14 - ($game_player.y - 14)
+        event.y = 14 - (($game_player.y - 13))
         event.x = $game_player.x
-        if event.y > 13
-          event.y = 13
+        if event.y > 14
+          event.y = 14
         end
-        if event.real_y > 13*128
-          event.real_y = 13*128
+        if event.real_y > 14*128
+          event.real_y = 14*128
         end
         event.direction = $game_player.direction
         event.pattern = $game_player.pattern
