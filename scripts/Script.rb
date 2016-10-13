@@ -25,7 +25,7 @@ module Script
 
   def self.is_name_like_niko
     test_string = $game_oneshot.player_name.downcase
-    if ["nico", "nikko", "nicco", "nikoh", "nicoh"].any? { |name| test_string.include? name }
+    if ["nico", "nikko", "nicco", "nikoh", "nicoh"].any? { |name| test_string == name }
       return true
     end
     return false
