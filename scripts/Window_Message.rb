@@ -28,6 +28,7 @@ class Window_Message < Window_Selectable
     @text = nil
     @text_y = @text_x = 0
     @drawing_text = false # set to true when message text is drawing
+    @skip_text = false
 
     # Number/Choices
     self.active = false
@@ -157,6 +158,11 @@ class Window_Message < Window_Selectable
 
     # Blit face graphic
     if $game_temp.message_face != nil
+      if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask"
+        if $game_temp.message_face.start_with?("niko")
+          $game_temp.message_face = "niko_gasmask"
+        end
+      end
       face = RPG::Cache.face($game_temp.message_face)
       self.contents.blt(self.contents.width - 96, 0, face, Rect.new(0, 0, 96, 96))
     end
@@ -229,20 +235,29 @@ class Window_Message < Window_Selectable
         end
         self.contents.fill_rect(self.contents.width - 96, 0, 96, 96, Color.new(0,0,0,0))
         $game_temp.message_face = face_name
+        if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask"
+          if $game_temp.message_face.start_with?("niko")
+            $game_temp.message_face = "niko_gasmask"
+          end
+        end
         face = RPG::Cache.face($game_temp.message_face)
         self.contents.blt(self.contents.width - 96, 0, face, Rect.new(0, 0, 96, 96))
         return
       end
       if c == "\004"
         @drawing_text = false
+        @skip_text = false
         return
       end
       # Draw text
       self.contents.draw_text(4 + @text_x, 24 * @text_y, 40, 24, c)
       # Add x to drawn text width
       @text_x += self.contents.text_size(c).width
-      break
+      if !@skip_text
+        break
+      end
     end
+    @skip_text = false
 
     # If text is empty, set up choices/numbers and indicate that we're done
     if @text.empty?
@@ -361,6 +376,9 @@ class Window_Message < Window_Selectable
           @blip += 1
         end
         tick
+      end
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
+        @skip_text = true
       end
     else
       # Handle user input
