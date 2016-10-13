@@ -49,7 +49,8 @@ FOOTSTEP_SFX = [
   ['step_tile',
    'step_wood'],
   # Blue mineshaft
-  [],
+  ['step_gravel',
+   'step_wood'],
   # Tower
   [],
 ]
