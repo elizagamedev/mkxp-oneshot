@@ -11,10 +11,15 @@ class Doc_Message
     @sprite_bg = Sprite.new(@viewport)
     @sprite_bg.bitmap = RPG::Cache.picture('lined_paper') #Bitmap.new(640, 480)
     @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
+    @sprite_bg.x = 120
+    @sprite_bg.y = 24
     #@sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
-    @contents = Bitmap.new(320, 240)
+    @contents = Bitmap.new(200, 216)
+    @contents.font.size = 16
     @sprite_text.bitmap = @contents
+    @sprite_text.x = 120
+    @sprite_text.y = 24
     @sprite_bg.z = 0
     @sprite_text.z = 1
     @sprite_text.zoom_x = @sprite_text.zoom_y = 2
@@ -136,7 +141,7 @@ class Doc_Message
         next
       end
       # Draw text
-      @contents.draw_text(HORIZ_MARGIN + x, VERT_MARGIN + (y + 1) * 24 - spacesize.height, 40, 24, c)
+      @contents.draw_text(HORIZ_MARGIN + x, VERT_MARGIN + (y + 1) * 18 - spacesize.height, 40, 18, c)
       # Add x to drawn text width
       x += @contents.text_size(c).width
     end
@@ -148,8 +153,8 @@ class Doc_Message
   def update
     # Handle fade-out effect
     if @fade_out
-      @sprite_text.opacity -= 15
-      @sprite_bg.opacity -= 17
+      @sprite_text.opacity -= 18
+      @sprite_bg.opacity -= 22
       if @sprite_text.opacity <= 0
         @sprite_text.opacity = 0
         @sprite_bg.opacity = 0
@@ -162,11 +167,11 @@ class Doc_Message
 
     # Handle fade-in effect
     if @fade_in
-      @sprite_text.opacity += 15
-      @sprite_bg.opacity += 17
-      if @sprite_text.opacity >= 150
-        @sprite_text.opacity = 150
-        @sprite_bg.opacity = 170
+      @sprite_text.opacity += 18
+      @sprite_bg.opacity += 22
+      if @sprite_text.opacity >= 180
+        @sprite_text.opacity = 180
+        @sprite_bg.opacity = 220
         @fade_in = false
         $game_temp.message_window_showing = true
       end
