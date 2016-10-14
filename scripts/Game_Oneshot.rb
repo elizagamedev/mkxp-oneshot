@@ -10,12 +10,7 @@ class Game_Oneshot
     if $GDC
       @player_name = ''
     else
-      user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
-      if user_name[0].casecmp('the') == 0 || user_name[0].casecmp('a') == 0
-        @player_name = user_name.join(' ')
-      else
-        @player_name = user_name[0]
-      end
+      @player_name = Game_Oneshot.get_user_name
     end
     @lights = {}
     @plight_timer = nil
@@ -32,5 +27,13 @@ module Wallpaper
   def reset_persistent
     $game_oneshot.wallpaper = nil
     Wallpaper.reset
+  end
+  def self.get_user_name
+    user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
+    if user_name[0].casecmp('the') == 0 || user_name[0].casecmp('a') == 0
+      return user_name.join(' ')
+    else
+      return user_name[0]
+    end
   end
 end
