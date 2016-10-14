@@ -460,6 +460,9 @@ class Scene_Map
   def new_footprint(direction, x, y)
     @spriteset.new_footprint(direction, x, y)
   end
+  def new_footsplash(direction, x, y)
+    @spriteset.new_footsplash(direction, x, y)
+  end
   def menu_open?
     @menu.visible || @item_menu.visible
   end

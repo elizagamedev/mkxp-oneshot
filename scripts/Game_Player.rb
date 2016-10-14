@@ -268,5 +268,6 @@ class Game_Player < Game_Character
       vol = 70 + rand(20)
       Audio.se_play("Audio/SE/#{name}.wav", (vol * volume).to_i, pitch.to_i)
     end
+    emit_footsplash(@direction)
   end
 end
