@@ -197,7 +197,8 @@ SOURCES += \
     binding-mri/steam-binding.cpp \
     src/xdg-user-dir-lookup.c \
     src/screen.cpp \
-    binding-mri/screen-binding.cpp
+    binding-mri/screen-binding.cpp \
+    binding-mri/wallpaper-binding.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h

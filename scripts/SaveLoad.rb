@@ -79,6 +79,10 @@ def real_load
     # Switch to map screen
     $scene = Scene_Map.new
     $game_temp.common_event_id = 42
+    # Set wallpaper if necessary
+    if $game_oneshot.wallpaper
+      Wallpaper.set $game_oneshot.wallpaper
+    end
 end
 
 def save_exists

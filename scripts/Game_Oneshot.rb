@@ -4,6 +4,7 @@ class Game_Oneshot
   #--------------------------------------------------------------------------
   attr_accessor :player_name              # map music (for battle memory)
   attr_accessor :plight_timer             # start of plight's plight
+  attr_accessor :wallpaper                # the wallpaper that we should use
 
   def initialize
     if $GDC
@@ -18,5 +19,18 @@ class Game_Oneshot
     end
     @lights = {}
     @plight_timer = nil
+    @wallpaper = nil
+  end
+end
+
+module Wallpaper
+  def set_persistent(name)
+    $game_oneshot.wallpaper = name
+    Wallpaper.set(name)
+  end
+
+  def reset_persistent
+    $game_oneshot.wallpaper = nil
+    Wallpaper.reset
   end
 end

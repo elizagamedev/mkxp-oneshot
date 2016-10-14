@@ -74,6 +74,7 @@ void graphicsBindingInit();
 void fileIntBindingInit();
 
 void screenBindingInit();
+void wallpaperBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
 
@@ -106,6 +107,7 @@ static void mriBindingInit()
 
 	fileIntBindingInit();
 	screenBindingInit();
+	wallpaperBindingInit();
 	oneshotBindingInit();
 	steamBindingInit();
 
