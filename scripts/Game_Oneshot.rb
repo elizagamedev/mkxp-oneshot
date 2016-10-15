@@ -16,18 +16,6 @@ class Game_Oneshot
     @plight_timer = nil
     @wallpaper = nil
   end
-end
-
-module Wallpaper
-  def set_persistent(name)
-    $game_oneshot.wallpaper = name
-    Wallpaper.set(name)
-  end
-
-  def reset_persistent
-    $game_oneshot.wallpaper = nil
-    Wallpaper.reset
-  end
   def self.get_user_name
     user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
     if user_name[0].casecmp('the') == 0 || user_name[0].casecmp('a') == 0
@@ -35,5 +23,17 @@ module Wallpaper
     else
       return user_name[0]
     end
+  end
+end
+
+module Wallpaper
+  def self.set_persistent(name)
+    $game_oneshot.wallpaper = name
+    Wallpaper.set(name)
+  end
+
+  def self.reset_persistent
+    $game_oneshot.wallpaper = nil
+    Wallpaper.reset
   end
 end
