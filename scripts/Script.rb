@@ -31,6 +31,19 @@ module Script
     return false
   end
 
+  def self.fix_footsplashes(xDelta, yDelta)
+    $scene.fix_footsplashes(xDelta, yDelta)
+  end
+
+  def self.move_player_relative(x, y)
+    $game_player.x += x
+    $game_player.y += y
+    $game_player.real_x += x * 4 * 32
+    $game_player.real_y += y * 4 * 32
+    $game_map.display_x += x * 4 * 32
+    $game_map.display_y += y * 4 * 32
+  end
+
   def self.eve_x(name)
     for event in $game_map.events.values
       if event.name == name

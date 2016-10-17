@@ -354,4 +354,10 @@ class Spriteset_Map
   def new_footsplash(direction, x, y)
     @footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)
   end
+  def fix_footsplashes(x, y)
+    for footprint in @footprint_sprites
+      footprint.correctX(x)
+      footprint.correctY(y)
+    end
+  end
 end

@@ -25,4 +25,11 @@ class Sprite_Footprint < Sprite
       dispose
     end
   end
+
+  def correctX(xDelta)
+    @real_x += xDelta*4*32
+  end
+  def correctY(yDelta)
+    @real_y += yDelta*4*32
+  end
 end

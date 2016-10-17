@@ -2,17 +2,28 @@ class Sprite_Footsplash < Sprite
   def initialize(viewport, direction, x, y)
 
     super(viewport)
-    y = y + 1
+    y = y + 2
     @direction = direction
     @real_x = x * 4 * 32
     @real_y = y * 4 * 32
 
-    self.zoom_x = 1
-    self.zoom_y = 1
-    self.ox = 48
-    self.oy = 96
+    case direction
+    when 2
+      @real_y -= 32
+    when 4
+      @real_x += 32
+    when 6
+      @real_x -= 32
+    when 8
+      @real_y += 32
+    end
+
+    self.zoom_x = 2
+    self.zoom_y = 2
+    self.ox = 40
+    self.oy = 80
     self.bitmap = RPG::Cache.misc('foot_splash')
-    self.src_rect.set(0, 0, 96, 96)
+    self.src_rect.set(0, 0, 80, 80)
     update
   end
 
@@ -23,12 +34,19 @@ class Sprite_Footsplash < Sprite
     self.y = (@real_y - $game_map.display_y + 3) / 4 + 32
 
     self.opacity -= 6
-    frameIndex = 12 - (self.opacity / 21)
+    frameIndex = 20 - (self.opacity / 13)
     frameX = frameIndex % 4
     frameY = frameIndex / 4
-    self.src_rect.set(96*frameX, 96*frameY, 96, 96)
+    self.src_rect.set(80*frameX, 80*frameY, 80, 80)
     if self.opacity == 0
       dispose
     end
+  end
+
+  def correctX(xDelta)
+    @real_x += xDelta*4*32
+  end
+  def correctY(yDelta)
+    @real_y += yDelta*4*32
   end
 end
