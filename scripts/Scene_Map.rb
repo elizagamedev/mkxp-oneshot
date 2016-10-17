@@ -89,8 +89,16 @@ class Scene_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    if Input.quit? && $game_map.map_id == 97
-      $game_temp.common_event_id = 33
+    if Input.quit?
+      # put in dialogue boxes here for player
+      # either telling them they can't quit during a cutscene
+      # or telling them they're saving and quitting
+      if $game_system.map_interpreter.running?
+        EdText.info("You cannot perform this action during cutscenes.")
+        return
+      else
+        $game_temp.common_event_id = 35
+      end
     end
     # Loop
     loop do
@@ -100,6 +108,9 @@ class Scene_Map
       # to run any event, and the player isn't provided the opportunity to
       # move in an instant)
       $game_map.update
+      if $scene == nil
+        return
+      end
       $game_system.map_interpreter.update
       $game_player.update if !@menu.visible && !@item_menu.visible && !@fast_travel.visible
       $game_followers.each{|f| f.update}
@@ -462,6 +473,9 @@ class Scene_Map
   end
   def new_footsplash(direction, x, y)
     @spriteset.new_footsplash(direction, x, y)
+  end
+  def fix_footsplashes(xDelt, yDelt)
+    @spriteset.fix_footsplashes(xDelt, yDelt)
   end
   def menu_open?
     @menu.visible || @item_menu.visible
