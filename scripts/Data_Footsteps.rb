@@ -52,10 +52,14 @@ FOOTSTEP_SFX = [
   ['step_gravel',
    'step_wood'],
   # Tower
-  [],
+  ['step_splash',
+  'step_tile_soft'],
+  # Start Tower
+  ['step_wood'],
 ]
 
 FOOTSTEP_AMT = {
   'step_metal' => 4,
   'step_tile' => 4,
+  'step_tile_soft' => 4
 }
