@@ -216,7 +216,7 @@ def blue_ambient
 end
 
 def house_ambient
-  ambient(-30, -30, -30)
+  ambient(-15, -15, -15)
 end
 
 # Travel
