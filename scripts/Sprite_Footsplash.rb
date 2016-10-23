@@ -18,6 +18,8 @@ class Sprite_Footsplash < Sprite
       @real_y += 32
     end
 
+    @real_y += 48
+
     self.zoom_x = 2
     self.zoom_y = 2
     self.ox = 40
