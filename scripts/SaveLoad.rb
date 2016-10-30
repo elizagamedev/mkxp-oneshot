@@ -92,5 +92,6 @@ end
 def quit_game_bed
   $game_system.map_interpreter.index += 1
   save
+  $game_system.map_interpreter.index -= 1
   $scene = nil
 end
