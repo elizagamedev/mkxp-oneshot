@@ -3,6 +3,9 @@
 #include "sharedstate.h"
 #include "binding-util.h"
 #include "binding-types.h"
+#include "eventthread.h"
+
+#include <SDL.h>
 
 RB_METHOD(oneshotSetYesNo)
 {
@@ -48,6 +51,21 @@ RB_METHOD(oneshotAllowExit)
 	return Qnil;
 }
 
+RB_METHOD(oneshotShake)
+{
+	RB_UNUSED_PARAM;
+	int absx, absy;
+	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
+	srand(time(NULL));
+	for (int i = 0; i < 60; ++i) {
+		int max = 60 - i;
+		int x = rand() % (max * 2) - max;
+		int y = rand() % (max * 2) - max;
+		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
+	}
+	return Qnil;
+}
+
 void oneshotBindingInit()
 {
     VALUE module = rb_define_module("Oneshot");
@@ -69,4 +87,5 @@ void oneshotBindingInit()
 	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
 	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
+	_rb_define_module_function(module, "shake", oneshotShake);
 }

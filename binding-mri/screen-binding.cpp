@@ -13,7 +13,7 @@ static void start()
 	ipc.open("oneshot-pipe", Pipe::Write);
 
 	// Create process
-#ifdef _WIN32
+#if defined _WIN32
 	WCHAR path[MAX_PATH];
 	WCHAR gameFolder[MAX_PATH];
 	MultiByteToWideChar(CP_UTF8, 0, shState->config().gameFolder.c_str(), -1, gameFolder, MAX_PATH);
@@ -28,7 +28,7 @@ static void start()
 	CreateProcessW(path, args, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	delete [] args;
 #else
-#ifdef linux
+#if defined __linux
 	char path[PATH_MAX];
 	ssize_t len = readlink("/proc/self/exe", path, PATH_MAX);
 	if (len == -1)
