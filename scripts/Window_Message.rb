@@ -119,12 +119,13 @@ class Window_Message < Window_Selectable
       spacewidth = self.contents.text_size(' ').width
       text.split("\n").each do |line|
         line.split(' ').each do |word|
-          if word.start_with?('\003')
-            #ignore new facepics
-            next
-          end
+
           # Get width of this word and insert a newline if it goes out of bounds
           width = self.contents.text_size(word.gsub(/(\000\[[0-9]+\]|\001|\002)/, '')).width
+          if word.include?("\003")
+            #ignore new facepics
+            width = 0
+          end
           if x + width > maxwidth
             @text << "\n"
             x = 0
