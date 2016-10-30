@@ -11,7 +11,7 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_101
     # If other text has been set to message_text
-    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil || $game_temp.message_desktop_text != nil
+    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil || $game_temp.message_desktop_text != nil || $game_temp.message_credits_text != nil
       # End
       return false
     end
@@ -22,6 +22,8 @@ class Interpreter
     if text.start_with?('$')
       is_doc = true
       text.slice!(0)
+    elsif text.start_with?('@credits')
+      is_credits = true
     else
       is_doc = false
     end
@@ -30,12 +32,15 @@ class Interpreter
       if @list[@index+1].code == 401
         @index += 1
         text << " " << @list[@index].parameters[0].rstrip
-      elsif @list[@index+1].code == 101 && is_doc
+      elsif @list[@index+1].code == 101 && (is_doc || is_credits)
         # 101: Another message box
         # Tack on if we're a doc
         new_text = @list[@index+1].parameters[0].strip
         if new_text.start_with?('$')
           text << "\n\n" << new_text[1..-1]
+          @index += 1
+        elsif  new_text.start_with?('@credits')
+          text << new_text[9..-1]
           @index += 1
         else
           break
@@ -71,12 +76,19 @@ class Interpreter
       if face == 'ed'
         is_desktop = false
         is_ed = true
+        is_credits = false
       elsif face == 'desktop'
         is_desktop = true
         is_ed = false
+        is_credits = false
+      elsif face == 'credits'
+        is_desktop = false
+        is_ed = false
+        is_credits = true
       else
         is_desktop = false
         is_ed = false
+        is_credits = false
         $game_temp.message_face = face
       end
 
@@ -98,6 +110,8 @@ class Interpreter
         $game_temp.message_doc_text = text
       elsif is_desktop
         $game_temp.message_desktop_text = text
+      elsif is_credits
+        $game_temp.message_credits_text = text
       else
         $game_temp.message_text = text
       end

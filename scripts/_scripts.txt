@@ -121,6 +121,7 @@ SaveLoad
 Ed_Message
 Doc_Message
 Desktop_Message
+Credits_Message
 Particles
 
 Demo

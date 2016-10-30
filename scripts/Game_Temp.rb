@@ -19,6 +19,7 @@ class Game_Temp
   attr_accessor :message_ed_text          # Ed message text
   attr_accessor :message_doc_text         # Text message text
   attr_accessor :message_desktop_text     # Desktop message text
+  attr_accessor :message_credits_text     # Desktop message text
   attr_accessor :choices                  # show choices: text
   attr_accessor :choice_cancel_type       # show choices: cancel
   attr_accessor :choice_proc              # show choices: callback (Proc)
@@ -61,6 +62,7 @@ class Game_Temp
   attr_accessor :debug_index              # debug screen: for saving conditions
   attr_accessor :footstep_sfx             # current footstep sfx array
   attr_accessor :filmsprite               # film puzzle sprite
+  attr_accessor :prompt_wait              # wait for delay caused by prompt
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -116,6 +118,7 @@ class Game_Temp
     @debug_index = 0
     @footstep_sfx = nil
     @filmsprite = nil
+    @prompt_wait = 0
   end
 
   def bgm_fadein(game_system)

@@ -16,6 +16,7 @@ class Scene_Map
     @ed_message = Ed_Message.new
     @doc_message = Doc_Message.new
     @desktop_message = Desktop_Message.new
+    @credits_message = Credits_Message.new
     # Make menus
     @menu = Window_MainMenu.new
     @item_menu = Window_Item.new
@@ -70,6 +71,7 @@ class Scene_Map
     @ed_message.dispose
     @doc_message.dispose
     @desktop_message.dispose
+    @credits_message.dispose
     # Dispose of menu
     @menu.dispose
     @item_menu.dispose
@@ -102,6 +104,10 @@ class Scene_Map
     end
     # Loop
     loop do
+      if $game_temp.prompt_wait > 0
+        $game_temp.prompt_wait -= 1
+        return
+      end
       $game_temp.bgm_fadein($game_system)
       # Update map, interpreter, and player order
       # (this update order is important for when conditions are fulfilled
@@ -135,6 +141,7 @@ class Scene_Map
     @ed_message.update
     @doc_message.update
     @desktop_message.update
+    @credits_message.update
     # Deactivate item
     if Input.trigger?(Input::DEACTIVATE) && $game_variables[1] > 0
       $game_system.se_play($data_system.cancel_se)
@@ -142,7 +149,7 @@ class Scene_Map
     end
 
     # Update the menu
-    if @message_window.visible || @ed_message.visible || @doc_message.visible || @desktop_message.visible
+    if @message_window.visible || @ed_message.visible || @doc_message.visible || @desktop_message.visible || @credits_message.visible
       @item_menu_refresh = true
     else
       if @item_menu_refresh
@@ -226,7 +233,7 @@ class Scene_Map
     # Update fast travel
     @fast_travel.update
     # If showing message window
-    if $game_temp.message_window_showing || @ed_message.visible || @doc_message.visible || @desktop_message.visible
+    if $game_temp.message_window_showing || @ed_message.visible || @doc_message.visible || @desktop_message.visible || @credits_message.visible
       return
     end
     # Process menu opening
