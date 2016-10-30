@@ -1,6 +1,7 @@
 FOOTSTEP_SFX = [
   # Start
-  ['step_wood'],
+  ['step_wood',
+   'step_tile'],
   # Blue
   ['step_gravel',
    'step_wood'],
@@ -26,7 +27,7 @@ FOOTSTEP_SFX = [
   # Tower Start
   [],
   # Blank
-  [],
+  ['step_tile'],
   # Blue Factory Interior
   [['step_metal', 0.5]],
   # Red Ground
@@ -55,7 +56,8 @@ FOOTSTEP_SFX = [
   ['step_splash',
   'step_tile_soft'],
   # Start Tower
-  ['step_wood'],
+  ['step_wood',
+   'step_tile'],
 ]
 
 FOOTSTEP_AMT = {
