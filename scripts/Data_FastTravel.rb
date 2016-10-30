@@ -23,6 +23,7 @@ class FastTravel
       :forest => tr("forest"),
       :wall => tr("the gate"),
       :dock => tr("dock"),
+      :courtyard => tr("courtyard"),
     }),
     :blue => Zone.new(tr("The Barrens"), {
       :entrance => tr("entrance"),
