@@ -9,7 +9,15 @@ class FastTravel
   end
 
   ZONES = {
+    :red_ground => Zone.new(tr("The Refuge (Surface)"), {
+      :ground1 => tr("elevator street"),
+      :ground2 => tr("vendor street"),
+      :backalley => tr("back alley"),
+      :library => tr("library"),
+      :factory => tr("factory"),
+    }),
     :red => Zone.new(tr("The Refuge"), {
+      :garden => tr("garden"),
       :gate => tr("city gate"),
       :elevator => tr("elevator deck"),
       :apartments => tr("apartments"),
