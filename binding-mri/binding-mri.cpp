@@ -73,8 +73,9 @@ void graphicsBindingInit();
 
 void fileIntBindingInit();
 
-void screenBindingInit();
+void journalBindingInit();
 void wallpaperBindingInit();
+void nikoBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
 
@@ -106,8 +107,9 @@ static void mriBindingInit()
 	graphicsBindingInit();
 
 	fileIntBindingInit();
-	screenBindingInit();
+	journalBindingInit();
 	wallpaperBindingInit();
+	nikoBindingInit();
 	oneshotBindingInit();
 	steamBindingInit();
 

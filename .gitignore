@@ -3,13 +3,16 @@
 *.bak
 *.xxd
 *.exe
+*.bmp
 
 /Makefile*
 
 /oneshot
 /steamshim_parent/steamshim
 
-/build
+/build*
+/debug
+/release
 
 object_script.*
 rpgscript.bat

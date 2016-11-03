@@ -55,6 +55,7 @@ unix {
 	!macx: {
 		PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
+		SOURCES += src/xdg-user-dir-lookup.c
 	}
 }
 
@@ -154,7 +155,7 @@ HEADERS += \
 	src/rgssad.h \
 	src/sdl-util.h \
 	src/oneshot.h \
-    src/pipe.h
+	src/pipe.h
 
 SOURCES += \
 	src/main.cpp \
@@ -194,11 +195,8 @@ SOURCES += \
 	src/rgssad.cpp \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
-    binding-mri/steam-binding.cpp \
-    src/xdg-user-dir-lookup.c \
-    src/screen.cpp \
-    binding-mri/screen-binding.cpp \
-    binding-mri/wallpaper-binding.cpp
+	src/screen.cpp \
+    binding-mri/journal-binding.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h
@@ -293,7 +291,10 @@ BINDING_MRI {
 	binding-mri/audio-binding.cpp \
 	binding-mri/module_rpg.cpp \
 	binding-mri/filesystem-binding.cpp \
-	binding-mri/oneshot-binding.cpp
+	binding-mri/oneshot-binding.cpp \
+	binding-mri/steam-binding.cpp \
+	binding-mri/wallpaper-binding.cpp \
+	binding-mri/niko-binding.cpp
 }
 
 OTHER_FILES += $$EMBED
