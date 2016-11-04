@@ -28,8 +28,8 @@ RB_METHOD(nikoStart)
 	WCHAR args[MAX_PATH];
 	GetModuleFileNameW(NULL, path, MAX_PATH);
 	PathRemoveFileSpecW(path);
-	wcscat(path, L"\\journal.exe");
-	wsprintfW(args, L"journal.exe %d %d", pos.x, pos.y);
+	wcscat(path, L"\\___.exe");
+	wsprintfW(args, L"___.exe %d %d", pos.x, pos.y);
 	STARTUPINFOW si;
 	memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
