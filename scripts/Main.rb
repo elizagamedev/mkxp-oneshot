@@ -6,7 +6,7 @@
 
 at_exit do
   Wallpaper.reset
-  save unless ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
+  save unless $game_switches[99] || ($game_system.map_interpreter.running? || !$scene.is_a?(Scene_Map))
 end
 
 begin
