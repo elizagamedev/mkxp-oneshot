@@ -135,6 +135,18 @@ module Script
     $game_temp.target_bgm_vol_level = target
     $game_temp.bgm_fadein_speed = speed
   end
+
+  def self.copy_journal
+    Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games")
+    Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games\\Oneshot") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games\\Oneshot")
+    File.open("_______.exe", "rb") do |input|
+      File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\_______.exe","wb") do |output|
+        while buff = input.read(4096)
+          output.write(buff)
+        end
+      end
+    end
+  end
 end
 
 def has_lightbulb?
