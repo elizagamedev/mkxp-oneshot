@@ -1,4 +1,6 @@
 #include <winuser.h>
+MAINICON ICON "icon.ico"
+
 NIKO1 BITMAP "niko1.bmp"
 NIKO2 BITMAP "niko2.bmp"
 NIKO3 BITMAP "niko3.bmp"
@@ -27,3 +29,9 @@ c4 BITMAP "c4.bmp"
 c5 BITMAP "c5.bmp"
 c6 BITMAP "c6.bmp"
 c7 BITMAP "c7.bmp"
+s1 BITMAP "s1.bmp"
+s2 BITMAP "s2.bmp"
+s3 BITMAP "s3.bmp"
+s4 BITMAP "s4.bmp"
+save BITMAP "save.bmp"
+final BITMAP "final.bmp"

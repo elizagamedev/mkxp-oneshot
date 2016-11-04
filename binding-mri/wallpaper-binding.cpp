@@ -22,7 +22,8 @@ RB_METHOD(wallpaperSet)
 {
 	RB_UNUSED_PARAM;
 	const char *imageName;
-	rb_get_args(argc, argv, "z", &imageName RB_ARG_END);
+	int color;
+	rb_get_args(argc, argv, "zi", &imageName, &color RB_ARG_END);
 	std::string imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".bmp";
 #ifdef _WIN32
 	// Crapify the slashes
@@ -41,7 +42,6 @@ RB_METHOD(wallpaperSet)
 
 
 	int colorId = COLOR_BACKGROUND;
-	int color = 0x1a041f;
 	WCHAR zero[2] = L"0";
 	DWORD zeroSize = 4;
 

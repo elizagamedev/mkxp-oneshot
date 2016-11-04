@@ -7,6 +7,6 @@ SOURCES += main.cpp \
     niko.cpp \
     journal.cpp
 
-LIBS += -lgdi32
+LIBS += -lgdi32 -lshlwapi
 
 RC_FILE = resources.rc

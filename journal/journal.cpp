@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <shlwapi.h>
+#include <shlobj.h>
 
 #define DEFAULT_WIDTH 800
 #define DEFAULT_HEIGHT 600
@@ -93,7 +95,15 @@ int do_journal()
     // Create
     HINSTANCE module = GetModuleHandleW(NULL);
 
-    loadImage("default");
+	// Default image
+	WCHAR save_path[MAX_PATH];
+	SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, 0, save_path);
+	wcscat(save_path, L"\\My Games\\Oneshot\\progress.oneshot");
+	if (PathFileExistsW(save_path)) {
+		loadImage("save");
+	} else {
+		loadImage("default");
+	}
 
     // Initial image
     char message[IN_BUFFER_SIZE];
@@ -132,7 +142,7 @@ int do_journal()
     if (!RegisterClassEx(&wc))
         return 1;
 
-    if (!(window = CreateWindowExW(WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TOPMOST,
+    if (!(window = CreateWindowExW(WS_EX_COMPOSITED | WS_EX_LAYERED,
                                    journal_classname,
                                    L"",
                                    WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX),

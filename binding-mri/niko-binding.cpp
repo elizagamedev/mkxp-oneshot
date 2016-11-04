@@ -16,7 +16,7 @@ RB_METHOD(nikoStart)
 	RB_UNUSED_PARAM;
 	// Calculate where to stick the window
 	POINT pos;
-	pos.x = (9 * 16 - 4) * 2;
+	pos.x = 320 - 16;
 	pos.y = (13 * 16) * 2;
 	SDL_SysWMinfo syswindow;
 	SDL_VERSION(&syswindow.version);
@@ -28,8 +28,8 @@ RB_METHOD(nikoStart)
 	WCHAR args[MAX_PATH];
 	GetModuleFileNameW(NULL, path, MAX_PATH);
 	PathRemoveFileSpecW(path);
-	wcscat(path, L"\\___.exe");
-	wsprintfW(args, L"___.exe %d %d", pos.x, pos.y);
+	wcscat(path, L"\\_______.exe");
+	wsprintfW(args, L"_______.exe %d %d", pos.x, pos.y);
 	STARTUPINFOW si;
 	memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
