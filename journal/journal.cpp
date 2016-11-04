@@ -70,7 +70,7 @@ DWORD WINAPI ipc_thread(LPVOID lpParam)
                     && len == IN_BUFFER_SIZE)
             {
                 WaitForSingleObject(image_mutex, INFINITE);
-                if (strcmp(message, "default") == 0) {
+                if (*message == 0) {
                     exit(0);
                 }
                 loadImage(message);
@@ -109,7 +109,8 @@ int do_journal()
         if (ReadFile(pipe, (void*)message, IN_BUFFER_SIZE, &len, NULL)
                 && len == IN_BUFFER_SIZE)
         {
-            loadImage(message);
+            if (*message)
+                loadImage(message);
         }
         CloseHandle(pipe);
     }

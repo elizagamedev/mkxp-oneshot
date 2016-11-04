@@ -11,6 +11,7 @@ static SDL_Thread *thread = NULL;
 static SDL_mutex *mutex = NULL;
 static volatile char message_buffer[OUT_BUFFER_SIZE];
 static volatile int message_len = 0;
+static volatile bool active = false;
 
 int server_thread(void *data)
 {
@@ -27,6 +28,7 @@ int server_thread(void *data)
 		ConnectNamedPipe(pipe, NULL);
 		SDL_LockMutex(mutex);
 		WriteFile(pipe, (const void*)message_buffer, OUT_BUFFER_SIZE, NULL, NULL);
+		active = true;
 		SDL_UnlockMutex(mutex);
 		FlushFileBuffers(pipe);
 		DisconnectNamedPipe(pipe);
@@ -59,6 +61,7 @@ RB_METHOD(journalSet)
 	message_len = len;
 	SDL_UnlockMutex(mutex);
 	if (pipe != INVALID_HANDLE_VALUE) {
+		active = true;
 		WriteFile(pipe, (const void*)message_buffer, OUT_BUFFER_SIZE, NULL, NULL);
 		FlushFileBuffers(pipe);
 		CloseHandle(pipe);
@@ -67,10 +70,16 @@ RB_METHOD(journalSet)
 	return Qnil;
 }
 
+RB_METHOD(journalActive)
+{
+	return active ? Qtrue : Qfalse;
+}
+
 void journalBindingInit()
 {
 	mutex = SDL_CreateMutex();
 
 	VALUE module = rb_define_module("Journal");
 	_rb_define_module_function(module, "set", journalSet);
+	_rb_define_module_function(module, "active?", journalActive);
 }
