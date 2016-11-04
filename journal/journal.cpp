@@ -98,7 +98,7 @@ int do_journal()
 	// Default image
 	WCHAR save_path[MAX_PATH];
 	SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, 0, save_path);
-	wcscat(save_path, L"\\My Games\\Oneshot\\progress.oneshot");
+	wcscat(save_path, L"\\My Games\\Oneshot\\save_progress.oneshot");
 	if (PathFileExistsW(save_path)) {
 		loadImage("save");
 	} else {

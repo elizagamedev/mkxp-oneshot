@@ -5,7 +5,7 @@
 *.exe
 *.bmp
 
-/Makefile*
+Makefile*
 
 /oneshot
 /steamshim_parent/steamshim
