@@ -157,7 +157,7 @@ int do_journal()
     ShowWindow(window, SW_SHOWNOACTIVATE);
     UpdateWindow(window);
 
-    image_mutex = CreateMutexW(NULL, NULL, NULL);
+    image_mutex = CreateMutexW(NULL, FALSE, NULL);
     HANDLE thread = CreateThread(NULL, 0, ipc_thread, NULL, 0, NULL);
 
     // Dispatch messages
