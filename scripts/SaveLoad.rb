@@ -81,7 +81,7 @@ def real_load
     $game_temp.common_event_id = 42
     # Set wallpaper if necessary
     if $game_oneshot.wallpaper
-      Wallpaper.set $game_oneshot.wallpaper
+      Wallpaper.set $game_oneshot.wallpaper, $gamme_oneshot.wallpaper_color
     end
 end
 
