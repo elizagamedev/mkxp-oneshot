@@ -173,25 +173,25 @@ class Window_Selectable < Window_Base
         end
       end
       # If R button was pressed
-      if Input.repeat?(Input::R)
-        # If bottom row being displayed is more to front than bottom data row
-        if self.top_row + (self.page_row_max - 1) < (self.row_max - 1)
-          # Move cursor 1 page back
-          $game_system.se_play($data_system.cursor_se)
-          @index = [@index + self.page_item_max, @item_max - 1].min
-          self.top_row += self.page_row_max
-        end
-      end
+      #if Input.repeat?(Input::R)
+      #  # If bottom row being displayed is more to front than bottom data row
+      #  if self.top_row + (self.page_row_max - 1) < (self.row_max - 1)
+      #    # Move cursor 1 page back
+      #    $game_system.se_play($data_system.cursor_se)
+      #    @index = [@index + self.page_item_max, @item_max - 1].min
+      #    self.top_row += self.page_row_max
+      #  end
+      #end
       # If L button was pressed
-      if Input.repeat?(Input::L)
-        # If top row being displayed is more to back than 0
-        if self.top_row > 0
-          # Move cursor 1 page forward
-          $game_system.se_play($data_system.cursor_se)
-          @index = [@index - self.page_item_max, 0].max
-          self.top_row -= self.page_row_max
-        end
-      end
+      #if Input.repeat?(Input::L)
+      #  # If top row being displayed is more to back than 0
+      #  if self.top_row > 0
+      #    # Move cursor 1 page forward
+      #    $game_system.se_play($data_system.cursor_se)
+      #    @index = [@index - self.page_item_max, 0].max
+      #    self.top_row -= self.page_row_max
+      #  end
+      #end
     end
     # Update help text (update_help is defined by the subclasses)
     if self.active and @help_window != nil
