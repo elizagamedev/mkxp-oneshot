@@ -11,6 +11,7 @@ module Item
     [11, 18] => 103, # empty bottle + crowbar => can't combine
     [11, 19] => 103, # empty bottle + pipe => can't combine
     [25, 26] => 30, # feather + ink bottle => pen
+    [27, 56] => 57, # tube of water + water pill => miracle water
     [32, 36] => 33, # button + magnets => magnetized button
     [37, 38] => 32, # tin + scissors => button
     [36, 37] => 100, # tin + magnets => can't combine
