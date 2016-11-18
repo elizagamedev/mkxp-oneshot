@@ -41,17 +41,17 @@ class Window_Base < Window
     when 0
       return Color.new(255, 255, 255, 255)
     when 1
-      return Color.new(255, 128, 128, 255)
+      return Color.new(255, 64, 64, 255)
     when 2
-      return Color.new(128, 255, 128, 255)
+      return Color.new(0, 224, 0, 255)
     when 3
-      return Color.new(255, 255, 128, 255)
+      return Color.new(255, 255, 0, 255)
     when 4
-      return Color.new(128, 128, 255, 255)
+      return Color.new(64, 64, 255, 255)
     when 5
-      return Color.new(255, 128, 255, 255)
+      return Color.new(255, 64, 255, 255)
     when 6
-      return Color.new(128, 255, 255, 255)
+      return Color.new(64, 255, 255, 255)
     when 7
       return Color.new(128, 128, 128, 255)
     else
