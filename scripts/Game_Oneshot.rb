@@ -4,6 +4,7 @@ class Game_Oneshot
   #--------------------------------------------------------------------------
   attr_accessor :player_name              # map music (for battle memory)
   attr_accessor :plight_timer             # start of plight's plight
+  attr_accessor :bruteforce_start         # when the bruteforce_timer is started
   attr_accessor :wallpaper                # the wallpaper that we should use
   attr_accessor :wallpaper_color          # the wallpaper color
 
@@ -16,6 +17,7 @@ class Game_Oneshot
     @lights = {}
     @plight_timer = nil
     @wallpaper = nil
+    @bruteforce_start = nil
   end
   def self.get_user_name
     user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)

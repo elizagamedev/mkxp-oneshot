@@ -31,6 +31,50 @@ module Script
     return false
   end
 
+  def self.start_bruteforce
+    $game_oneshot.bruteforce_start = Graphics.frame_count
+  end
+
+  def self.check_bruteforce
+    if($game_oneshot.bruteforce_start == nil)
+      $game_oneshot.bruteforce_start = Graphics.frame_count
+    end
+    time_passed = Graphics.frame_count - $game_oneshot.bruteforce_start
+    if(time_passed > (2 * 60 * 63014))
+      return true
+    else
+      return false
+    end
+  end
+
+  def self.skip_bruteforce
+    $game_oneshot.bruteforce_start -= 62800*2*60
+  end
+
+  def self.lose_all_items
+    for i in 1..99
+      $game_party.lose_item(i, 99)
+    end
+  end
+
+  def self.bruteforce_vars
+    if($game_oneshot.bruteforce_start == nil)
+      $game_oneshot.bruteforce_start = Graphics.frame_count
+    end
+    time_passed = Graphics.frame_count - $game_oneshot.bruteforce_start
+    counts_tried = time_passed / (2 * 60)
+    digit1 = counts_tried % 10;
+    digit2 = ((counts_tried % 100) - digit1) / 10
+    digit3 = ((counts_tried % 1000) - (digit2 * 10) - digit1) / 100
+    digit4 = ((counts_tried % 10000) - (digit3 * 100) - (digit2 * 10) - digit1) / 1000
+    digit5 = ((counts_tried % 100000) - (digit4 * 1000) - (digit3 * 100) - (digit2 * 10) - digit1) / 10000
+    $game_variables[26] = digit5
+    $game_variables[27] = digit4
+    $game_variables[28] = digit3
+    $game_variables[29] = digit2
+    $game_variables[30] = digit1
+  end
+
   def self.fix_footsplashes(xDelta, yDelta)
     $scene.fix_footsplashes(xDelta, yDelta)
   end
@@ -147,6 +191,7 @@ module Script
       end
     end
   end
+
 end
 
 def has_lightbulb?
