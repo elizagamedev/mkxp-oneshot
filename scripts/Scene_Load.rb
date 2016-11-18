@@ -83,7 +83,7 @@ class Scene_Load < Scene_File
     $game_followers     = Marshal.load(file)
     $game_oneshot       = Marshal.load(file)
     $game_fasttravel    = Marshal.load(file)
-	$game_temp.footstep_sfx = Marshal.load(file)
+	  $game_temp.footstep_sfx = Marshal.load(file)
 
     # If magic number is different from when saving
     # (if editing was added with editor)
@@ -99,5 +99,6 @@ class Scene_Load < Scene_File
       f.leader = $game_player
       f.moveto($game_player.x, $game_player.y)
     end
+    load_perma_flags
   end
 end

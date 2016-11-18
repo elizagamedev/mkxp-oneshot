@@ -84,5 +84,6 @@ class Scene_Save < Scene_File
     Marshal.dump($game_oneshot, file)
     Marshal.dump($game_fasttravel, file)
     Marshal.dump($game_temp.footstep_sfx , file)
+    save_perma_flags
   end
 end
