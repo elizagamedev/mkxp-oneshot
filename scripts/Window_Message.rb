@@ -270,7 +270,10 @@ class Window_Message < Window_Selectable
         self.active = true
         self.contents.font.color = normal_color
         $game_temp.choices.each_with_index do |choice, i|
-          self.contents.draw_text(12, 24 * (@choice_start + i), self.contents.width, 24, choice.gsub!("\\p", $game_oneshot.player_name))
+          if choice != nil
+            choice.gsub!("\\p", $game_oneshot.player_name)
+          end
+          self.contents.draw_text(12, 24 * (@choice_start + i), self.contents.width, 24, choice)
         end
       elsif @number_start >= 0
         # Setup numbers
