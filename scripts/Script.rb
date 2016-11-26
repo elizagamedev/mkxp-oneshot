@@ -88,6 +88,12 @@ module Script
     $game_map.display_y += y * 4 * 32
   end
 
+  def self.move_player(x, y)
+    xDelta = x - $game_player.x
+	yDelta = y - $game_player.y
+    Script.move_player_relative(xDelta, yDelta)
+  end
+
   def self.eve_x(name)
     for event in $game_map.events.values
       if event.name == name
@@ -104,6 +110,71 @@ module Script
       end
     end
     return 0
+  end
+
+  def self.countdown_update
+    equinox = Time.new(2017, 03, 20)
+	diff = equinox - Time.now
+	if(diff < 0)
+	  diff = 0
+	end
+	seconds = diff % 60
+	minutes = ((diff - seconds)/ 60) % 60
+	hours = ((((diff - seconds)/ 60) - minutes) / 60) % 24
+	days = (((((diff - seconds)/ 60) - minutes) / 60) - hours) / 24
+	secs1 = seconds % 10
+	secs2 = (seconds - secs1) / 10
+	mins1 = minutes % 10
+	mins2 = (minutes - mins1) / 10
+	hrs1 = hours % 10
+	hrs2 = (hours - hrs1) / 10
+	dys1 = days % 10
+	dys2 = ((days - dys1) / 10) % 10
+	dys3 = ((days - dys1 - (dys2*10)) / 100) % 10
+	dys4 = ((days - dys1 - (dys2*10) - (dys3*100)) / 1000) % 10
+	secs1 = secs1.floor
+	change = false
+	if secs1 != $game_variables[101]
+	  $game_variables[101] = secs1
+	  change = true
+	end
+	if secs2 != $game_variables[102]
+	  $game_variables[102] = secs2
+	  change = true
+	end
+	if mins1 != $game_variables[103]
+	  $game_variables[103] = mins1
+	  change = true
+	end
+	if mins2 != $game_variables[104]
+	  $game_variables[104] = mins2
+	  change = true
+	end
+	if hrs1 != $game_variables[105]
+	  $game_variables[105] = hrs1
+	  change = true
+	end
+	if hrs2 != $game_variables[106]
+	  $game_variables[106] = hrs2
+	  change = true
+	end
+	if dys1 != $game_variables[107]
+	  $game_variables[107] = dys1
+	  change = true
+	end
+	if dys2 != $game_variables[108]
+	  $game_variables[108] = dys2
+	  change = true
+	end
+	if dys3 != $game_variables[109]
+	  $game_variables[109] = dys3
+	  change = true
+	end
+	if dys4 != $game_variables[110]
+	  $game_variables[110] = dys4
+	  change = true
+	end
+	return change
   end
 
   def self.niko_reflection_update
@@ -265,7 +336,7 @@ end
 
 # Map specific settings
 def green_ambient
-  ambient(-40, -40, -40)
+  ambient(-30, -20, -30)
 end
 
 def blue_ambient
