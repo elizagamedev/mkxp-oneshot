@@ -232,6 +232,16 @@ class Scene_Map
     end
     # Update fast travel
     @fast_travel.update
+	
+    if Input.trigger?(Input::F8)
+      if Graphics.fullscreen == true
+	    Graphics.fullscreen = false
+		$console = false
+	  else
+	    Graphics.fullscreen = true
+		$console = true
+	  end
+    end
     # If showing message window
     if $game_temp.message_window_showing || @ed_message.visible || @doc_message.visible || @desktop_message.visible || @credits_message.visible
       return
@@ -261,9 +271,6 @@ class Scene_Map
     if $debug and Input.press?(Input::F9)
       # Set debug calling flag
       $game_temp.debug_calling = true
-    end
-    if $GDC && Input.press?(Input::F8)
-      $game_temp.to_title = true
     end
     # If player is not moving
     unless $game_player.moving?

@@ -115,6 +115,15 @@ class Scene_Title
           update_cursor = true
         end
       end
+      if Input.trigger?(Input::F8)
+        if Graphics.fullscreen == true
+	      Graphics.fullscreen = false
+		  $console = false
+	    else
+	      Graphics.fullscreen = true
+		  $console = true
+	    end
+      end
       if update_cursor
         Audio.se_play('Audio/SE/title_cursor.wav', 40)
         @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 24 * @cursor_pos
