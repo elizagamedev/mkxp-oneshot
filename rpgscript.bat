@@ -1,2 +1,2 @@
-"C:\Ruby22-x64\bin\ruby.exe" rpgscript.rb "C:\Users\Michael\Documents\oneshot src\mkxp-oneshot\scripts" "C:\Users\Michael\Dropbox\Oneshot Project\Game"
+"C:\Ruby23\bin\ruby.exe" rpgscript.rb "C:\Users\GIR\Documents\oneshot scripts and stuff\mkxp-oneshot\scripts" "C:\Users\GIR\Dropbox\Oneshot Project\Game"
 pause
