@@ -70,6 +70,7 @@ class Credits_Message
     text = ''
     y = -1
     widths = []
+	right_widths = []
 
     # Pre-process text
     text_raw = $game_temp.message_credits_text.to_str
@@ -83,6 +84,8 @@ class Credits_Message
     end
     text_raw.gsub!("\\p", $game_oneshot.player_name)
     text_raw.gsub!("\\n", "\n")
+    text_raw.gsub!("\\l", "\005")
+    text_raw.gsub!("\\r", "\006")
     # Handle text-rendering escape sequences
     text_raw.gsub!(/\\c\[([0-9]+)\]/, "\000[\\1]")
     # Finally convert the backslash back
@@ -92,6 +95,7 @@ class Credits_Message
 
     # Now split text into lines by measuring text metrics
     x = y = 0
+	right_x = 0
     maxwidth = @contents.width - 8
     spacesize = @contents.text_size(' ')
     for i in text_raw.split(/ /)
@@ -102,19 +106,28 @@ class Credits_Message
         if newline
           text << "\n"
           widths << x
+		  right_widths << right_x
           x = 0
+		  right_x = 0
           y += 1
           @contents.font.size = 24
         else
           newline = true
         end
 
+		if j.start_with?("\006")
+		  right_x = 0
+		  x = 0
+		end
+
         # Get width of this word and see if it goes out of bounds
-        width = @contents.text_size(j.gsub(/\000\[[0-9]+\]/, '')).width
+        width = @contents.text_size(j.gsub(/\000\[[0-9]+\]/, '').gsub( "\005","").gsub( "\006","")).width
         if x + width > maxwidth
           text << "\n"
           widths << x
+		  right_widths << right_x
           x = 0
+		  right_x = 0
           y += 1
           @contents.font.size = 24
         end
@@ -126,9 +139,11 @@ class Credits_Message
           text << ' ' << j
         end
         x += width + spacesize.width
+		right_x += width
       end
     end
     widths << x
+	right_widths << right_x
 
     # Prepare renderer
     @contents.clear
@@ -165,6 +180,14 @@ class Credits_Message
         # go to next text
         next
       end
+	  if c == "\005"
+	    x = 16
+        next
+	  end
+	  if c == "\006"
+	    x = 320 - (right_widths[y] + 16)
+        next
+	  end
       # Draw text
       @contents.draw_text(x, y_top + (y * 24), 40, 18, c)
       # Add x to drawn text width
