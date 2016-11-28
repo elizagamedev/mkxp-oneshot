@@ -233,7 +233,7 @@ class Scene_Map
     # Update fast travel
     @fast_travel.update
 	
-    if Input.trigger?(Input::F8)
+    if Input.trigger?(Input::F8) && !$game_switches[123]
       if Graphics.fullscreen == true
 	    Graphics.fullscreen = false
 		$console = false
