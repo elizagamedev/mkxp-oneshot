@@ -20,9 +20,9 @@ class SpecialEventData
        [-2, -2], [-1, -2], [0, -2], [1, -2], [2, -2]] #bottom lower
     ),
     :smallpool => SpecialEventData.new(
-      [:bottom],
+      [],
       [[-1, 0], [0, 0], [1, 0],
-       [-1, -1], [0, -1], [1, -1]]
+       [-2, -1],[-1, -1], [0, -1], [1, -1],[2, -1]]
     ),
     :specialpool => SpecialEventData.new(
       [],
