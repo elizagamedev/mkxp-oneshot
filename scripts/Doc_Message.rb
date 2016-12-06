@@ -9,7 +9,11 @@ class Doc_Message
   def initialize
     @viewport = Viewport.new(0, 0, 640, 480)
     @sprite_bg = Sprite.new(@viewport)
-    @sprite_bg.bitmap = RPG::Cache.picture('lined_paper') #Bitmap.new(640, 480)
+	if $game_switches[124] == true
+	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
+	else
+      @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue') #Bitmap.new(640, 480)
+	end
     @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
     @sprite_bg.x = 120
     @sprite_bg.y = 24
@@ -62,6 +66,12 @@ class Doc_Message
     # Initialize
     text = ''
     y = -1
+
+	if $game_switches[124] == true
+	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
+	else
+      @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue') #Bitmap.new(640, 480)
+	end
 
     # Pre-process text
     text_raw = $game_temp.message_doc_text.to_str
@@ -118,6 +128,9 @@ class Doc_Message
     # Prepare renderer
     @contents.clear
     @contents.font.color = Color.new(55, 46, 190, 255)
+	if $game_switches[124] == true
+	  @contents.font.color = Color.new(105, 25, 44, 255)
+	end
     x = 0
     y = 0
 
