@@ -20,7 +20,8 @@ class Game_Oneshot
     @bruteforce_start = nil
   end
   def self.get_user_name
-    user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
+    user_name = (Oneshot::USER_NAME).split(/\s+/)
+    #user_name = (Steam.enabled? ? Steam::USER_NAME : Oneshot::USER_NAME).split(/\s+/)
     if user_name[0].casecmp('the') == 0 || user_name[0].casecmp('a') == 0
       return user_name.join(' ')
     else
