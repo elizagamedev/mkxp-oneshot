@@ -46,7 +46,9 @@ unix:!macx {
 		linux/display.h \
 		linux/image.h
 
-	LIBS += -lxcb -lxcb-util -lxcb-image -lxcb-shape
+	QMAKE_CFLAGS += -pthread
+
+	LIBS += -pthread -lxcb -lxcb-util -lxcb-image -lxcb-shape -lxcb-icccm -lxcb-ewmh
 }
 
 # OS X

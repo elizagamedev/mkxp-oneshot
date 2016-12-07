@@ -5,50 +5,74 @@
 
 #include <SDL.h>
 
-#define OUT_BUFFER_SIZE 256
+#if defined __linux
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/inotify.h>
+#include <unistd.h>
+#endif
+
+#define BUFFER_SIZE 256
 
 static SDL_Thread *thread = NULL;
 static SDL_mutex *mutex = NULL;
-static volatile char message_buffer[OUT_BUFFER_SIZE];
-static volatile int message_len = 0;
+static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;
+
+#if defined __linux
+#define PIPE_PATH "/tmp/oneshot-pipe"
+static volatile int message_len = 0;
+static volatile int out_pipe = -1;
+void cleanup_pipe()
+{
+	unlink(PIPE_PATH);
+}
+#endif
 
 int server_thread(void *data)
 {
 	(void)data;
+#if defined _WIN32
 	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
 	                               PIPE_ACCESS_OUTBOUND,
 	                               PIPE_TYPE_BYTE | PIPE_WAIT,
 	                               PIPE_UNLIMITED_INSTANCES,
-	                               OUT_BUFFER_SIZE,
-	                               OUT_BUFFER_SIZE,
+	                               BUFFER_SIZE,
+	                               BUFFER_SIZE,
 	                               0,
 	                               NULL);
 	for (;;) {
 		ConnectNamedPipe(pipe, NULL);
 		SDL_LockMutex(mutex);
-		WriteFile(pipe, (const void*)message_buffer, OUT_BUFFER_SIZE, NULL, NULL);
+		DWORD written;
+		WriteFile(pipe, (const void*)message_buffer, BUFFER_SIZE, &written, NULL);
 		active = true;
 		SDL_UnlockMutex(mutex);
 		FlushFileBuffers(pipe);
 		DisconnectNamedPipe(pipe);
 	}
-
 	CloseHandle(pipe);
-
+#elif defined __linux
+	out_pipe = open(PIPE_PATH, O_WRONLY);
+	active = true;
+	SDL_LockMutex(mutex);
+	if (message_len > 0)
+		write(out_pipe, (char*)message_buffer, message_len);
+	SDL_UnlockMutex(mutex);
 	return 0;
+#endif
 }
 
 RB_METHOD(journalSet)
 {
 	RB_UNUSED_PARAM;
 	const char *name;
-	int len;
-	rb_get_args(argc, argv, "s", &name, &len RB_ARG_END);
-#ifdef _WIN32
-	if (thread == NULL) {
-		thread = SDL_CreateThread(server_thread, "journal", NULL);
-	}
+	rb_get_args(argc, argv, "z", &name RB_ARG_END);
+#if defined _WIN32
+	SDL_LockMutex(mutex);
+	strcpy((char*)message_buffer, name);
+	SDL_UnlockMutex(mutex);
 	HANDLE pipe = CreateFileW(L"\\\\.\\pipe\\oneshot-game-to-journal",
 	                          GENERIC_WRITE,
 	                          0,
@@ -56,28 +80,60 @@ RB_METHOD(journalSet)
 	                          OPEN_EXISTING,
 	                          0,
 	                          NULL);
-	SDL_LockMutex(mutex);
-	strcpy((char*)message_buffer, name);
-	message_len = len;
-	SDL_UnlockMutex(mutex);
 	if (pipe != INVALID_HANDLE_VALUE) {
 		active = true;
-		WriteFile(pipe, (const void*)message_buffer, OUT_BUFFER_SIZE, NULL, NULL);
+		DWORD written;
+		WriteFile(pipe, (const void*)message_buffer, BUFFER_SIZE, &written, NULL);
 		FlushFileBuffers(pipe);
 		CloseHandle(pipe);
 	}
+	if (thread == NULL) {
+		thread = SDL_CreateThread(server_thread, "journal", NULL);
+	}
+#elif defined __linux
+	// Clean up connection thread
+	if (thread != NULL && out_pipe != -1) {
+		SDL_WaitThread(thread, NULL);
+		thread = NULL;
+	}
+	// Record message
+	SDL_LockMutex(mutex);
+	message_len = strlen(name);
+	memcpy((char*)message_buffer, name, message_len);
+	SDL_UnlockMutex(mutex);
+
+	// Attempt to send it over the tubes
+	if (out_pipe != -1) {
+		// We have a connection, so send it over
+		if (write(out_pipe, (char*)message_buffer, message_len) <= 0) {
+			// In the case of an error, close
+			close(out_pipe);
+			out_pipe = -1;
+		}
+	}
+	if (out_pipe == -1) {
+		// We don't have a pipe open, so spawn the connection thread
+		thread = SDL_CreateThread(server_thread, "journal", NULL);
+	}
+#else
+#error "not yet implemented"
 #endif
 	return Qnil;
 }
 
 RB_METHOD(journalActive)
 {
+	RB_UNUSED_PARAM;
 	return active ? Qtrue : Qfalse;
 }
 
 void journalBindingInit()
 {
 	mutex = SDL_CreateMutex();
+#if defined __linux
+	mkfifo(PIPE_PATH, 0666);
+	atexit(cleanup_pipe);
+#endif
 
 	VALUE module = rb_define_module("Journal");
 	_rb_define_module_function(module, "set", journalSet);

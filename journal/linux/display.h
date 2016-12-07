@@ -11,5 +11,7 @@ struct Display {
 };
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+#define STRING(x) sizeof(x) - 1, (x)
+#define ARRAY(x) sizeof(x), (x)
 
 #endif // DISPLAY_H

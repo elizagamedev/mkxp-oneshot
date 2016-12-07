@@ -7,7 +7,7 @@ HOST			?= linux64
 FLAGS			:= -I$(STEAMWORKS)/public -DGAME_LAUNCH_NAME=\"$(GAME_LAUNCH_NAME)\" -Wall
 
 ifeq ($(HOST),w32)
-	FLAGS		+= -L$(STEAMWORKS)/redistributable_bin -mwindows
+	FLAGS		+= -L$(STEAMWORKS)/redistributable_bin
 else ifeq ($(HOST),linux32)
 	FLAGS		+= -L$(STEAMWORKS)/redistributable_bin/linux32 -m32
 else ifeq ($(HOST),linux64)
@@ -20,6 +20,8 @@ FLAGS			+= -lsteam_api
 
 ifeq ($(DEBUG),1)
 	FLAGS		+= -DSTEAMSHIM_DEBUG
+else
+	FLAGS		+= -mwindows
 endif
 
 SRC			:= steamshim_parent.cpp

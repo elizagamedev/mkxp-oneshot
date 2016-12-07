@@ -106,7 +106,7 @@ bool EventThread::allocUserEvents()
 
 EventThread::EventThread()
     : fullscreen(false),
-      showCursor(false)
+      showCursor(true)
 {}
 
 void EventThread::process(RGSSThreadData &rtData)

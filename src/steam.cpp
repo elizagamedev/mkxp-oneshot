@@ -7,8 +7,17 @@
 
 /* Achievements */
 static const char *const achievementNames[] = {
-    "SaveWorld",
-    "SaveNiko",
+    "CHAOTIC_EVIL",
+    "SHOCK",
+    "EXTREME_BARTENDING",
+    "RAM_WHISPERER",
+    "PANCAKES",
+    "WE_RIDE_AT_DAWN",
+    "SECRET",
+    "BOOKWORM",
+    "REBIRTH",
+    "ONESHOT",
+    "RETURN",
 };
 #define NUM_ACHIEVEMENTS (sizeof(achievementNames) / sizeof(achievementNames[0]))
 

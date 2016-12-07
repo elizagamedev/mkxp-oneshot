@@ -6,6 +6,8 @@
 #define DEFAULT_HEIGHT 600
 #define IN_BUFFER_SIZE 256
 
+#define WINDOW_STYLE (WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX))
+
 static const WCHAR journal_classname[] = L"journal";
 
 static HBITMAP image_handle = NULL;
@@ -132,7 +134,7 @@ int do_journal()
     wc.cbClsExtra       = 0;
     wc.cbWndExtra       = 0;
     wc.hInstance        = module;
-    wc.hIcon            = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hIcon            = LoadIcon(NULL, "MAINICON");
     wc.hCursor          = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground    = NULL;
     wc.lpszMenuName     = NULL;
@@ -142,12 +144,19 @@ int do_journal()
     if (!RegisterClassEx(&wc))
         return 1;
 
+    RECT winrect;
+    winrect.left = 0;
+    winrect.top = 0;
+    winrect.right = DEFAULT_WIDTH;
+    winrect.bottom = DEFAULT_HEIGHT;
+    AdjustWindowRectEx(&winrect, WINDOW_STYLE, FALSE, 0);
+
     if (!(window = CreateWindowExW(WS_EX_COMPOSITED | WS_EX_LAYERED,
                                    journal_classname,
                                    L"",
-                                   WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX),
+                                   WINDOW_STYLE,
                                    CW_USEDEFAULT, CW_USEDEFAULT,
-                                   DEFAULT_WIDTH, DEFAULT_HEIGHT,
+                                   winrect.right - winrect.left, winrect.bottom - winrect.top,
                                    NULL, NULL, module, NULL))) {
         return 1;
     }

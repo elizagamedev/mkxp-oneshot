@@ -42,7 +42,7 @@ struct GLProperty
 	}
 
 	void push() { stack.push(current); }
-	void pop()  { set(stack.top()); stack.pop(); }
+	void pop()  { if (!stack.empty()) { set(stack.top()); stack.pop(); } }
 	const T &get()    { return current; }
 	void set(const T &value)
 	{

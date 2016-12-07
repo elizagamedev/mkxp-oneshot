@@ -86,6 +86,7 @@ int do_niko(struct Display *dpy, int x, int y)
                     xcb_flush(dpy->c);
                 } break;
                 }
+                free(e);
             } else if (getticks() - ticks >= 1000 / 60) {
                 break;
             }

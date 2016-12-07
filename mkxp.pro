@@ -56,6 +56,7 @@ unix {
 		PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		SOURCES += src/xdg-user-dir-lookup.c
+		LIBS += -lX11
 	}
 }
 
