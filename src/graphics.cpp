@@ -1036,6 +1036,16 @@ void Graphics::setFullscreen(bool value)
 	p->threadData->ethread->requestFullscreenMode(value);
 }
 
+bool Graphics::getSmooth() const
+{
+	return p->threadData->config.smoothScaling;
+}
+
+void Graphics::setSmooth(bool value)
+{
+	p->threadData->config.smoothScaling = value;
+}
+
 bool Graphics::getShowCursor() const
 {
 	return p->threadData->ethread->getShowCursor();
