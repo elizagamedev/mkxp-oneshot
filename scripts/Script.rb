@@ -31,6 +31,22 @@ module Script
     return false
   end
 
+  def self.is_name_like_mom_dad
+    test_string = $game_oneshot.player_name.downcase
+    if ["mom", "dad", "mommy", "daddy", "mama", "papa"].any? { |name| test_string == name }
+      return true
+    end
+    return false
+  end
+
+  def self.is_name_gross
+    test_string = $game_oneshot.player_name.downcase
+    if ["poo", "pee", "fart", "stinky", "piss", "shit", "slimy"].any? { |name| test_string == name }
+      return true
+    end
+    return false
+  end
+
   def self.start_bruteforce
     $game_oneshot.bruteforce_start = Graphics.frame_count
   end
@@ -261,6 +277,15 @@ module Script
         end
       end
     end
+	if File.exists?("README.txt")
+      File.open("README.txt", "rb") do |input|
+        File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\README.txt","wb") do |output|
+          while buff = input.read(4096)
+            output.write(buff)
+          end
+        end
+      end
+	end
   end
 
 end
