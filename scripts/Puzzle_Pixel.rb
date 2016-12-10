@@ -125,6 +125,13 @@ def puzzle_check(puzzle)
   Script.tmp_s1 = result
 end
 
+def lightbulb_room_fix
+  if ($game_player.x < 5) || ($game_player.x > 15) || ($game_player.y < 2) || ($game_player.y > 13)
+    $game_player.x = 10
+	$game_player.y = 13
+  end
+end
+
 def pixel_puzzle_niko_correct(puzzle)
   niko_x = $game_variables[7]
   niko_y = $game_variables[8]
