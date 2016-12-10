@@ -126,9 +126,11 @@ def puzzle_check(puzzle)
 end
 
 def lightbulb_room_fix
-  if ($game_player.x < 5) || ($game_player.x > 15) || ($game_player.y < 2) || ($game_player.y > 13)
+  if (($game_player.x < 5) || ($game_player.x > 15) || ($game_player.y < 2) || ($game_player.y > 13))
     $game_player.x = 10
 	$game_player.y = 13
+	$game_player.real_x = 10 * 4 * 32
+    $game_player.real_y = 13 * 4 * 32
   end
 end
 
