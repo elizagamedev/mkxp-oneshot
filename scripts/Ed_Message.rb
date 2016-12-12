@@ -179,6 +179,13 @@ class Ed_Message
       return
     end
 
+    if visible
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
+        terminate_message
+        @fade_out_text = true
+      end
+    end
+
     # Message is over and should be hidden or advanced to next
     if $game_temp.message_ed_text == nil
       @fade_out = true if @viewport.visible
@@ -213,12 +220,6 @@ class Ed_Message
       return
     end
 
-    if visible
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
-        terminate_message
-        @fade_out_text = true
-      end
-    end
   end
   #--------------------------------------------------------------------------
   # * Variables

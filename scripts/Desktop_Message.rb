@@ -176,6 +176,13 @@ class Desktop_Message
       return
     end
 
+    if visible
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
+        terminate_message
+        @fade_out = true
+      end
+    end
+
     # Message is over and should be hidden or advanced to next
     if $game_temp.message_desktop_text == nil
       @fade_out = true if @viewport.visible
@@ -189,12 +196,6 @@ class Desktop_Message
       end
     end
 
-    if visible
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
-        terminate_message
-        @fade_out = true
-      end
-    end
   end
   #--------------------------------------------------------------------------
   # * Variables
