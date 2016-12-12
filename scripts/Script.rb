@@ -128,6 +128,15 @@ module Script
     return 0
   end
 
+  def self.countdown_over
+    equinox = Time.new(2017, 03, 20)
+	diff = equinox - Time.now
+	if(diff <= 0)
+	  return true
+	end
+	return false
+  end
+
   def self.countdown_update
     equinox = Time.new(2017, 03, 20)
 	diff = equinox - Time.now
