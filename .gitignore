@@ -4,7 +4,6 @@
 *.bak
 *.xxd
 *.exe
-*.app
 *.bmp
 
 Makefile*
