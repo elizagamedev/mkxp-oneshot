@@ -5,6 +5,7 @@
 *.xxd
 *.exe
 *.bmp
+*.lproj
 
 Makefile*
 
