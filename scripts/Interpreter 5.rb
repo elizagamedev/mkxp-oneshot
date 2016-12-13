@@ -363,6 +363,8 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_241
     # Play BGM
+    $game_temp.target_bgm_vol_level = -1
+    $game_temp.bgm_fadein_speed = 99
     $game_system.bgm_play(@parameters[0])
     # Continue
     return true
@@ -372,6 +374,8 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_242
     # Fade out BGM
+    $game_temp.target_bgm_vol_level = -1
+    $game_temp.bgm_fadein_speed = 99
     $game_system.bgm_fade(@parameters[0])
     # Continue
     return true
