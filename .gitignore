@@ -1,8 +1,10 @@
 *.o
 *.pro.*
+*.cmake
 *.bak
 *.xxd
 *.exe
+*.app
 *.bmp
 
 Makefile*
@@ -16,3 +18,7 @@ Makefile*
 
 object_script.*
 rpgscript.bat
+
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/

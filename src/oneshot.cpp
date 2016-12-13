@@ -18,50 +18,54 @@
 	#include <security.h>
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
-#elif defined __APPLE__
-	#define OS_OSX
-	#include <pwd.h>
-#elif defined __linux__
-	#define OS_LINUX
+#elif defined __APPLE__ || __linux__
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
+	#endif
+
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
 
-	class GtkWidget;
+	#ifdef OS_LINUX
+		class GtkWidget;
 
-	typedef enum
-	{
-		GTK_MESSAGE_INFO,
-		GTK_MESSAGE_WARNING,
-		GTK_MESSAGE_QUESTION,
-		GTK_MESSAGE_ERROR
-	} GtkMessageType;
+		typedef enum
+		{
+			GTK_MESSAGE_INFO,
+			GTK_MESSAGE_WARNING,
+			GTK_MESSAGE_QUESTION,
+			GTK_MESSAGE_ERROR
+		} GtkMessageType;
 
-	typedef enum
-	{
-		GTK_BUTTONS_NONE,
-		GTK_BUTTONS_OK,
-		GTK_BUTTONS_CLOSE,
-		GTK_BUTTONS_CANCEL,
-		GTK_BUTTONS_YES_NO,
-		GTK_BUTTONS_OK_CANCEL
-	} GtkButtonsType;
+		typedef enum
+		{
+			GTK_BUTTONS_NONE,
+			GTK_BUTTONS_OK,
+			GTK_BUTTONS_CLOSE,
+			GTK_BUTTONS_CANCEL,
+			GTK_BUTTONS_YES_NO,
+			GTK_BUTTONS_OK_CANCEL
+		} GtkButtonsType;
 
-	typedef enum
-	{
-		GTK_RESPONSE_NONE = -1,
-		GTK_RESPONSE_REJECT = -2,
-		GTK_RESPONSE_ACCEPT = -3,
-		GTK_RESPONSE_DELETE_EVENT = -4,
-		GTK_RESPONSE_OK = -5,
-		GTK_RESPONSE_CANCEL = -6,
-		GTK_RESPONSE_CLOSE = -7,
-		GTK_RESPONSE_YES = -8,
-		GTK_RESPONSE_NO = -9,
-		GTK_RESPONSE_APPLY = -10,
-		GTK_RESPONSE_HELP = -11
-	} GtkResponseType;
+		typedef enum
+		{
+			GTK_RESPONSE_NONE = -1,
+			GTK_RESPONSE_REJECT = -2,
+			GTK_RESPONSE_ACCEPT = -3,
+			GTK_RESPONSE_DELETE_EVENT = -4,
+			GTK_RESPONSE_OK = -5,
+			GTK_RESPONSE_CANCEL = -6,
+			GTK_RESPONSE_CLOSE = -7,
+			GTK_RESPONSE_YES = -8,
+			GTK_RESPONSE_NO = -9,
+			GTK_RESPONSE_APPLY = -10,
+			GTK_RESPONSE_HELP = -11
+		} GtkResponseType;
+	#endif
 
 	/**
 	 * xdg_user_dir_lookup_with_fallback:
@@ -422,28 +426,46 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	else
 		p->lang = "en";
 
-	//Get user's name
-	struct passwd *pwd = getpwuid(getuid());
-	if (pwd)
-	{
-        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-        {
-			//Get the user's full name
-			int comma = 0;
-			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
-			p->userName = std::string(pwd->pw_gecos, comma);
-		}
-		else
-			p->userName = pwd->pw_name;
-	}
+	#ifdef OS_OSX
 
-#ifdef OS_LINUX
+		//Get user's name
+		struct passwd *pwd = getpwuid(geteuid());
+		if (pwd)
+		{
+	        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
+	        {
+				//Get the user's full name
+				int comma = 0;
+				for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
+				p->userName = std::string(pwd->pw_gecos, comma);
+			}
+			else
+				p->userName = pwd->pw_name;
+		}
+
+	#elif defined OS_LINUX
+
+		//Get user's name
+		struct passwd *pwd = getpwuid(getuid());
+		if (pwd)
+		{
+	        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
+	        {
+				//Get the user's full name
+				int comma = 0;
+				for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
+				p->userName = std::string(pwd->pw_gecos, comma);
+			}
+			else
+				p->userName = pwd->pw_name;
+		}
+
+	#endif
+
 	//Get documents path
 	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
 	p->docsPath = path;
 	free(path);
-#elif OS_OSX
-#endif
 #endif
 
 	/**********
