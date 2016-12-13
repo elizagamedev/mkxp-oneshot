@@ -175,7 +175,7 @@ class Game_Player < Game_Character
     # If moving, event running, move route forcing, and message window
     # display are all not occurring
     unless $game_system.map_interpreter.running? or @move_route_forcing or
-           $game_temp.message_window_showing
+           $game_temp.message_window_showing or $game_temp.menus_visible
       # Adjust move speed
       @move_speed = Input.press?(Input::RUN) ? 4 : 3
       unless moving?
@@ -235,7 +235,7 @@ class Game_Player < Game_Character
       end
     end
     # If not moving
-    unless moving?
+    unless moving? or $game_temp.menus_visible
       # If player was moving last time
       if last_moving
         # Event determinant is via touch of same position event

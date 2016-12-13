@@ -118,7 +118,8 @@ class Scene_Map
         return
       end
       $game_system.map_interpreter.update
-      $game_player.update if !@menu.visible && !@item_menu.visible && !@fast_travel.visible
+	  $game_temp.menus_visible = @menu.visible || @item_menu.visible || @fast_travel.visible
+      $game_player.update
       $game_followers.each{|f| f.update}
       # Update system (timer), screen
       $game_system.update

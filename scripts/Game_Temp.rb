@@ -63,6 +63,7 @@ class Game_Temp
   attr_accessor :footstep_sfx             # current footstep sfx array
   attr_accessor :filmsprite               # film puzzle sprite
   attr_accessor :prompt_wait              # wait for delay caused by prompt
+  attr_accessor :menus_visible
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -119,6 +120,7 @@ class Game_Temp
     @footstep_sfx = nil
     @filmsprite = nil
     @prompt_wait = 0
+	@menus_visible = false
   end
 
   def bgm_fadein(game_system)
