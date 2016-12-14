@@ -153,7 +153,9 @@ def real_load
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new
-    $game_temp.common_event_id = 42
+	if !$game_switches[198]  # if this was a "checkpoint" save
+      $game_temp.common_event_id = 42
+	end
     # Set wallpaper if necessary
     if $game_oneshot.wallpaper
       Wallpaper.set $game_oneshot.wallpaper, $game_oneshot.wallpaper_color
