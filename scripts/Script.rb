@@ -437,5 +437,5 @@ def activate_balcony?(ypos)
   !$scene.menu_open? &&
     $game_player.y == ypos &&
     $game_player.direction == 8 &&
-    Input.trigger?(Input::ACTION)
+    Input.trigger?(Input::ACTION) && !$game_system.map_interpreter.running?
 end
