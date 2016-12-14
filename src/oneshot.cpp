@@ -19,18 +19,16 @@
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
 #elif defined __APPLE__ || __linux__
-	#ifdef __APPLE__
-		#define OS_OSX
-	#else
-		#define OS_LINUX
-	#endif
-
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
 
-	#ifdef OS_LINUX
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
+
 		class GtkWidget;
 
 		typedef enum
@@ -426,41 +424,24 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	else
 		p->lang = "en";
 
+	//Get user's name
 	#ifdef OS_OSX
-
-		//Get user's name
 		struct passwd *pwd = getpwuid(geteuid());
-		if (pwd)
-		{
-	        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-	        {
-				//Get the user's full name
-				int comma = 0;
-				for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
-				p->userName = std::string(pwd->pw_gecos, comma);
-			}
-			else
-				p->userName = pwd->pw_name;
-		}
-
 	#elif defined OS_LINUX
-
-		//Get user's name
 		struct passwd *pwd = getpwuid(getuid());
-		if (pwd)
-		{
-	        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-	        {
-				//Get the user's full name
-				int comma = 0;
-				for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
-				p->userName = std::string(pwd->pw_gecos, comma);
-			}
-			else
-				p->userName = pwd->pw_name;
-		}
-
 	#endif
+	if (pwd)
+	{
+        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
+        {
+			//Get the user's full name
+			int comma = 0;
+			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
+			p->userName = std::string(pwd->pw_gecos, comma);
+		}
+		else
+			p->userName = pwd->pw_name;
+	}
 
 	//Get documents path
 	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
@@ -696,15 +677,16 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	//Interpret result
 	return (result == IDOK || result == IDYES);
 #else
-#if defined OS_LINUX
-	if (p->libgtk)
-	{
-		linux_DialogData data = {p, type, body, title, 0};
-		p->gdk_threads_add_idle(linux_dialog, &data);
-		p->gtk_main();
-		return data.result;
-	}
-#endif
+	#if defined OS_LINUX
+		if (p->libgtk)
+		{
+			linux_DialogData data = {p, type, body, title, 0};
+			p->gdk_threads_add_idle(linux_dialog, &data);
+			p->gtk_main();
+			return data.result;
+		}
+	#endif
+
 	//SDL message box
 
 	//Button data
@@ -716,7 +698,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 	//Messagebox data
 	SDL_MessageBoxData data;
-	data.window = p->window;
+	data.window = NULL;//p->window;
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
