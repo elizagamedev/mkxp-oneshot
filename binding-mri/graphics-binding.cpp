@@ -202,6 +202,7 @@ DEF_GRA_PROP_B(Smooth)
 
 DEF_GRA_PROP_B(Fullscreen)
 DEF_GRA_PROP_B(ShowCursor)
+DEF_GRA_PROP_B(Smooth)
 
 #define INIT_GRA_PROP_BIND(PropName, prop_name_s) \
 { \
@@ -245,4 +246,5 @@ void graphicsBindingInit()
 
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
+	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
 }

@@ -223,7 +223,7 @@ fileIntBindingInit()
 	/* We overload the built-in 'Marshal::load()' function to silently
 	 * insert our utf8proc that ensures all read strings will be
 	 * UTF-8 encoded */
-	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
-	_rb_define_module_function(marsh, "load", _marshalLoad);
+	// VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
+	// rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
+	// _rb_define_module_function(marsh, "load", _marshalLoad);
 }
