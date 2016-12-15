@@ -4,6 +4,7 @@
 *.bak
 *.xxd
 *.exe
+*.app
 *.bmp
 *.lproj
 
