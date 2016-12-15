@@ -1,40 +1,40 @@
 module EdText
   def self.blue_understand
-    Oneshot.msgbox Oneshot::Msg::YESNO, tr("Do you understand what this means?")
+    self.msgbox(Oneshot::Msg::YESNO, tr("Do you understand what this means?"))
   end
+
   def self.info(text)
-    if(Graphics.fullscreen == true)
-	  Graphics.fullscreen = false
-	  $console = false
-	end
-	sleep 0.2
-	Graphics.update
-    text.gsub!("\\p", $game_oneshot.player_name)
-    Oneshot.msgbox Oneshot::Msg::INFO, tr(text)
-    Graphics.frame_reset
+    # TODO tr text
+    self.msgbox(Oneshot::Msg::INFO, text)
   end
+
   def self.yesno(text)
-    if(Graphics.fullscreen == true)
-	  Graphics.fullscreen = false
-	  $console = false
-	end
-	sleep 0.2
-	Graphics.update
-    text.gsub!("\\p", $game_oneshot.player_name)
-    result = Oneshot.msgbox Oneshot::Msg::YESNO, tr(text)
-    Graphics.frame_reset
-    return result
+    # TODO tr text
+    self.msgbox(Oneshot::Msg::YESNO, text)
   end
+
   def self.err(text)
-    if(Graphics.fullscreen == true)
-	  Graphics.fullscreen = false
-	  $console = false
-	end
-	sleep 0.2
-	Graphics.update
-    text.gsub!("\\p", $game_oneshot.player_name)
-    result = Oneshot.msgbox Oneshot::Msg::ERR, tr(text)
-    Graphics.frame_reset
-    return result
+    # TODO tr text
+    self.msgbox(Oneshot::Msg::ERR, text)
+  end
+
+  def self.msgbox(type, text)
+    if Graphics.fullscreen
+      Graphics.fullscreen = false
+      $console = false
+      sleep 0.2
+    end
+    result = nil
+    thread = Thread.new do
+      result = Oneshot.msgbox(type, text
+          .gsub(/\s+\n\s+/, " ")
+          .gsub("\\p", $game_oneshot.player_name) +
+          " " * 10)
+          # HACK: Fuck
+    end
+    while thread.alive?
+      Graphics.update
+    end
+    result
   end
 end

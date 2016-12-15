@@ -15,6 +15,7 @@
 	#define WIN32_LEAN_AND_MEAN
 	#define SECURITY_WIN32
 	#include <windows.h>
+	#include <mmsystem.h>
 	#include <security.h>
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
@@ -660,7 +661,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
 	if (!title)
 		title = "";
-#if defined OS_W32
+#if 0
 	//Get native window handle
 	SDL_SysWMinfo wminfo;
 	SDL_version version;
@@ -690,7 +691,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	//Create message box
 	WCHAR *wbody = w32_toWide(body);
 	WCHAR *wtitle = w32_toWide(title);
-	int result = MessageBoxW(hwnd, wbody, wtitle, flags);
+	int result = MessageBoxW(N, wbody, wtitle, flags);
 	delete [] title;
 	delete [] body;
 
@@ -722,19 +723,32 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
+#ifdef OS_W32
+	DWORD sound;
+#endif
 
 	//Set type
 	switch (type)
 	{
 	case MSG_INFO:
 	case MSG_YESNO:
+	default:
 		data.flags = SDL_MESSAGEBOX_INFORMATION;
+#ifdef OS_W32
+		sound = SND_ALIAS_SYSTEMQUESTION;
+#endif
 		break;
 	case MSG_WARN:
 		data.flags = SDL_MESSAGEBOX_WARNING;
+#ifdef OS_W32
+		sound = SND_ALIAS_SYSTEMEXCLAMATION;
+ #endif
 		break;
 	case MSG_ERR:
 		data.flags = SDL_MESSAGEBOX_WARNING;
+#ifdef OS_W32
+		sound = SND_ALIAS_SYSTEMASTERISK;
+#endif
 		break;
 	}
 
@@ -744,6 +758,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	case MSG_INFO:
 	case MSG_WARN:
 	case MSG_ERR:
+	default:
 		data.numbuttons = 1;
 		data.buttons = buttonsOk;
 		break;
@@ -754,6 +769,9 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	}
 
 	//Show messagebox
+#ifdef OS_W32
+	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
+#endif
 	int button;
 	SDL_ShowMessageBox(&data, &button);
 	return button ? true : false;
