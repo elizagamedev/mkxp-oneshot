@@ -49,6 +49,8 @@ public:
 	const std::string &userName() const;
 	const std::string &savePath() const;
 	const std::string &docsPath() const;
+	const std::string &gamePath() const;
+	const std::string &journal() const;
 	const std::vector<uint8_t> &obscuredMap() const;
 	bool obscuredCleared() const;
 	bool allowExit() const;

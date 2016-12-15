@@ -277,18 +277,20 @@ module Script
   end
 
   def self.copy_journal
-    Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games")
-    Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games\\Oneshot") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games\\Oneshot")
-    File.open("_______.exe", "rb") do |input|
-      File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\_______.exe","wb") do |output|
-        while buff = input.read(4096)
-          output.write(buff)
+    Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
+    if File.exists?(Oneshot::JOURNAL)
+      File.open(Oneshot::JOURNAL, "rb") do |input|
+        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL,"wb") do |output|
+          while buff = input.read(4096)
+            output.write(buff)
+          end
         end
       end
     end
 	if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
-        File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\README.txt","wb") do |output|
+        File.open(Oneshot::GAME_PATH + "/Oneshot/README.txt","wb") do |output|
           while buff = input.read(4096)
             output.write(buff)
           end

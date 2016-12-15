@@ -1,15 +1,14 @@
 SAVE_FILE_NAME = Oneshot::SAVE_PATH + '/save.dat'
 PERMA_FLAGS_NAME = Oneshot::SAVE_PATH + '/p-settings.dat'
-FAKE_SAVE_NAME = Oneshot::DOCS_PATH + '\\My Games\\Oneshot\\save_progress.oneshot'
-
+FAKE_SAVE_NAME = Oneshot::GAME_PATH + '/Oneshot/save_progress.oneshot'
 
 def erase_game
   File.delete(SAVE_FILE_NAME)
 end
 
 def fake_save
-  Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games")
-  Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games\\Oneshot") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games\\Oneshot")
+  Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
+  Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
   File.open(FAKE_SAVE_NAME, 'wb') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)

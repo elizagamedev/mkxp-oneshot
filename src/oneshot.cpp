@@ -219,6 +219,8 @@ struct OneshotPrivate
 	std::string userName;
 	std::string savePath;
 	std::string docsPath;
+	std::string gamePath;
+	std::string journal;
 
 	//Dialog text
 	std::string txtYes;
@@ -409,6 +411,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	WCHAR path[MAX_PATH];
 	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
 	p->docsPath = w32_fromWide(path);
+	p->gamePath = p->docsPath+"\\My Games";
+	p->journal = "_______.exe";
 #else
 	//Get language code
 	const char *lc_all = getenv("LC_ALL");
@@ -446,6 +450,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	//Get documents path
 	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
 	p->docsPath = path;
+	p->gamePath = path;
+	#ifdef OS_OSX
+		p->journal = "_______.app";
+	#elif defined OS_LINUX
+		p->journal = "_______";
+	#endif
 	free(path);
 #endif
 
@@ -601,6 +611,16 @@ const std::string &Oneshot::savePath() const
 const std::string &Oneshot::docsPath() const
 {
 	return p->docsPath;
+}
+
+const std::string &Oneshot::gamePath() const
+{
+	return p->gamePath;
+}
+
+const std::string &Oneshot::journal() const
+{
+	return p->journal;
 }
 
 const std::vector<uint8_t> &Oneshot::obscuredMap() const
