@@ -23,10 +23,12 @@ RB_METHOD(oneshotMsgBox)
     RB_UNUSED_PARAM;
 
     int type;
-    const char *body;
-    const char *title = 0;
-    rb_get_args(argc, argv, "iz|z", &type, &body, &title RB_ARG_END);
-    return rb_bool_new(shState->oneshot().msgbox(type, body, title));
+    VALUE body;
+    VALUE title = Qnil;
+    rb_get_args(argc, argv, "iS|S", &type, &body, &title RB_ARG_END);
+	std::string bodyStr = std::string(RSTRING_PTR(body), RSTRING_LEN(body));
+	std::string titleStr = (title == Qnil) ? "" : std::string(RSTRING_PTR(title), RSTRING_LEN(title));
+    return rb_bool_new(shState->oneshot().msgbox(type, bodyStr.c_str(), titleStr.c_str()));
 }
 
 RB_METHOD(oneshotResetObscured)

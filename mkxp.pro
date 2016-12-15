@@ -66,7 +66,7 @@ win32 {
 
 	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
 	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
-	LIBS += -lphysfs -lsecur32
+	LIBS += -lphysfs -lsecur32 -lwinmm
 
 	release {
 	    RC_FILE = assets/resources.rc
