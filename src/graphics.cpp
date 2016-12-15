@@ -936,13 +936,6 @@ void Graphics::fadein(int duration)
 	}
 }
 
-DEF_ATTR_RD_SIMPLE(Graphics, Smooth, bool, p->smooth)
-
-void Graphics::setSmooth(bool value)
-{
-	p->smooth = value;
-}
-
 Bitmap *Graphics::snapToBitmap()
 {
 	Bitmap *bitmap = new Bitmap(width(), height());

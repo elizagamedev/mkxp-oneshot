@@ -198,7 +198,6 @@ RB_METHOD(graphicsPlayMovie)
 DEF_GRA_PROP_I(FrameRate)
 DEF_GRA_PROP_I(FrameCount)
 DEF_GRA_PROP_I(Brightness)
-DEF_GRA_PROP_B(Smooth)
 
 DEF_GRA_PROP_B(Fullscreen)
 DEF_GRA_PROP_B(ShowCursor)
@@ -241,8 +240,6 @@ void graphicsBindingInit()
 	{
 	_rb_define_module_function(module, "play_movie", graphicsPlayMovie);
 	}
-
-	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
 
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
