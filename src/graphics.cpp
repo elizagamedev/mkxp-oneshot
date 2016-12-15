@@ -472,6 +472,7 @@ struct GraphicsPrivate
 	int frameRate;
 	int frameCount;
 	int brightness;
+	bool smooth;
 
 	FPSLimiter fpsLimiter;
 
@@ -933,6 +934,13 @@ void Graphics::fadein(int duration)
 			update();
 		}
 	}
+}
+
+DEF_ATTR_RD_SIMPLE(Graphics, Smooth, bool, p->smooth)
+
+void Graphics::setSmooth(bool value)
+{
+	p->smooth = value;
 }
 
 Bitmap *Graphics::snapToBitmap()
