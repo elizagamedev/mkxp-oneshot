@@ -45,7 +45,6 @@ public:
 	DECL_ATTR( FrameRate,  int )
 	DECL_ATTR( FrameCount, int )
 	DECL_ATTR( Brightness, int )
-	DECL_ATTR( Smooth,    bool )
 
 	void wait(int duration);
 	void fadeout(int duration);
