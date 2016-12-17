@@ -103,6 +103,18 @@ class Window_MainMenu < Window_Selectable
       return
     end
 
+
+    # Cancel menu
+    if Input.trigger?(Input::CANCEL) ||
+        Input.trigger?(Input::MENU) ||
+        Input.trigger?(Input::ITEMS)
+      unless Input.trigger?(Input::ITEMS)
+        $game_system.se_play($data_system.cancel_se)
+      end
+      @fade_out = true
+      return
+    end
+	
     # Select menu item
     if Input.trigger?(Input::ACTION)
       self.active = false
@@ -129,15 +141,5 @@ class Window_MainMenu < Window_Selectable
       return
     end
 
-    # Cancel menu
-    if Input.trigger?(Input::CANCEL) ||
-        Input.trigger?(Input::MENU) ||
-        Input.trigger?(Input::ITEMS)
-      unless Input.trigger?(Input::ITEMS)
-        $game_system.se_play($data_system.cancel_se)
-      end
-      @fade_out = true
-      return
-    end
   end
 end
