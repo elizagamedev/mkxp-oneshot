@@ -127,9 +127,9 @@ class Doc_Message
 
     # Prepare renderer
     @contents.clear
-    @contents.font.color = Color.new(55, 46, 190, 255)
+    @contents.font.color = Color.new(100, 92, 255, 255)
 	if $game_switches[124] == true
-	  @contents.font.color = Color.new(105, 25, 44, 255)
+	  @contents.font.color = Color.new(255, 92, 100, 255)
 	end
     x = 0
     y = 0
