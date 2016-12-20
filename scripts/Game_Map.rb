@@ -498,12 +498,7 @@ class Game_Map
     end
     # Update map event
     for event in @events.values
-	  if (event.list != nil && event.list.size > 1) || (event.x * 128 > $game_map.display_x - (10 * 128)) &&
-        (event.x * 128 < $game_map.display_x + (30 * 128)) &&
-        (event.y * 128 > ($game_map.display_y) - (10 * 128) &&
-        (event.y * 128 < ($game_map.display_y) + (27 * 128)))
-        event.update
-      end
+      event.update
     end
     # Update common event
     for common_event in @common_events.values
