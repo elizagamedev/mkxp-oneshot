@@ -250,7 +250,7 @@ class Scene_Map
     # Process menu opening
     unless $game_system.map_interpreter.running? ||
         $game_system.menu_disabled ||
-        @fast_travel.visible
+        @fast_travel.visible || $game_temp.menu_calling == true  || $game_temp.item_menu_calling == true
       if !@menu.visible && Input.trigger?(Input::MENU)
         $game_temp.menu_calling = true
         $game_temp.menu_beep = true
