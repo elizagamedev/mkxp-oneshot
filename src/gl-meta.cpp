@@ -131,7 +131,7 @@ void vaoUnbind(VAO &vao)
 	}
 }
 
-#define HAVE_NATIVE_BLIT gl.BlitFramebuffer
+#define HAVE_NATIVE_BLIT false //gl.BlitFramebuffer
 
 static void _blitBegin(FBO::ID fbo, const Vec2i &size)
 {
