@@ -4,6 +4,66 @@ class Window_Settings
   TITLE_MARGIN = 100
   ITEM_SPACING = 28
   ACTIVE_MARGIN = MARGIN * 2 + 20
+  SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
+  
+  def save_settings
+    File.open(SETTINGS_FILE_NAME, 'w') do |file|
+	  file.puts('bgm_volume=' + Audio.bgm_volume.to_s)
+	  file.puts('sfx_volume=' + Audio.sfx_volume.to_s)
+	  file.puts('fullscreen=' + Graphics.fullscreen.to_s)
+	  file.puts('default_run=' + $game_switches[251].to_s)
+	  file.puts('colorblind_mode=' + $game_switches[252].to_s)
+	  file.puts('frameskip=' + Graphics.frameskip.to_s)
+	end
+  end
+  
+  def self.load_settings
+    return false if !FileTest.exist?(SETTINGS_FILE_NAME)
+    File.foreach(SETTINGS_FILE_NAME).with_index do |line, line_num|
+      if !line.include? "="
+	    next
+	  end
+	  vals = line.strip.split("=")
+	  case vals[0]
+	  when "bgm_volume"
+	    if !!(vals[1] =~ /\A[-+]?[0-9]+\z/) #is a number
+		  number = vals[1].to_i
+		  Audio.bgm_volume = number
+		end
+	  when "sfx_volume"
+	    if !!(vals[1] =~ /\A[-+]?[0-9]+\z/) #is a number
+		  number = vals[1].to_i
+		  Audio.sfx_volume = number
+		end
+	  when "fullscreen"
+	    if vals[1] == "true"
+		  Graphics.fullscreen = true
+		  $console = true
+		elsif vals[1] == "false"
+		  Graphics.fullscreen = false
+		  $console = false
+		end
+	  when "default_run"
+	    if vals[1] == "true"
+		  $game_switches[251] = true
+		elsif vals[1] == "false"
+		  $game_switches[251] = false
+		end
+	  when "colorblind_mode"
+	    if vals[1] == "true"
+		  $game_switches[252] = true
+		elsif vals[1] == "false"
+		  $game_switches[252] = false
+		end
+	  when "frameskip"
+	    if vals[1] == "true"
+		  Graphics.frameskip = true
+		elsif vals[1] == "false"
+		  Graphics.frameskip = false
+		end
+	  end
+    end
+  end
 
   def initialize
     @viewport = Viewport.new(0, 0, 640, 480)
@@ -288,6 +348,7 @@ class Window_Settings
     if Input.trigger?(Input::CANCEL)
       $game_system.se_play($data_system.cancel_se)
       @fade_out = true
+	  save_settings
     end
   end
 
