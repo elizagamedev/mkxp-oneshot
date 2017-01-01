@@ -259,7 +259,7 @@ void Audio::bgmPlay(const char *filename,
                     float pos)
 {
 	p->current_bgm_volume = volume;
-	p->bgm.play(filename, volume, pitch, pos);
+	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
 }
 
 void Audio::bgmStop()
@@ -279,7 +279,7 @@ void Audio::bgsPlay(const char *filename,
                     float pos)
 {
 	p->current_bgs_volume = volume;
-	p->bgs.play(filename, volume, pitch, pos);
+	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos);
 }
 
 void Audio::bgsStop()
@@ -298,7 +298,7 @@ void Audio::mePlay(const char *filename,
                    int pitch)
 {
 	p->current_me_volume = volume;
-	p->me.play(filename, volume, pitch);
+	p->me.play(filename, (volume*p->bgm_volume)/100, pitch);
 }
 
 void Audio::meStop()
