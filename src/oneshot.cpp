@@ -19,50 +19,52 @@
 	#include <security.h>
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
-#elif defined __APPLE__
-	#define OS_OSX
-	#include <pwd.h>
-#elif defined __linux__
-	#define OS_LINUX
+#elif defined __APPLE__ || __linux__
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
 
-	class GtkWidget;
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
 
-	typedef enum
-	{
-		GTK_MESSAGE_INFO,
-		GTK_MESSAGE_WARNING,
-		GTK_MESSAGE_QUESTION,
-		GTK_MESSAGE_ERROR
-	} GtkMessageType;
+		class GtkWidget;
 
-	typedef enum
-	{
-		GTK_BUTTONS_NONE,
-		GTK_BUTTONS_OK,
-		GTK_BUTTONS_CLOSE,
-		GTK_BUTTONS_CANCEL,
-		GTK_BUTTONS_YES_NO,
-		GTK_BUTTONS_OK_CANCEL
-	} GtkButtonsType;
+		typedef enum
+		{
+			GTK_MESSAGE_INFO,
+			GTK_MESSAGE_WARNING,
+			GTK_MESSAGE_QUESTION,
+			GTK_MESSAGE_ERROR
+		} GtkMessageType;
 
-	typedef enum
-	{
-		GTK_RESPONSE_NONE = -1,
-		GTK_RESPONSE_REJECT = -2,
-		GTK_RESPONSE_ACCEPT = -3,
-		GTK_RESPONSE_DELETE_EVENT = -4,
-		GTK_RESPONSE_OK = -5,
-		GTK_RESPONSE_CANCEL = -6,
-		GTK_RESPONSE_CLOSE = -7,
-		GTK_RESPONSE_YES = -8,
-		GTK_RESPONSE_NO = -9,
-		GTK_RESPONSE_APPLY = -10,
-		GTK_RESPONSE_HELP = -11
-	} GtkResponseType;
+		typedef enum
+		{
+			GTK_BUTTONS_NONE,
+			GTK_BUTTONS_OK,
+			GTK_BUTTONS_CLOSE,
+			GTK_BUTTONS_CANCEL,
+			GTK_BUTTONS_YES_NO,
+			GTK_BUTTONS_OK_CANCEL
+		} GtkButtonsType;
+
+		typedef enum
+		{
+			GTK_RESPONSE_NONE = -1,
+			GTK_RESPONSE_REJECT = -2,
+			GTK_RESPONSE_ACCEPT = -3,
+			GTK_RESPONSE_DELETE_EVENT = -4,
+			GTK_RESPONSE_OK = -5,
+			GTK_RESPONSE_CANCEL = -6,
+			GTK_RESPONSE_CLOSE = -7,
+			GTK_RESPONSE_YES = -8,
+			GTK_RESPONSE_NO = -9,
+			GTK_RESPONSE_APPLY = -10,
+			GTK_RESPONSE_HELP = -11
+		} GtkResponseType;
+	#endif
 
 	/**
 	 * xdg_user_dir_lookup_with_fallback:
@@ -218,6 +220,8 @@ struct OneshotPrivate
 	std::string userName;
 	std::string savePath;
 	std::string docsPath;
+	std::string gamePath;
+	std::string journal;
 
 	//Dialog text
 	std::string txtYes;
@@ -408,6 +412,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	WCHAR path[MAX_PATH];
 	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
 	p->docsPath = w32_fromWide(path);
+	p->gamePath = p->docsPath+"\\My Games";
+	p->journal = "_______.exe";
 #else
 	//Get language code
 	const char *lc_all = getenv("LC_ALL");
@@ -424,7 +430,11 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		p->lang = "en";
 
 	//Get user's name
-	struct passwd *pwd = getpwuid(getuid());
+	#ifdef OS_OSX
+		struct passwd *pwd = getpwuid(geteuid());
+	#elif defined OS_LINUX
+		struct passwd *pwd = getpwuid(getuid());
+	#endif
 	if (pwd)
 	{
         if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
@@ -438,13 +448,16 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 			p->userName = pwd->pw_name;
 	}
 
-#ifdef OS_LINUX
 	//Get documents path
 	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
 	p->docsPath = path;
+	p->gamePath = path;
+	#ifdef OS_OSX
+		p->journal = "_______.app";
+	#elif defined OS_LINUX
+		p->journal = "_______";
+	#endif
 	free(path);
-#elif OS_OSX
-#endif
 #endif
 
 	/**********
@@ -601,6 +614,16 @@ const std::string &Oneshot::docsPath() const
 	return p->docsPath;
 }
 
+const std::string &Oneshot::gamePath() const
+{
+	return p->gamePath;
+}
+
+const std::string &Oneshot::journal() const
+{
+	return p->journal;
+}
+
 const std::vector<uint8_t> &Oneshot::obscuredMap() const
 {
 	return p->obscuredMap;
@@ -675,15 +698,16 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	//Interpret result
 	return (result == IDOK || result == IDYES);
 #else
-#if defined OS_LINUX
-	if (p->libgtk)
-	{
-		linux_DialogData data = {p, type, body, title, 0};
-		p->gdk_threads_add_idle(linux_dialog, &data);
-		p->gtk_main();
-		return data.result;
-	}
-#endif
+	#if defined OS_LINUX
+		if (p->libgtk)
+		{
+			linux_DialogData data = {p, type, body, title, 0};
+			p->gdk_threads_add_idle(linux_dialog, &data);
+			p->gtk_main();
+			return data.result;
+		}
+	#endif
+
 	//SDL message box
 
 	//Button data
@@ -695,7 +719,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 	//Messagebox data
 	SDL_MessageBoxData data;
-	data.window = p->window;
+	data.window = NULL;//p->window;
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;

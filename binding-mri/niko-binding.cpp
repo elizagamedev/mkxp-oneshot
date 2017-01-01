@@ -6,6 +6,13 @@
 
 #if defined _WIN32
 #include <shlwapi.h>
+#elif defined __APPLE__ || __linux__
+	#define LINUX
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
+	#endif
 #endif
 
 #include <SDL.h>
@@ -43,7 +50,7 @@ RB_METHOD(nikoStart)
 	si.cb = sizeof(si);
 	PROCESS_INFORMATION pi;
 	CreateProcessW(path, args, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-#elif defined __linux
+#elif defined LINUX
 	// Calculate where to stick the window
 	int x, y; // Top-left area of client (hopefully)
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);

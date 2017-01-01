@@ -472,6 +472,7 @@ struct GraphicsPrivate
 	int frameRate;
 	int frameCount;
 	int brightness;
+	bool smooth;
 
 	FPSLimiter fpsLimiter;
 

@@ -53,6 +53,53 @@ unix:!macx {
 
 # OS X
 macx {
+	# Directly copied from Linux, assuming this works but unsure
+
+	SOURCES += \
+		mac/main.c \
+		mac/niko.c \
+		mac/journal.c \
+		mac/image/niko1.c \
+		mac/image/niko2.c \
+		mac/image/niko3.c \
+		mac/image/default.c \
+		mac/image/c1.c \
+		mac/image/c2.c \
+		mac/image/c3.c \
+		mac/image/c4.c \
+		mac/image/c5.c \
+		mac/image/c6.c \
+		mac/image/c7.c \
+		mac/image/s1.c \
+		mac/image/s2.c \
+		mac/image/s3.c \
+		mac/image/s4.c \
+		mac/image/t1.c \
+		mac/image/t2.c \
+		mac/image/t3.c \
+		mac/image/t4.c \
+		mac/image/t5.c \
+		mac/image/t6.c \
+		mac/image/t7.c \
+		mac/image/t8.c \
+		mac/image/t9.c \
+		mac/image/t10.c \
+		mac/image/t11.c \
+		mac/image/t12.c \
+		mac/image/t13.c \
+		mac/image/t14.c \
+		mac/image/t15.c \
+		mac/image/t16.c \
+		mac/image/final.c \
+		mac/image/save.c
+
+	HEADERS += \
+		mac/display.h \
+		mac/image.h
+
+	QMAKE_CFLAGS += -pthread
+
+	LIBS += -pthread -lxcb -lxcb-util -lxcb-image -lxcb-shape -lxcb-icccm -lxcb-ewmh
 }
 
 # Windows

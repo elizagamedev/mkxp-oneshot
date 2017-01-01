@@ -44,6 +44,8 @@
 
 #include <map>
 
+#include <iostream>
+
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
 
@@ -173,7 +175,7 @@ void EventThread::process(RGSSThreadData &rtData)
 	std::map<int, SDL_Joystick*>::iterator jsit;
 	std::map<int, SDL_GameController*>::iterator gcit;
 
-	SDL_GetWindowSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 
 	SettingsMenu *sMenu = 0;
 
@@ -225,6 +227,8 @@ void EventThread::process(RGSSThreadData &rtData)
 			case SDL_WINDOWEVENT_SIZE_CHANGED :
 				winW = event.window.data1;
 				winH = event.window.data2;
+
+				//SDL_GL_GetDrawableSize(win, &winW, &winH);
 
 				windowSizeMsg.post(Vec2i(winW, winH));
 				resetInputStates();
