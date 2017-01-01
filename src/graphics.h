@@ -63,6 +63,7 @@ public:
 	DECL_ATTR( Fullscreen, bool )
 	DECL_ATTR( ShowCursor, bool )
 	DECL_ATTR( Smooth,     bool )
+	DECL_ATTR( Frameskip,  bool )
 
 	/* <internal> */
 	Scene *getScreen() const;

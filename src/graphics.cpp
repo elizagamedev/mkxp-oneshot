@@ -1046,6 +1046,16 @@ void Graphics::setSmooth(bool value)
 	p->threadData->config.smoothScaling = value;
 }
 
+bool Graphics::getFrameskip() const
+{
+	return p->threadData->config.frameSkip;
+}
+
+void Graphics::setFrameskip(bool value)
+{
+	p->threadData->config.frameSkip = value;
+}
+
 bool Graphics::getShowCursor() const
 {
 	return p->threadData->ethread->getShowCursor();
