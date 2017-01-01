@@ -177,7 +177,11 @@ class Game_Player < Game_Character
     unless $game_system.map_interpreter.running? or @move_route_forcing or
            $game_temp.message_window_showing or $game_temp.menus_visible
       # Adjust move speed
-      @move_speed = Input.press?(Input::RUN) ? 4 : 3
+	  if $game_switches[251] == false
+        @move_speed = Input.press?(Input::RUN) ? 4 : 3
+	  else
+        @move_speed = Input.press?(Input::RUN) ? 3 : 4
+	  end
       unless moving?
         # Move player in the direction the directional button is being pressed
         case Input.dir4

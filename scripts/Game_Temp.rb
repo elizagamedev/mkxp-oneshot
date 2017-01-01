@@ -45,6 +45,7 @@ class Game_Temp
   attr_accessor :menu_calling             # menu calling flag
   attr_accessor :item_menu_calling        # item menu calling flag
   attr_accessor :travel_menu_calling      # fast travel menu calling flag
+  attr_accessor :window_settings_calling      # fast travel menu calling flag
   attr_accessor :menu_beep                # menu: play sound effect flag
   attr_accessor :save_calling             # save calling flag
   attr_accessor :debug_calling            # debug calling flag
@@ -102,6 +103,7 @@ class Game_Temp
     @menu_calling = false
     @item_menu_calling = false
     @travel_menu_calling = false
+    @window_settings_calling = false
     @menu_beep = false
     @save_calling = false
     @debug_calling = false

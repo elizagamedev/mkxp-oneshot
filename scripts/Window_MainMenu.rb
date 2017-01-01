@@ -134,9 +134,9 @@ class Window_MainMenu < Window_Selectable
         $game_temp.common_event_id = 15
         @fade_out = true
       else
-        $game_system.se_play($data_system.buzzer_se)
-        self.active = true
-        self.opacity = 255
+        $game_system.se_play($data_system.decision_se)
+        $game_temp.window_settings_calling = true
+        @fade_out = true
       end
       return
     end
