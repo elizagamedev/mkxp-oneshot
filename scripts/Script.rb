@@ -279,13 +279,17 @@ module Script
   def self.copy_journal
     Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games")
     Dir.mkdir(Oneshot::DOCS_PATH + "\\My Games\\Oneshot") unless File.exists?(Oneshot::DOCS_PATH + "\\My Games\\Oneshot")
-    File.open("_______.exe", "rb") do |input|
-      File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\_______.exe","wb") do |output|
-        while buff = input.read(4096)
-          output.write(buff)
+	begin
+      File.open("_______.exe", "rb") do |input|
+        File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\_______.exe","wb") do |output|
+          while buff = input.read(4096)
+            output.write(buff)
+          end
         end
       end
-    end
+	rescue Errno::EACCES => e
+	  #this probably means the clover.exe already exists and is running, so no need to create it again
+	end
 	if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
         File.open(Oneshot::DOCS_PATH + "\\My Games\\Oneshot\\README.txt","wb") do |output|
