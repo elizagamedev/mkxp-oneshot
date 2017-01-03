@@ -87,6 +87,7 @@ class Window_Settings
     @fade_out = false
 
     @transfer_player = nil
+	@visible = false
   end
 
   def dispose
@@ -132,6 +133,9 @@ class Window_Settings
   end
   
   def redraw_setting(spr, i)
+      if @visible == false
+	    return
+	  end
       spr.bitmap.clear
       spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
       spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
@@ -168,6 +172,12 @@ class Window_Settings
   end
   
   def redraw_setting_index(i)
+    if !@data_sprites.kind_of?(Array)
+	  return
+	end
+	if @data_sprites.length - 1 < i
+	  return
+	end
     redraw_setting(@data_sprites[i], i)
   end
 
@@ -304,8 +314,9 @@ class Window_Settings
 	        Graphics.fullscreen = true
 		    $console = true
 	      end
-	      sleep(0.100)
+	      sleep(0.500)
 		  redraw_setting_index(2)
+	      sleep(0.500)
 		end
 		
 	  when 3 #default movement
@@ -354,10 +365,11 @@ class Window_Settings
 
   # Attributes
   def visible
-    @viewport.visible
+    return @visible
   end
   def visible=(val)
     @viewport.visible = val
+	@visible = val
   end
   def opacity=(val)
     @bg.opacity = val

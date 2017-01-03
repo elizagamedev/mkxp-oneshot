@@ -245,9 +245,10 @@ class Scene_Map
 	    Graphics.fullscreen = true
 		$console = true
 	  end
+	  sleep(0.500)
 	  if @window_settings.visible
-	    sleep(0.100)
 	    @window_settings.redraw_setting_index(2)
+	    sleep(0.500)
 	  end
     end
     # If showing message window
