@@ -356,10 +356,10 @@ void Audio::setBGM_Volume(int value)
 	}
 	p->bgm_volume = value;
 	p->bgm.lockStream();
-	p->bgm.setVolume(AudioStream::External, ((float)(p->bgm_volume * p->current_bgm_volume))/10000.0f );
+	p->bgm.setVolume(AudioStream::Base, ((float)(p->bgm_volume * p->current_bgm_volume))/10000.0f );
 	p->bgm.unlockStream();
 	p->me.lockStream();
-	p->me.setVolume(AudioStream::External, ((float)(p->bgm_volume * p->current_me_volume))/10000.0f );
+	p->me.setVolume(AudioStream::Base, ((float)(p->bgm_volume * p->current_me_volume))/10000.0f );
 	p->me.unlockStream();
 }
 
@@ -377,7 +377,7 @@ void Audio::setSFX_Volume(int value)
 	}
 	p->sfx_volume = value;
 	p->bgs.lockStream();
-	p->bgs.setVolume(AudioStream::External, ((float)(p->sfx_volume * p->current_bgs_volume))/10000.0f );
+	p->bgs.setVolume(AudioStream::Base, ((float)(p->sfx_volume * p->current_bgs_volume))/10000.0f );
 	p->bgs.unlockStream();
 	
 }
