@@ -40,6 +40,7 @@ class Scene_Title
       $scene = Scene_Map.new
       return
     end
+	Window_Settings.load_settings
     # Make title graphic
     @sprite = Sprite.new
     @sprite.bitmap = RPG::Cache.title($data_system.title_name)

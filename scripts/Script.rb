@@ -287,7 +287,9 @@ module Script
           end
         end
       end
-    end
+	rescue Errno::EACCES => e
+	  #this probably means the clover.exe already exists and is running, so no need to create it again
+	end
 	if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
         File.open(Oneshot::GAME_PATH + "/Oneshot/README.txt","wb") do |output|

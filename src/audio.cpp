@@ -34,9 +34,16 @@
 
 struct AudioPrivate
 {
+	int bgm_volume;
+	int sfx_volume;
+
 	AudioStream bgm;
 	AudioStream bgs;
 	AudioStream me;
+
+	int current_bgm_volume;
+	int current_bgs_volume;
+	int current_me_volume;
 
 	SoundEmitter se;
 
@@ -69,6 +76,11 @@ struct AudioPrivate
 	      se(rtData.config),
 	      syncPoint(rtData.syncPoint)
 	{
+		bgm_volume = 100;
+		sfx_volume = 100;
+		current_bgm_volume = 100;
+		current_bgs_volume = 100;
+		current_me_volume = 100;
 		meWatch.state = MeNotPlaying;
 		meWatch.thread = createSDLThread
 			<AudioPrivate, &AudioPrivate::meWatchFun>(this, "audio_mewatch");
@@ -246,7 +258,8 @@ void Audio::bgmPlay(const char *filename,
                     int pitch,
                     float pos)
 {
-	p->bgm.play(filename, volume, pitch, pos);
+	p->current_bgm_volume = volume;
+	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
 }
 
 void Audio::bgmStop()
@@ -265,7 +278,8 @@ void Audio::bgsPlay(const char *filename,
                     int pitch,
                     float pos)
 {
-	p->bgs.play(filename, volume, pitch, pos);
+	p->current_bgs_volume = volume;
+	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos);
 }
 
 void Audio::bgsStop()
@@ -283,7 +297,8 @@ void Audio::mePlay(const char *filename,
                    int volume,
                    int pitch)
 {
-	p->me.play(filename, volume, pitch);
+	p->current_me_volume = volume;
+	p->me.play(filename, (volume*p->bgm_volume)/100, pitch);
 }
 
 void Audio::meStop()
@@ -301,7 +316,7 @@ void Audio::sePlay(const char *filename,
                    int volume,
                    int pitch)
 {
-	p->se.play(filename, volume, pitch);
+	p->se.play(filename, (volume*p->sfx_volume)/100, pitch);
 }
 
 void Audio::seStop()
@@ -325,6 +340,46 @@ void Audio::reset()
 	p->bgs.stop();
 	p->me.stop();
 	p->se.stop();
+}
+
+int Audio::getBGM_Volume() const
+{
+	return p->bgm_volume;
+}
+
+void Audio::setBGM_Volume(int value)
+{
+	if(value > 100){
+		value = 100;
+	}else if(value < 0){
+		value = 0;
+	}
+	p->bgm_volume = value;
+	p->bgm.lockStream();
+	p->bgm.setVolume(AudioStream::Base, ((float)(p->bgm_volume * p->current_bgm_volume))/10000.0f );
+	p->bgm.unlockStream();
+	p->me.lockStream();
+	p->me.setVolume(AudioStream::Base, ((float)(p->bgm_volume * p->current_me_volume))/10000.0f );
+	p->me.unlockStream();
+}
+
+int Audio::getSFX_Volume() const
+{
+	return p->sfx_volume;
+}
+
+void Audio::setSFX_Volume(int value)
+{
+	if(value > 100){
+		value = 100;
+	}else if(value < 0){
+		value = 0;
+	}
+	p->sfx_volume = value;
+	p->bgs.lockStream();
+	p->bgs.setVolume(AudioStream::Base, ((float)(p->sfx_volume * p->current_bgs_volume))/10000.0f );
+	p->bgs.unlockStream();
+	
 }
 
 Audio::~Audio() { delete p; }

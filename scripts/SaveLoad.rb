@@ -36,6 +36,9 @@ def fake_save
 end
 
 def save
+  if ($game_variables[3] == 0) #don't save if intro variable isn't set
+    return
+  end
   File.open(SAVE_FILE_NAME, 'wb') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
