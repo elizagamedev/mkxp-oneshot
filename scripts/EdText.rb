@@ -25,9 +25,9 @@ module EdText
       sleep 0.2
     end
     result = nil
+    text = Language.tr(text.to_s.gsub(/\s*\n\s*/, " ").strip)
     thread = Thread.new do
       result = Oneshot.msgbox(type, text
-          .gsub(/\s+\n\s+/, " ")
           .gsub("\\p", $game_oneshot.player_name) +
           " " * 10)
           # HACK: Fuck

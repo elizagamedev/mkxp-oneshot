@@ -38,6 +38,10 @@ class Persistent
     end
     Language.set(@lang)
   end
+  
+  def langcode
+  	self.lang.full.to_s
+  end
 
   # MARSHAL
   def marshal_dump
@@ -49,7 +53,7 @@ class Persistent
 
   # Save/Load global instance of persistent
   FILE_NAME = Oneshot::SAVE_PATH + '/persistent.dat'
-  def self.save
+  def save
     File.open(FILE_NAME, 'wb') do |file|
       Marshal.dump($persistent, file)
     end
