@@ -30,7 +30,6 @@ class Scene_Title
     # Load save game/initialize data
     $game_temp = Game_Temp.new
     new_game #unless load
-    load_perma_flags
     # Make system object
     $game_system = Game_System.new
     # Skip title screen if debug mode (or demo, but not GDC)
@@ -40,6 +39,7 @@ class Scene_Title
       $scene = Scene_Map.new
       return
     end
+    load_perma_flags
 	Window_Settings.load_settings
     # Make title graphic
     @sprite = Sprite.new

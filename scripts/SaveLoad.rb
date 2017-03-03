@@ -9,7 +9,7 @@ end
 def fake_save
   Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
   Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
-  File.open(FAKE_SAVE_NAME, 'wb') do |file|
+  File.open(FAKE_SAVE_NAME, 'wb+') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
     # Increase save count by 1
@@ -32,14 +32,50 @@ def fake_save
     Marshal.dump($game_fasttravel, file)
     Marshal.dump($game_temp.footstep_sfx , file)
   end
-  save_perma_flags
+  write_perma_flags(PERMA_FLAGS_NAME)
 end
 
 def save
   if ($game_variables[3] == 0) #don't save if intro variable isn't set
     return
   end
-  File.open(SAVE_FILE_NAME, 'wb') do |file|
+  write_save(SAVE_FILE_NAME)
+  write_perma_flags(PERMA_FLAGS_NAME)
+  
+  
+  Dir.mkdir(Oneshot::SAVE_PATH + "\\save_backups") unless File.exists?(Oneshot::SAVE_PATH + "\\save_backups")
+  i = 5
+  while i > 0
+    #delete save5.bk if it exists
+    if File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\save" + i.to_s + ".bk")
+	  File.delete(Oneshot::SAVE_PATH + "\\save_backups\\save" + i.to_s + ".bk")
+	end
+    #delete p-settings5.bk if it exists
+    if File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + i.to_s + ".bk")
+	  File.delete(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + i.to_s + ".bk")
+	end
+
+	#rename save4.bk to save5.bk if save4.bk exists
+    if File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\save" + (i-1).to_s + ".bk")
+	  File.rename(Oneshot::SAVE_PATH + "\\save_backups\\save" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "\\save_backups\\save" + i.to_s + ".bk" )
+	end
+	#rename p-settings4.bk to p-settings5.bk if save4.bk exists
+    if File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + (i-1).to_s + ".bk")
+	  File.rename(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + i.to_s + ".bk" )
+	end
+	
+    i -= 1
+  end
+  write_save(Oneshot::SAVE_PATH + "\\save_backups\\save1.bk")
+  write_perma_flags(Oneshot::SAVE_PATH + "\\save_backups\\p-settings1.bk")
+  
+end
+
+def write_save(filename)
+  if ($game_variables[3] == 0) #don't save if intro variable isn't set
+    return
+  end
+  File.open(filename, 'wb') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
     # Increase save count by 1
@@ -62,10 +98,9 @@ def save
     Marshal.dump($game_fasttravel, file)
     Marshal.dump($game_temp.footstep_sfx , file)
   end
-  save_perma_flags
 end
 
-def save_perma_flags
+def write_perma_flags(filename)
   perma_flags = Array.new(25, false)
   for i in 151..175
     perma_flags[i-151] = $game_switches[i]
@@ -76,16 +111,16 @@ def save_perma_flags
   end
   p_name = $game_oneshot.player_name
 
-  File.open(PERMA_FLAGS_NAME, 'wb') do |file|
+  File.open(filename, 'wb') do |file|
     Marshal.dump(perma_flags, file)
     Marshal.dump(perma_vars, file)
     Marshal.dump(p_name,file)
   end
 end
 
-def load
-  return false if !FileTest.exist?(SAVE_FILE_NAME) || $debug
-  File.open(SAVE_FILE_NAME, 'rb') do |file|
+def load(filename)
+  return false if !FileTest.exist?(filename) || $debug
+  File.open(filename, 'rb') do |file|
     # Read frame count for measuring play time
     Graphics.frame_count = Marshal.load(file)
     # Read each type of game object
@@ -119,16 +154,42 @@ def load
       f.moveto($game_player.x, $game_player.y)
     end
   end
-  load_perma_flags
   return true
 end
 
 def load_perma_flags
-  return false if !FileTest.exist?(PERMA_FLAGS_NAME)
+  
+	begin
+      read_perma_flags(PERMA_FLAGS_NAME)
+	rescue TypeError => e
+	  puts "oops: #{e.message}"
+	  EdText.err("p-settings.dat corrupt. Attempting to load backup.")
+	  for i in 1..6
+	    if !File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + (i).to_s + ".bk")
+	      EdText.err("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
+		  File.delete(PERMA_FLAGS_NAME)
+          Oneshot.allow_exit true
+          Kernel.abort("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
+		  break
+		end
+	    begin
+	      read_perma_flags(Oneshot::SAVE_PATH + "\\save_backups\\p-settings" + (i).to_s + ".bk")
+		  break
+	    rescue TypeError => e2
+	      puts "oops: #{e2.message}"
+	      EdText.err("p-settings" + (i).to_s + ".bk corrupt. Attempting to load backup.")
+		end
+	  end
+	end
+	
+end
+
+def read_perma_flags(filename)
+  return false if !FileTest.exist?(filename)
   perma_flags = nil
   perma_vars = nil
   p_name = nil
-  File.open(PERMA_FLAGS_NAME, 'rb') do |file|
+  File.open(filename, 'rb') do |file|
     perma_flags      = Marshal.load(file)
     perma_vars       = Marshal.load(file)
     p_name           = Marshal.load(file)
@@ -143,7 +204,34 @@ def load_perma_flags
 end
 
 def real_load
-    load
+
+#load save data
+	begin
+      load(SAVE_FILE_NAME)
+	rescue TypeError => e
+	  puts "oops: #{e.message}"
+	  EdText.err("save.dat corrupt. Attempting to load backup.")
+	  for i in 1..6
+	    if !File.exists?(Oneshot::SAVE_PATH + "\\save_backups\\save" + (i).to_s + ".bk")
+	      EdText.err("All save backups corrupt!  Deleting corrupt save and shutting down.")
+		  File.delete(SAVE_FILE_NAME)
+          Oneshot.allow_exit true
+          Kernel.abort("All save backups corrupt!  Deleting corrupt save file and shutting down.")
+		  break
+		end
+	    begin
+	      load(Oneshot::SAVE_PATH + "\\save_backups\\save" + (i).to_s + ".bk")
+		  break
+	    rescue TypeError => e2
+	      puts "oops: #{e2.message}"
+	      EdText.err("save" + (i).to_s + ".bk corrupt. Attempting to load backup.")
+		end
+	  end
+	end
+	
+	load_perma_flags
+	
+	
     # Restore BGM and BGS
     # switch 181 or 183 or 186 means its time for a dream, so no BGM
 
