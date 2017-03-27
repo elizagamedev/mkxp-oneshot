@@ -41,12 +41,15 @@ class Game_Player < Game_Character
   # * Set Map Display Position to Center of Screen
   #--------------------------------------------------------------------------
   def center(x, y)
-    #max_x = ($game_map.width - 20) * 128
-    #max_y = ($game_map.height - 15) * 128
-    #$game_map.display_x = [0, [x * 128 - CENTER_X, max_x].min].max
-    #$game_map.display_y = [0, [y * 128 - CENTER_Y, max_y].min].max
-    $game_map.display_x = x * 128 - CENTER_X
-    $game_map.display_y = y * 128 - CENTER_Y
+	if $game_switches[98] == true
+      max_x = ($game_map.width - 20) * 128
+      max_y = ($game_map.height - 15) * 128
+      $game_map.display_x = [0, [x * 128 - CENTER_X, max_x].min].max
+      $game_map.display_y = [0, [y * 128 - CENTER_Y, max_y].min].max
+	else
+      $game_map.display_x = x * 128 - CENTER_X
+      $game_map.display_y = y * 128 - CENTER_Y
+	end
   end
   #--------------------------------------------------------------------------
   # * Move to Designated Position
@@ -186,13 +189,21 @@ class Game_Player < Game_Character
         # Move player in the direction the directional button is being pressed
         case Input.dir4
         when 2
-          move_down
+		  if $game_switches[112] == false
+            move_down
+		  else
+		    turn_down
+		  end
         when 4
           move_left
         when 6
           move_right
         when 8
-          move_up
+		  if $game_switches[112] == false
+            move_up
+		  else
+		    turn_up
+		  end
         end
       end
     else
@@ -258,7 +269,7 @@ class Game_Player < Game_Character
   def emit_footstep
     return unless $game_temp.footstep_sfx
     tag = $game_map.terrain_tag(@x, @y) - 1
-    if tag >= 0 && tag < $game_temp.footstep_sfx.size
+    if tag >= 0 && tag < $game_temp.footstep_sfx.size 
       name = $game_temp.footstep_sfx[tag]
       if name.kind_of?(Array)
         name, volume = name
@@ -270,6 +281,16 @@ class Game_Player < Game_Character
       end
       pitch = 85 + rand(30)
       vol = 70 + rand(20)
+	  if $game_switches[112] == true
+	    name = "wheel_squeak1"
+		pitch = 120 + rand(10)
+		if @wheel_squeak != true
+		  pitch += 10
+		  @wheel_squeak = true
+		else
+		  @wheel_squeak = false
+		end
+	  end
       Audio.se_play("Audio/SE/#{name}.wav", (vol * volume).to_i, pitch.to_i)
     end
     emit_footsplash(@direction)

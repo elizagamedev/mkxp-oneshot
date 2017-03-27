@@ -19,7 +19,11 @@ class Window_NameEdit < Window_Base
   def initialize
     super(0, 0, 640, 128)
     self.contents = Bitmap.new(width - 32, height - 32)
-    @name = $game_oneshot.player_name
+	if $game_switches[91]
+	  @name = ""
+	else
+      @name = $game_oneshot.player_name
+	end
     @max_char = 16
     # Fit name within maximum number of characters
     name_array = @name.split(//)[0...@max_char]
