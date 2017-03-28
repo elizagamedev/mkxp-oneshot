@@ -262,7 +262,7 @@ class Scene_Map
       if !@menu.visible && Input.trigger?(Input::MENU)
         $game_temp.menu_calling = true
         $game_temp.menu_beep = true
-      elsif !@item_menu.visible && Input.trigger?(Input::ITEMS)
+      elsif !@item_menu.visible && Input.trigger?(Input::ITEMS) && ($game_switches[174] == false)
         $game_temp.item_menu_calling = true
         $game_temp.menu_beep = true
       end
@@ -506,6 +506,9 @@ class Scene_Map
   end
   def new_footsplash(direction, x, y)
     @spriteset.new_footsplash(direction, x, y)
+  end
+  def new_maptext(text, x, y)
+    @spriteset.new_maptext(text, x, y)
   end
   def fix_footsplashes(xDelt, yDelt)
     @spriteset.fix_footsplashes(xDelt, yDelt)

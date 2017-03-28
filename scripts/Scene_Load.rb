@@ -95,9 +95,11 @@ class Scene_Load < Scene_File
     # Refresh party members
     $game_party.refresh
 
+	f_prev = $game_player
     for f in $game_followers
-      f.leader = $game_player
+      f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
+	  f_prev = f
     end
     load_perma_flags
   end
