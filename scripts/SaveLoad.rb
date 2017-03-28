@@ -4,7 +4,7 @@ FAKE_SAVE_NAME = Oneshot::DOCS_PATH + '\\My Games\\Oneshot\\save_progress.onesho
 
 
 def erase_game
-  File.delete(SAVE_FILE_NAME)
+  File.delete(SAVE_FILE_NAME) unless !File.exists?(SAVE_FILE_NAME)
 end
 
 def fake_save
@@ -42,7 +42,6 @@ def save
   end
   write_save(SAVE_FILE_NAME)
   write_perma_flags(PERMA_FLAGS_NAME)
-  
   
   Dir.mkdir(Oneshot::SAVE_PATH + "\\save_backups") unless File.exists?(Oneshot::SAVE_PATH + "\\save_backups")
   i = 5
@@ -150,9 +149,11 @@ def load(filename)
     # Refresh party members
     $game_party.refresh
 
+	f_prev = $game_player
     for f in $game_followers
-      f.leader = $game_player
+      f.leader = f_prev
       f.moveto($game_player.x, $game_player.y)
+	  f_prev = f
     end
   end
   return true

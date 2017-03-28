@@ -54,6 +54,9 @@ class Scene_Title
     if !$GDC
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 28, 150, 24, tr("Exit"))
     end
+	if $game_switches[160] && $game_switches[152]
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 56, 150, 24, tr("..."))
+	end
     # Make cursor graphic
     @cursor = Sprite.new
     @cursor.zoom_x = @cursor.zoom_y = 2
@@ -111,10 +114,18 @@ class Scene_Title
           update_cursor = true
         end
       elsif Input.trigger?(Input::DOWN)
-        if @cursor_pos < 1
-          @cursor_pos += 1
-          update_cursor = true
-        end
+	    
+	    if $game_switches[160] && $game_switches[152]
+          if @cursor_pos < 2
+            @cursor_pos += 1
+            update_cursor = true
+          end
+	    else
+          if @cursor_pos < 1
+            @cursor_pos += 1
+            update_cursor = true
+          end
+		end
       end
       if Input.trigger?(Input::F8)
         if Graphics.fullscreen == true
@@ -135,9 +146,13 @@ class Scene_Title
     if Input.trigger?(Input::ACTION)
       case @cursor_pos
       when 0  # Continue
+	    $game_switches[157] = false
         command_continue
       when 1  # Shutdown
         command_shutdown
+      when 2  # memory
+	    $game_switches[157] = true
+        command_continue
       end
     end
   end

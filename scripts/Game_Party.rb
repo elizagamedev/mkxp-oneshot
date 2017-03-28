@@ -134,15 +134,17 @@ class Game_Party
       follower = $game_followers.pop
       $scene.remove_follower(follower)
       new_actor = follower.actor
-      $game_followers.reverse_each do |follower|
-        new_actor, follower.actor = follower.actor, new_actor
-        break if new_actor == actor
-      end
+	  if new_actor != actor
+        $game_followers.reverse_each do |follower|
+          new_actor, follower.actor = follower.actor, new_actor
+          break if new_actor == actor
+        end
+	  end
     end
     # Delete actor
     @actors.delete(actor)
     # Refresh player
-    $game_player.refresh
+    # $game_player.refresh
   end
   #--------------------------------------------------------------------------
   # * Gain Gold (or lose)

@@ -30,6 +30,8 @@ class Game_Map
   attr_accessor :particles_type           # particles name
   attr_accessor :clamped_x                # panorama is horizontally clamped?
   attr_accessor :clamped_y                # panorama is vertically clamped?
+  attr_accessor :always_moving            # panorama is always moving
+  attr_accessor :pan_move_offset          # panorama moving offset
   attr_accessor :pan_onetoone             # panorama is 1:1
   attr_accessor :pan_animate              # panorama is animated
   attr_accessor :pan_fade_animate         # panorama is fade animated
@@ -72,6 +74,10 @@ class Game_Map
   NOZOOM = [
     'dark_water',
     #'green_water',
+  ]
+  
+  ALWAYS_MOVING = [
+    'codebg'
   ]
   #--------------------------------------------------------------------------
   # * Object Initialization
@@ -159,6 +165,10 @@ class Game_Map
       @clamped_x = false
       @clamped_y = false
     end
+	
+	@always_moving = ALWAYS_MOVING.include? @panorama_name
+	@pan_move_offset = 0
+	
     # Animated/One-to-one/zoom
     @pan_animate = ANIMATED.include? @panorama_name
     @pan_fade_animate = FADE_ANIMATION_PANORAMA.include? @panorama_name
@@ -250,37 +260,51 @@ class Game_Map
     # Clear refresh request flag
     @need_refresh = false
   end
+  
+  
   #--------------------------------------------------------------------------
   # * Scroll Down
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_down(distance)
-    #@display_y = [@display_y + distance, (self.height - 15) * 128].min
-    @display_y += distance
+	if $game_switches[98] == true
+      @display_y = [@display_y + distance, (self.height - 15) * 128].min
+	else
+      @display_y += distance
+	end
   end
   #--------------------------------------------------------------------------
   # * Scroll Left
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_left(distance)
-    #@display_x = [@display_x - distance, 0].max
-    @display_x -= distance
+	if $game_switches[98] == true
+      @display_x = [@display_x - distance, 0].max
+	else
+      @display_x -= distance
+	end
   end
   #--------------------------------------------------------------------------
   # * Scroll Right
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_right(distance)
-    #@display_x = [@display_x + distance, (self.width - 20) * 128].min
-    @display_x += distance
+	if $game_switches[98] == true
+      @display_x = [@display_x + distance, (self.width - 20) * 128].min
+	else
+      @display_x += distance
+	end
   end
   #--------------------------------------------------------------------------
   # * Scroll Up
   #     distance : scroll distance
   #--------------------------------------------------------------------------
   def scroll_up(distance)
-    #@display_y = [@display_y - distance, 0].max
-    @display_y -= distance
+	if $game_switches[98] == true
+      @display_y = [@display_y - distance, 0].max
+	else
+      @display_y -= distance
+	end
   end
   #--------------------------------------------------------------------------
   # * Determine Valid Coordinates

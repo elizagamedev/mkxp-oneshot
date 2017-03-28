@@ -74,6 +74,7 @@ class Spriteset_Map
     @timer_sprite = Sprite_Timer.new
     # Make lightbulb sprite
     @bulb = Sprite.new(@viewport_lights)
+	@bulb.x = -80
     @bulb.bitmap = RPG::Cache.light('bulb')
     @bulb.opacity = has_lightbulb? ? 255 : 0
     # Panorama animation timer
@@ -230,21 +231,24 @@ class Spriteset_Map
       end
     end
     # Update bg plane
-    @bg.x = -$game_map.display_x / 4
-    @bg.y = -$game_map.display_y / 4
+    @bg.x = (-$game_map.display_x / 4) 
+    @bg.y = (-$game_map.display_y / 4) 
     # Update tilemap
     @tilemap.ox = $game_map.display_x / 4
     @tilemap.oy = $game_map.display_y / 4
     @tilemap.update
     # Update panorama plane
+	if $game_map.always_moving
+	  $game_map.pan_move_offset += 1
+	end
     if $game_map.clamped_x
-      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - 640)
+      x = ($game_player.real_x.to_f / (($game_map.width  - 1) * 128)) * (@panorama.bitmap.width * $game_map.pan_zoom - 640) 
       @panorama.ox = x < 0.0 ? 0.0 : x
     else
       @panorama.ox = $game_map.display_x / ($game_map.pan_onetoone ? 4 : 8)
     end
     if $game_map.clamped_y
-      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - 480)
+      y = ($game_player.real_y.to_f / (($game_map.height - 1) * 128)) * (@panorama.bitmap.height * $game_map.pan_zoom  - 480) 
       @panorama.oy = y < 0.0 ? 0.0 : y
     else
       @panorama.oy = $game_map.pan_offset_y + $game_map.display_y / ($game_map.pan_onetoone ? 4 : 8)
@@ -350,6 +354,9 @@ class Spriteset_Map
   #--------------------------------------------------------------------------
   def new_footprint(direction, x, y)
     @footprint_sprites << Sprite_Footprint.new(@viewport, direction, x, y)
+  end
+  def new_maptext(text, x, y)
+    @footprint_sprites << Sprite_MapText.new(@viewport, text, x, y)
   end
   def new_footsplash(direction, x, y)
     @footprint_sprites << Sprite_Footsplash.new(@viewport, direction, x, y)

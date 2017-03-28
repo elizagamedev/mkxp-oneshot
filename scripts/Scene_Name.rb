@@ -75,7 +75,11 @@ class Scene_Name
             return
           end
           # Change actor name
-          $game_oneshot.player_name = @edit_window.name
+		  if $game_switches[91]
+		    $game_temp.countdown_password = @edit_window.name
+		  else
+            $game_oneshot.player_name = @edit_window.name
+		  end
           # Play decision SE
           $game_system.se_play($data_system.decision_se)
           # Switch to map screen

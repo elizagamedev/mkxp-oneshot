@@ -65,6 +65,7 @@ class Game_Temp
   attr_accessor :filmsprite               # film puzzle sprite
   attr_accessor :prompt_wait              # wait for delay caused by prompt
   attr_accessor :menus_visible
+  attr_accessor :countdown_password
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -123,6 +124,7 @@ class Game_Temp
     @filmsprite = nil
     @prompt_wait = 0
 	@menus_visible = false
+	@countdown_password = ""
   end
 
   def bgm_fadein(game_system)
