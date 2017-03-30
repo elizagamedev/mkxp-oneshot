@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 QT =
-TARGET = oneshot
+TARGET = OneShot
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
@@ -42,7 +42,7 @@ unix {
 		#CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL
-		QMAKE_LFLAGS += -L/usr/local/opt/ruby21/lib -L/usr/local/opt/openal-soft/lib
+		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
 	}
 	!macx: {
 		PKGCONFIG += openal zlib
