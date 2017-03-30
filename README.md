@@ -2,6 +2,8 @@
 
 This is a specialized fork of [mkxp by Ancurio](https://github.com/Ancurio/mkxp) for the upcoming game [*OneShot*](http://oneshot-game.com/).
 
+Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux [reimplementation of the journal program](https://github.com/hunternet93/OneShot-Journal)!
+
 > mkxp is a project that seeks to provide a fully open source implementation of the Ruby Game Scripting System (RGSS) interface used in the popular game creation software "RPG Maker XP", "RPG Maker VX" and "RPG Maker VX Ace" (trademark by Enterbrain, Inc.), with focus on Linux. The goal is to be able to run games created with the above software natively without changing a single file.
 >
 > It is licensed under the GNU General Public License v2+.
