@@ -3,7 +3,7 @@
 # Translator class: translate text to another language
 
 # for debug REMOVE BEFORE COMMITTING
-require "zlib"
+# require "zlib"
 
 class Language
   FONT_WESTERN = 'Terminus (TTF)'
@@ -67,13 +67,13 @@ class Language
     end
 
     def dbg_print(str)
-      dbg = IO.new(STDERR.fileno)
-      if str.nil?
-        dbg.write("null\n")
-      else
-        dbg.write(str.to_s + "\n")
-      end
-      dbg.close()
+      # dbg = IO.new(STDERR.fileno)
+      # if str.nil?
+      #   dbg.write("null\n")
+      # else
+      #   dbg.write(str.to_s + "\n")
+      # end
+      # dbg.close()
     end
 
     def register_text_sprite(key, spr)
@@ -94,7 +94,9 @@ class Language
       elsif sprites.kind_of?(Hash)
         sprites.each_value do |spr|
           if spr.kind_of?(Sprite)
-             spr.bitmap.font.name = Font.default_name
+            spr.bitmap.font.name = Font.default_name
+          elsif spr.kind_of?(Bitmap)
+            spr.font.name = Font.default_name
           end
         end
       elsif sprites.kind_of?(Sprite)

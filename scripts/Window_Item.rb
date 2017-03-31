@@ -197,8 +197,9 @@ class Window_Item < Window_Selectable
   # * Open
   #--------------------------------------------------------------------------
   def open
+    update_help
     refresh
-
+	
     # Search for selected item and auto-select
     if $game_variables[1] > 0
       @data.each_with_index do |item, i|

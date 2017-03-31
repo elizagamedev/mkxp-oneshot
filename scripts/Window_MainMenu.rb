@@ -20,6 +20,7 @@ class Window_MainMenu < Window_Selectable
 
     # Render menu
     self.contents = Bitmap.new(width - 32, 32)
+    Language.register_text_sprite(self.class.name + "_contents", self.contents)
     for i in 0...@item_max
       draw_item(i, normal_color)
     end
