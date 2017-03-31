@@ -13,12 +13,15 @@ Makefile*
 /oneshot
 /steamshim_parent/steamshim
 
+__pycache__
 /build*
+/dist
 /debug
 /release
 
 object_script.*
 rpgscript.bat
+xScripts.rxdata
 
 .qmake.stash
 CMakeCache.txt
