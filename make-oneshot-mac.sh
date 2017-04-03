@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mac_version="0.3.1"
+mac_version="0.3.2"
 
 # Generate makefile and build main + journal
 qmake MRIVERSION=2.3

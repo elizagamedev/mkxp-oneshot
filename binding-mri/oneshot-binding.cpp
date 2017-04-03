@@ -83,8 +83,8 @@ RB_METHOD(oneshotGetWindowPos)
     int x, y;
     SDL_GetWindowPosition(shState->rtData().window, &x, &y);
     VALUE ary = rb_ary_new();
-    rb_ary_push(ary,rb_fix_new(x));
-    rb_ary_push(ary,rb_fix_new(y));
+    rb_ary_push(ary, rb_int_new(x));
+    rb_ary_push(ary, rb_int_new(y));
     return ary;
 }
 

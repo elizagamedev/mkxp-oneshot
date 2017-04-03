@@ -31,6 +31,6 @@
 		<key>NSHumanReadableCopyright</key>
 		<string>Copyright © 2017, OneShot team, all rights reserved.  View CREDITS.txt for more.  Ported for macOS by Vinyl Darkscratch.</string>
 		<key>NSHighResolutionCapable</key>
-		<string>False</string>
+		<string>True</string>
 	</dict>
 </plist>
