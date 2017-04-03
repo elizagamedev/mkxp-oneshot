@@ -35,6 +35,7 @@ Sprite_Timer
 Sprite_Light
 Sprite_Footprint
 Sprite_Footsplash
+Sprite_MapText
 Spriteset_Map
 
 FastTravel

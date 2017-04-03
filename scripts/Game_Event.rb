@@ -23,6 +23,7 @@ class Game_Event < Game_Character
   #--------------------------------------------------------------------------
   def initialize(map_id, event)
     super()
+	@made_text = false
     @map_id = map_id
     @event = event
     @id = @event.id
@@ -239,6 +240,14 @@ class Game_Event < Game_Character
   #--------------------------------------------------------------------------
   def update
     super
+	
+	if(@made_text == false && @event.name.start_with?("@text"))
+	  if @list.size > 1 && @list[0].code == 101
+        $scene.new_maptext(Language.tr(@list[0].parameters[0].strip), @x, @y)
+		@list.delete_at(0)
+      end
+	  @made_text = true
+	end
     # Automatic event starting determinant
     check_event_trigger_auto
     # If parallel process is valid

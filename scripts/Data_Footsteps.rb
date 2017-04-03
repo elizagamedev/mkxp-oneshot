@@ -12,7 +12,8 @@ FOOTSTEP_SFX = [
   # Green
   ['step_grass',
    'step_wood',
-   'step_gravel'],
+   'step_gravel',
+   'step_boat'],
   # Green Interior
   ['step_grass',
    'step_tile'],
@@ -58,6 +59,15 @@ FOOTSTEP_SFX = [
   # Start Tower
   ['step_wood',
    'step_tile'],
+  # Start line
+  [],
+  # Green mineshaft
+  ['step_gravel',
+   'step_wood'],
+  # Green interior boat
+  ['step_gravel',
+   'step_wood',
+   'step_boat'],
 ]
 
 FOOTSTEP_AMT = {
