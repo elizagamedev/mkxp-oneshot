@@ -68,16 +68,16 @@ RB_METHOD(oneshotShake)
 	return Qnil;
 }
 
-RB_METHOD(oneshotmovewindow)
+RB_METHOD(oneshotSetWindowPos)
 {
     RB_UNUSED_PARAM;
     int x, y;
-    rb_get_args(argc, argv, "ii", &x, &y, RB_ARG_END);
+    rb_get_args(argc, argv, "ii", &x, &y RB_ARG_END);
     SDL_SetWindowPosition(shState->rtData().window, x, y);
     return Qnil;
 }
 
-RB_METHOD(oneshotgetwindowpos)
+RB_METHOD(oneshotGetWindowPos)
 {
     RB_UNUSED_PARAM;
     int x, y;
@@ -112,6 +112,6 @@ void oneshotBindingInit()
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
 	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
 	_rb_define_module_function(module, "shake", oneshotShake);
-	_rb_define_module_function(module, "getwinpos", oneshotgetwindowpos);
-	_rb_define_module_function(module, "setwinpos", oneshotmovewindow);
+	_rb_define_module_function(module, "setwinpos", oneshotSetWindowPos);
+	_rb_define_module_function(module, "getwinpos", oneshotGetWindowPos);
 }
