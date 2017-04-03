@@ -112,4 +112,6 @@ void oneshotBindingInit()
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
 	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
 	_rb_define_module_function(module, "shake", oneshotShake);
+	_rb_define_module_function(module, "getwinpos", oneshotgetwindowpos);
+	_rb_define_module_function(module, "setwinpos", oneshotmovewindow);
 }
