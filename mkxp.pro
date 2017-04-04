@@ -39,7 +39,6 @@ unix {
 				 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
 	LIBS += -ldl
 	macx: {
-		#CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL
 		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib

@@ -4,6 +4,7 @@ set -e
 # User-configurable variables
 mac_version="0.3.3"
 steam_game_dir=~/Library/Application\ Support/Steam/SteamApps/common/OneShot
+make_threads=4
 
 # Colors
 white="\033[0;37m"      # White - Regular
@@ -18,7 +19,7 @@ echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for m
 echo "-> ${cyan}Generate makefile...${color_reset}"
 qmake MRIVERSION=2.3
 echo "-> ${cyan}Compile engine...${color_reset}"
-make -j4
+make -j${make_threads}
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/mac/journal.spec --onefile --windowed
 
@@ -31,8 +32,8 @@ cp -r dist/_______.app _______.app
 
 # Set version number
 echo "-> ${cyan}Set version number...${color_reset}"
-rm OneShot.app/Contents/Info.plist
-rm _______.app/Contents/Info.plist
+rm -f OneShot.app/Contents/Info.plist
+rm -f _______.app/Contents/Info.plist
 m4 patches/mac/Info.plist.in -DONESHOTMACVERSION=$mac_version > OneShot.app/Contents/Info.plist
 m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.app/Contents/Info.plist
 
@@ -43,17 +44,17 @@ ruby rpgscript.rb ./scripts "${steam_game_dir}"
 # Install to Steam directory
 echo "-> ${cyan}Install to Steam directory...${color_reset}"
 cp "${steam_game_dir}/Data/xScripts.rxdata" .
-rm -r "${steam_game_dir}/OneShot.app"
-rm -r "${steam_game_dir}/_______.app"
+rm -rf "${steam_game_dir}/OneShot.app"
+rm -rf "${steam_game_dir}/_______.app"
 cp -r OneShot.app "${steam_game_dir}/OneShot.app"
 cp -r _______.app "${steam_game_dir}/_______.app"
 
 # Cleanup
 echo "-> ${cyan}Cleanup files...${color_reset}"
 # make clean
-rm -r OneShot_new.app
-rm -r journal/mac/__pycache__
-rm -r build
-rm -r dist
+rm -rf OneShot_new.app
+rm -rf journal/mac/__pycache__
+rm -rf build
+rm -rf dist
 
 echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/mkxp-oneshot/issues${color_reset}"
