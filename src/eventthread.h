@@ -238,6 +238,9 @@ struct RGSSThreadData
 	/* Set when attempting to exit and allowExit is false */
 	AtomicFlag triedExit;
 
+	/* True if accepting text input */
+	AtomicFlag acceptingTextInput;
+
 	EventThread *ethread;
 	UnidirMessage<Vec2i> windowSizeMsg;
 	UnidirMessage<BDescVec> bindingUpdateMsg;
@@ -255,6 +258,8 @@ struct RGSSThreadData
 	Config config;
 
 	std::string rgssErrorMsg;
+	std::string inputText;
+	int inputTextLimit;
 
 	RGSSThreadData(EventThread *ethread,
 	               const char *argv0,

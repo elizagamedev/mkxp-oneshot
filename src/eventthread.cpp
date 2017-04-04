@@ -282,6 +282,10 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			break;
 
+		case SDL_TEXTINPUT:
+			if (rtData.inputText.length() < rtData.inputTextLimit) rtData.inputText += event.text.text;
+			break;
+
 		case SDL_KEYDOWN :
 			if (event.key.keysym.scancode == SDL_SCANCODE_F1)
 			{
@@ -336,6 +340,15 @@ void EventThread::process(RGSSThreadData &rtData)
 				resetting = true;
 				rtData.rqResetFinish.clear();
 				rtData.rqReset.set();
+				break;
+			}
+
+			if (rtData.acceptingTextInput) {
+				if (event.key.keysym.sym == SDLK_BACKSPACE && rtData.inputText.length() > 0)
+					rtData.inputText.pop_back();
+				else if (event.key.keysym.sym == SDLK_RETURN)
+					rtData.acceptingTextInput.clear();
+
 				break;
 			}
 
