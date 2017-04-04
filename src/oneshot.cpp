@@ -232,7 +232,7 @@ struct OneshotPrivate
 	std::string txtYes;
 	std::string txtNo;
 
-	//Allow exiting game
+	bool exiting;
 	bool allowExit;
 
 	//Alpha texture data for portions of window obscured by screen edges
@@ -500,6 +500,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winY = 0;
 	p->winPosChanged = false;
 	p->allowExit = true;
+	p->exiting = false;
 
 	/********************
 	 * USERNAME/DOCS PATH
@@ -763,6 +764,11 @@ bool Oneshot::obscuredCleared() const
 	return p->obscuredCleared;
 }
 
+bool Oneshot::exiting() const
+{
+	return p->exiting;
+}
+
 bool Oneshot::allowExit() const
 {
 	return p->allowExit;
@@ -772,6 +778,18 @@ void Oneshot::setYesNo(const char *yes, const char *no)
 {
 	p->txtYes = yes;
 	p->txtNo = no;
+}
+
+void Oneshot::setExiting(bool exiting)
+{
+	if (p->exiting != exiting) {
+		p->exiting = exiting;
+		if (exiting) {
+			threadData.exiting.set();
+		} else {
+			threadData.exiting.clear();
+		}
+	}
 }
 
 void Oneshot::setAllowExit(bool allowExit)

@@ -104,10 +104,12 @@ public:
 	const std::vector<uint8_t> &obscuredMap() const;
 	bool obscuredCleared() const;
 	bool allowExit() const;
+	bool exiting() const;
 
 	//Mutators
 	void setYesNo(const char *yes, const char *no);
 	void setWindowPos(int x, int y);
+	void setExiting(bool exiting);
 	void setAllowExit(bool allowExit);
 	void resetObscured();
 

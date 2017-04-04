@@ -232,6 +232,9 @@ struct RGSSThreadData
 	/* Set when F12 is released */
 	AtomicFlag rqResetFinish;
 
+	/* True if we're currently exiting */
+	AtomicFlag exiting;
+
 	/* True if exiting is allowed */
 	AtomicFlag allowExit;
 

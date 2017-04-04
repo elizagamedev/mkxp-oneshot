@@ -64,6 +64,15 @@ RB_METHOD(oneshotAllowExit)
 	return Qnil;
 }
 
+RB_METHOD(oneshotExiting)
+{
+    RB_UNUSED_PARAM;
+    bool exiting;
+    rb_get_args(argc, argv, "b", &exiting RB_ARG_END);
+    shState->oneshot().setExiting(exiting);
+    return Qnil;
+}
+
 RB_METHOD(oneshotShake)
 {
 	RB_UNUSED_PARAM;
@@ -122,7 +131,8 @@ void oneshotBindingInit()
     _rb_define_module_function(module, "textinput", oneshotTextInput);
 	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
-	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);
+    _rb_define_module_function(module, "allow_exit", oneshotAllowExit);
+	_rb_define_module_function(module, "exiting", oneshotExiting);
 	_rb_define_module_function(module, "shake", oneshotShake);
 	_rb_define_module_function(module, "setwinpos", oneshotSetWindowPos);
 	_rb_define_module_function(module, "getwinpos", oneshotGetWindowPos);
