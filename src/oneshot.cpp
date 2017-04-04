@@ -6,6 +6,8 @@
 
 #include "eventthread.h"
 #include "debugwriter.h"
+#include "bitmap.h"
+#include "font.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -925,65 +927,86 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 #endif
 }
 
-std::string Oneshot::textinput(const char* prompt, int char_limit, const char* font) {
-	SDL_Color textColor = {0xFF, 0xFF, 0xFF, 0xFF}; //Set text color as black
-	SDL_Renderer *gRenderer = SDL_CreateRenderer(threadData.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	// SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	LTexture gPromptTextTexture;
-	LTexture gInputTextTexture;
+std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
+	// SDL_Color textColor = {0xFF, 0xFF, 0xFF, 0xFF}; //Set text color as black
+	// SDL_Renderer *gRenderer = SDL_CreateRenderer(threadData.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	// // SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	// LTexture gPromptTextTexture;
+	// LTexture gInputTextTexture;
 
-	//Open the font
-	TTF_Font *gFont = TTF_OpenFont("VL-Gothic-Regular.ttf", 18); // XXX Implement font changing
-	if (gFont == NULL) {
-		printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
-		// success = false;
-	} else {
-		//Render the prompt
-		if (!gPromptTextTexture.loadFromRenderedText(prompt, textColor, gRenderer, gFont)) {
-			printf("Failed to render prompt text!\n");
-			// success = false;
-		}
-	}
+	// //Open the font
+	// TTF_Font *gFont = TTF_OpenFont("VL-Gothic-Regular.ttf", 18); // XXX Implement font changing
+	// if (gFont == NULL) {
+	// 	printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+	// 	// success = false;
+	// } else {
+	// 	//Render the prompt
+	// 	if (!gPromptTextTexture.loadFromRenderedText(prompt, textColor, gRenderer, gFont)) {
+	// 		printf("Failed to render prompt text!\n");
+	// 		// success = false;
+	// 	}
+	// }
 
-	gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
-	SDL_StartTextInput();
+	// gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
+	
+	std::vector<std::string> *fontNames = new std::vector<std::string>();
+	fontNames->push_back("VL Gothic");
+	Font *font = new Font(fontNames, 18);
+
+	Bitmap *promptBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	promptBmp->setInitFont(font);
+	promptBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, prompt, 1);
+
+	Bitmap *inputBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	inputBmp->setInitFont(font);
+	inputBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, "", 1);
+
+	std::string inputTextPrev = std::string("");
 	threadData.acceptingTextInput.set();
 	threadData.inputTextLimit = char_limit;
 	threadData.inputText.clear();
+	SDL_StartTextInput();
 
 	//Main loop
 	while (threadData.acceptingTextInput) {
-		if (threadData.inputText.length() > 0) gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
-		else gInputTextTexture.loadFromRenderedText(" ", textColor, gRenderer, gFont);
+		if (inputTextPrev != threadData.inputText) {
+			inputBmp->clear();
+			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
+			inputTextPrev = threadData.inputText;
+			// if (threadData.inputText.length() > 0) gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
+			// else gInputTextTexture.loadFromRenderedText(" ", textColor, gRenderer, gFont);
+		}
 
-		//Clear screen
-		// SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(gRenderer);
+		// //Clear screen
+		// // SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		// SDL_RenderClear(gRenderer);
 
-		//Render text textures
-		gPromptTextTexture.render(gRenderer, (DEF_SCREEN_W - gPromptTextTexture.getWidth()) / 2,
-		                          (DEF_SCREEN_H / 2) - gPromptTextTexture.getHeight());
-		gInputTextTexture.render(gRenderer, (DEF_SCREEN_W - gInputTextTexture.getWidth()) / 2,
-		                         (DEF_SCREEN_H / 2));
+		// //Render text textures
+		// gPromptTextTexture.render(gRenderer, (DEF_SCREEN_W - gPromptTextTexture.getWidth()) / 2,
+		//                           (DEF_SCREEN_H / 2) - gPromptTextTexture.getHeight());
+		// gInputTextTexture.render(gRenderer, (DEF_SCREEN_W - gInputTextTexture.getWidth()) / 2,
+		//                          (DEF_SCREEN_H / 2));
 
-		//Update screen
-		SDL_RenderPresent(gRenderer);
+		// //Update screen
+		// SDL_RenderPresent(gRenderer);
 	}
 
 	//Disable text input
 	SDL_StopTextInput();
 
-	//Free loaded images
-	gPromptTextTexture.free();
-	gInputTextTexture.free();
+	// //Free loaded images
+	// gPromptTextTexture.free();
+	// gInputTextTexture.free();
 
-	//Free global font
-	TTF_CloseFont(gFont);
-	gFont = NULL;
+	// //Free global font
+	// TTF_CloseFont(gFont);
+	// gFont = NULL;
 
-	//Destroy renderer
-	SDL_DestroyRenderer(gRenderer);
-	gRenderer = NULL;
+	// //Destroy renderer
+	// SDL_DestroyRenderer(gRenderer);
+	// gRenderer = NULL;
+	// delete promptBmp;
+	// delete inputBmp;
 
 	return threadData.inputText;
 }
