@@ -88,26 +88,6 @@ RB_METHOD(oneshotShake)
 	return Qnil;
 }
 
-RB_METHOD(oneshotSetWindowPos)
-{
-    RB_UNUSED_PARAM;
-    int x, y;
-    rb_get_args(argc, argv, "ii", &x, &y RB_ARG_END);
-    SDL_SetWindowPosition(shState->rtData().window, x, y);
-    return Qnil;
-}
-
-RB_METHOD(oneshotGetWindowPos)
-{
-    RB_UNUSED_PARAM;
-    int x, y;
-    SDL_GetWindowPosition(shState->rtData().window, &x, &y);
-    VALUE ary = rb_ary_new();
-    rb_ary_push(ary, rb_int_new(x));
-    rb_ary_push(ary, rb_int_new(y));
-    return ary;
-}
-
 void oneshotBindingInit()
 {
     VALUE module = rb_define_module("Oneshot");
