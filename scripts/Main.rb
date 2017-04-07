@@ -26,6 +26,10 @@ begin
   $scene = Scene_Title.new
   Oneshot.allow_exit false
   Oneshot.exiting false
+
+#  x = Oneshot.textinput("Foo Bar")
+#  print("#{x}")
+
   # Call main method as long as $scene is effective
   while $scene != nil
     $scene.main
