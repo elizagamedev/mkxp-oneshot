@@ -114,6 +114,10 @@ class Window_NameInput < Window_Base
   #--------------------------------------------------------------------------
   def refresh
     self.contents.clear
+	delete_text = tr("Press X to delete characters (default controls)")
+	delete_width = self.contents.text_size(delete_text).width
+	delete_height = self.contents.text_size(delete_text).height
+	self.contents.draw_text((self.contents.width - delete_width)/2, self.contents.height - (delete_height+2), delete_width, delete_height, delete_text, 1)
     table = current_table
     @table_size.times do |i|
       x = @start_x + (i % @table_width) * @char_w
