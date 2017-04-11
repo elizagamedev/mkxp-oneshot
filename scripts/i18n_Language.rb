@@ -2,7 +2,7 @@
 
 # Translator class: translate text to another language
 
-# for debug REMOVE BEFORE COMMITTING
+# for debug REMOVE BEFORE COMMITTING / BUILDING
 # require "zlib"
 
 class Language
@@ -87,19 +87,19 @@ class Language
     def reset_fonts(sprites)
       if sprites.kind_of?(Array)
         sprites.each do |spr|
-          if spr.kind_of?(Sprite)
+          if spr.kind_of?(Sprite) and !spr.disposed?
              spr.bitmap.font.name = Font.default_name
           end
         end
       elsif sprites.kind_of?(Hash)
         sprites.each_value do |spr|
-          if spr.kind_of?(Sprite)
+          if spr.kind_of?(Sprite) and !spr.disposed?
             spr.bitmap.font.name = Font.default_name
-          elsif spr.kind_of?(Bitmap)
+          elsif spr.kind_of?(Bitmap) and !spr.disposed?
             spr.font.name = Font.default_name
           end
         end
-      elsif sprites.kind_of?(Sprite)
+      elsif sprites.kind_of?(Sprite) and not sprites.disposed?
         sprites.bitmap.font.name = Font.default_name
       end
     end

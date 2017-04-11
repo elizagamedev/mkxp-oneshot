@@ -101,7 +101,8 @@ Persistent
 
 # Internationalization
 i18n_Language
-i18n_Japanese
+i18n_English
+#i18n_Japanese
 
 # Data
 Data_Item

@@ -19,7 +19,7 @@ class Window_InputNumber < Window_Base
     dummy_bitmap.dispose
     super(0, 0, @cursor_width * @digits_max + 32, 64)
     self.contents = Bitmap.new(width - 32, height - 32)
-    Language.register_text_sprite(self.class.name + "_contents", self.contents)
+    # Language.register_text_sprite(self.class.name + "_contents", self.contents)
     self.z += 9999
     self.opacity = 0
     @index = 0
