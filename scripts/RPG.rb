@@ -2,7 +2,16 @@
 
 module RPG
   module Cache
+    def self.character(filename, hue)
+	  if $game_switches[160] && filename.start_with?("niko")
+	    filename.gsub!(/niko/, "en")
+	  end
+      self.load_bitmap("Graphics/Characters/", filename, hue)
+    end
     def self.face(filename)
+	  if $game_switches[160] && filename.start_with?("niko")
+	    filename.gsub!(/niko/, "en")
+	  end
       self.load_bitmap("Graphics/Faces/", filename)
     end
     def self.menu(filename)
