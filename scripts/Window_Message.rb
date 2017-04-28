@@ -159,9 +159,13 @@ class Window_Message < Window_Selectable
 
     # Blit face graphic
     if $game_temp.message_face != nil
-      if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask"
+      if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
+		|| $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
         if $game_temp.message_face.start_with?("niko")
           $game_temp.message_face = "niko_gasmask"
+        end
+		if $game_temp.message_face.start_with?("en")
+          $game_temp.message_face = "en_gasmask"
         end
       end
       face = RPG::Cache.face($game_temp.message_face)
@@ -236,9 +240,13 @@ class Window_Message < Window_Selectable
         end
         self.contents.fill_rect(self.contents.width - 96, 0, 96, 96, Color.new(0,0,0,0))
         $game_temp.message_face = face_name
-        if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask"
+		if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
+      	  || $game_player.character_name == "en_gasmask" || $game_player.character_name == "en_bulb_gasmask"
           if $game_temp.message_face.start_with?("niko")
             $game_temp.message_face = "niko_gasmask"
+          end
+		  if $game_temp.message_face.start_with?("en")
+            $game_temp.message_face = "en_gasmask"
           end
         end
         face = RPG::Cache.face($game_temp.message_face)
