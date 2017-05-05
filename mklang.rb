@@ -15,6 +15,12 @@ po = GetPomo::PoFile.parse(File.read(src_file))
 
 File.open(dst_file, 'wb') do |file|
   file.write(Marshal.dump(po.map do |t|
-    [Zlib.crc32(t.msgid), t.msgstr]
+  	id = t.msgid
+  	msg = t.msgstr
+  	id = id.gsub("\\\\","\\")
+  	id = id.gsub("\\\"", "\"")
+  	msg = msg.gsub("\\\\","\\")
+  	msg = msg.gsub("\\\"", "\"")
+    [Zlib.crc32(id), msg]
   end.to_h))
 end

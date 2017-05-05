@@ -9,7 +9,7 @@ class Language
   FONT_WESTERN = 'Terminus (TTF)'
   FONT_CJK = 'WenQuanYi Micro Hei'
   LANG_WESTERN = [
-    'en', 'fr', 'pt_BR'
+    'en', 'fr', 'pt_BR', 'es'
   ]
   LANG_CJK = [
     'ja', 'ko', 'zh_CN'
