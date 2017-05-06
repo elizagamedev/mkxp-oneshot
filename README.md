@@ -12,6 +12,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 
 ## Dependencies / Building
 
+* Qt5
 * Boost.Unordered (headers only)
 * Boost.Program_options
 * libsigc++ 2.0
@@ -25,9 +26,8 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 * pixman
 * zlib (only ruby bindings)
 * OpenGL header (alternatively GLES2 with `DEFINES+=GLES2_HEADER`)
-* Ruby (make sure to use 2.3 on macOS due to a formatting bug)
+* Ruby (make sure to use 2.3 on macOS (and Linux(?)) due to a save formatting bug)
 * Python 3 (journal reimplementation only)
-* Qt5 (journal reimplementation only)
 * PyQt5 (journal reimplementation only)
 
 *OneShot* employs Qt's qmake build system, so you'll need to install that beforehand. (The cmake build hasn't been maintained since the fork.)
