@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+#encoding: utf-8
 
 require 'get_pomo'
 require 'zlib'
@@ -11,7 +12,7 @@ end
 src_file = ARGV[0]
 dst_file = ARGV[1]
 
-po = GetPomo::PoFile.parse(File.read(src_file))
+po = GetPomo::PoFile.parse(File.read(src_file, :encoding => 'utf-8'))
 
 File.open(dst_file, 'wb') do |file|
   file.write(Marshal.dump(po.map do |t|
