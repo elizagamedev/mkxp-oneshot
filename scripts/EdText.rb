@@ -25,9 +25,14 @@ module EdText
       sleep 0.2
     end
     result = nil
+    # so here, we strip unescaped newlines from the untranslated text
+    # for the translator to find the right string. Then from the
+    # translated text, we replace escaped newlines with empty strings.
+    # yeah.
+    text = Language.tr(text.to_s.gsub(/\s*\n\s*/, " ").strip)
+        .to_s.gsub(/\s*\\n\s*/, "").strip
     thread = Thread.new do
       result = Oneshot.msgbox(type, text
-          .gsub(/\s+\n\s+/, " ")
           .gsub("\\p", $game_oneshot.player_name) +
           " " * 10)
           # HACK: Fuck

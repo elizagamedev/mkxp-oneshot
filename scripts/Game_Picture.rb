@@ -58,7 +58,15 @@ class Game_Picture
   #     blend_type : blend method
   #--------------------------------------------------------------------------
   def show(name, origin, x, y, zoom_x, zoom_y, opacity, blend_type)
-    @name = name
+    # Localization: check if this picture exists
+    # in the appropriate language folder, else
+    # default to the base graphics folder
+    translation_name = "#{$persistent.langcode}/#{name}"
+    if File.exists?("Graphics/Pictures/#{translation_name}.png")
+      @name = translation_name
+    else
+      @name = name
+    end
     @origin = origin
     @x = x.to_f
     @y = y.to_f

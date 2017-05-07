@@ -7,14 +7,15 @@ class Window_Settings
   SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
   
   def save_settings
+    $persistent.save
     File.open(SETTINGS_FILE_NAME, 'w') do |file|
-	  file.puts('bgm_volume=' + Audio.bgm_volume.to_s)
-	  file.puts('sfx_volume=' + Audio.sfx_volume.to_s)
-	  file.puts('fullscreen=' + Graphics.fullscreen.to_s)
-	  file.puts('default_run=' + $game_switches[251].to_s)
-	  file.puts('colorblind_mode=' + $game_switches[252].to_s)
-	  file.puts('frameskip=' + Graphics.frameskip.to_s)
-	end
+      file.puts('bgm_volume=' + Audio.bgm_volume.to_s)
+      file.puts('sfx_volume=' + Audio.sfx_volume.to_s)
+      file.puts('fullscreen=' + Graphics.fullscreen.to_s)
+      file.puts('default_run=' + $game_switches[251].to_s)
+      file.puts('colorblind_mode=' + $game_switches[252].to_s)
+      file.puts('frameskip=' + Graphics.frameskip.to_s)
+    end
   end
   
   def self.load_settings
@@ -75,6 +76,7 @@ class Window_Settings
     @title.bitmap.font.size = 40
     @title.y = TITLE_TOP_MARGIN
     @title.x = MARGIN
+    Language.register_text_sprite(self.class.name + "_title", @title)
     @data_sprites = []
     @viewport.z = 9998
 	
@@ -110,10 +112,16 @@ class Window_Settings
 			 tr('Default movement'),
 			 tr('Colorblind mode'),
 			 tr('Frameskip'),
+			 tr('Language'),
 			 tr('Configure Controls (Press F1)'),
 			]
 
     @index = 0
+    # Load our language settings from persistent, stored differently
+    @lang_index = Language::LANGUAGES.index($persistent.langcode)
+    if @lang_index.nil?
+        @lang_index = 0
+    end
 
     # Create title
     @title.bitmap.clear
@@ -126,6 +134,7 @@ class Window_Settings
       spr.x = MARGIN
       spr.y = TITLE_MARGIN + TITLE_TOP_MARGIN + ITEM_SPACING * i
       spr.opacity = 0
+      Language.register_text_sprite(self.class.name + "_option_#{i}", spr)
 	  redraw_setting(spr, i)
       
       @data_sprites << spr
@@ -168,9 +177,13 @@ class Window_Settings
 		  else
 		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-	  end
+        when 6 # Language
+          l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
+          spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, l)
+        end
   end
-  
+
+
   def redraw_setting_index(i)
     if !@data_sprites.kind_of?(Array)
 	  return
@@ -180,6 +193,16 @@ class Window_Settings
 	end
     redraw_setting(@data_sprites[i], i)
   end
+
+
+  def redraw_all_settings
+    @title.bitmap.clear
+    @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"))
+    for i in 0..7
+      redraw_setting_index(i)
+    end
+  end
+
 
   def update
     if @fade_in
@@ -276,15 +299,16 @@ class Window_Settings
 		  Audio.bgm_volume -= 1
 		  if old_vol > 1
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.bgm_volume/2) + 75)
+		    redraw_setting_index(0)
 		  end
 		elsif Input.trigger?(Input::RIGHT) || (Input.press?(Input::RIGHT) && (@right_hold_timer >= 15))
 		  @right_hold_timer -= 2
 		  Audio.bgm_volume += 1
 		  if old_vol < 100
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.bgm_volume/2) + 75)
+		    redraw_setting_index(0)
 		  end
 		end
-		redraw_setting_index(0)
 		
 	  when 1 #sfx vol
 		old_vol = Audio.sfx_volume
@@ -293,15 +317,16 @@ class Window_Settings
 		  Audio.sfx_volume -= 1
 		  if old_vol > 1
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.sfx_volume/2) + 75)
+		    redraw_setting_index(1)
 		  end
 		elsif Input.trigger?(Input::RIGHT) || (Input.press?(Input::RIGHT) && (@right_hold_timer >= 15))
 		  @right_hold_timer -= 2
 		  Audio.sfx_volume += 1
 		  if old_vol < 100
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.sfx_volume/2) + 75)
+		    redraw_setting_index(1)
 		  end
 		end
-		redraw_setting_index(1)
 		
 	  when 2 #fullscreen
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
@@ -353,6 +378,24 @@ class Window_Settings
 	        Graphics.frameskip = true
 	      end
 		  redraw_setting_index(5)
+		end
+		
+	  when 6 #language
+	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
+          @lang_index += 1
+          if @lang_index >= Language::LANGUAGES.length
+            @lang_index = 0
+          end
+          $persistent.lang = Language::LANGUAGES[@lang_index]
+          redraw_all_settings()
+		end
+		if Input.trigger?(Input::LEFT) 
+		  @lang_index -= 1
+		  if @lang_index < 0
+		    @lang_index = Language::LANGUAGES.length - 1
+		  end
+          $persistent.lang = Language::LANGUAGES[@lang_index]	
+          redraw_all_settings()
 		end
 	end
 

@@ -17,6 +17,7 @@ class Credits_Message
     end
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(320, 240)
+    Language.register_text_sprite(self.class.name + "_contents", @contents)
     @contents.font.size = 16
     @sprite_text.bitmap = @contents
     @sprite_bg.z = 0
