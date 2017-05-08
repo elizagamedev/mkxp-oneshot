@@ -11,6 +11,7 @@ class Ed_Message
     @sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(640, HEIGHT)
+    Language.register_text_sprite(self.class.name + "_contents", @contents)
     @sprite_text.bitmap = @contents
     @sprite_text.y = (480 - HEIGHT) / 2
     @sprite_bg.z = 0

@@ -16,7 +16,6 @@ begin
 
   # Load persistent data
   Persistent.load
-  $persistent.lang = 'ja'
 
   # Prepare for transition
   Graphics.freeze

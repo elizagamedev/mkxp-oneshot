@@ -20,6 +20,7 @@ class Doc_Message
     #@sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(200, 216)
+    Language.register_text_sprite(self.class.name + "_contents", @contents)
     @contents.font.size = 16
     @sprite_text.bitmap = @contents
     @sprite_text.x = 120

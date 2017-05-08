@@ -98,7 +98,7 @@ class Scene_Map
       # either telling them they can't quit during a cutscene
       # or telling them they're saving and quitting
       if $game_system.map_interpreter.running?
-        EdText.info("You cannot perform this action during cutscenes.")
+        EdText.info(tr("You cannot perform this action during cutscenes."))
         return
       else
         $game_temp.common_event_id = 35

@@ -5,9 +5,9 @@ class Window_MainMenu < Window_Selectable
 
     # Set up menu options
     @commands = Array.new
-    @commands << tr('Travel')
-    @commands << tr('Notes')
-    @commands << tr('Settings')
+    @commands << 'Travel'
+    @commands << 'Notes'
+    @commands << 'Settings'
     @item_max = @commands.size
     @column_max = @item_max
 
@@ -20,6 +20,7 @@ class Window_MainMenu < Window_Selectable
 
     # Render menu
     self.contents = Bitmap.new(width - 32, 32)
+    Language.register_text_sprite(self.class.name + "_contents", self.contents)
     for i in 0...@item_max
       draw_item(i, normal_color)
     end
@@ -47,7 +48,7 @@ class Window_MainMenu < Window_Selectable
     # Update item
     rect = Rect.new(w * index, 0, w - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
-    self.contents.draw_text(rect, @commands[index], 1)
+    self.contents.draw_text(rect, tr(@commands[index]), 1)
   end
   #--------------------------------------------------------------------------
   # * Disable Item
@@ -59,6 +60,10 @@ class Window_MainMenu < Window_Selectable
 
   # Open/show the menu
   def open
+    # redraw in case language has been updated
+    for i in 0...@item_max
+      draw_item(i, normal_color)
+    end
     self.opacity = 0
     self.contents_opacity = 0
     self.visible = true

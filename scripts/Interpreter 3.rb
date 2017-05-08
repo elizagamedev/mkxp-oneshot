@@ -19,6 +19,10 @@ class Interpreter
     # Create full text string
     choices = false
     text = @list[@index].parameters[0].strip
+
+    # Translate text
+    text = Language.tr(text).clone
+
     if text.start_with?('$')
       is_doc = true
       text.slice!(0)
@@ -31,11 +35,11 @@ class Interpreter
       # 401: another line of text
       if @list[@index+1].code == 401
         @index += 1
-        text << " " << @list[@index].parameters[0].rstrip
+        text << " " << Language.tr(@list[@index].parameters[0].rstrip).clone
       elsif @list[@index+1].code == 101 && (is_doc || is_credits)
         # 101: Another message box
         # Tack on if we're a doc
-        new_text = @list[@index+1].parameters[0].strip
+        new_text = Language.tr(@list[@index+1].parameters[0].strip).clone
         if new_text.start_with?('$')
           text << "\n\n" << new_text[1..-1]
           @index += 1
@@ -64,9 +68,7 @@ class Interpreter
     end
     text.gsub!(/\s*\\n\s*/, '\\n')
     text.strip!
-
-    # Translate text
-    text = Language.tr(text).clone
+    text = Language.tr(text)
 
     # Parse first line for portrait specifier
     if text[0,1] == '@'
