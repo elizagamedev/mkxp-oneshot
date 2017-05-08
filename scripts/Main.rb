@@ -24,11 +24,17 @@ begin
   # Make scene object (title screen)
   $scene = Scene_Title.new
   Oneshot.allow_exit false
+  Oneshot.exiting false
+
+#  x = Oneshot.textinput("Foo Bar")
+#  print("#{x}")
+
   # Call main method as long as $scene is effective
   while $scene != nil
     $scene.main
   end
   # Fade out
+  Oneshot.exiting true
   Graphics.transition(20)
   Oneshot.allow_exit true
 rescue Errno::ENOENT

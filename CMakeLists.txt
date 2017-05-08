@@ -6,7 +6,7 @@ Project(mkxp)
 option(SHARED_FLUID "Dynamically link fluidsynth at build time" OFF)
 option(WORKDIR_CURRENT "Keep current directory on startup" OFF)
 option(FORCE32 "Force 32bit compile on 64bit OS" OFF)
-set(BINDING "MRI" CACHE STRING "The Binding Type (MRI, MRUBY, NULL)")
+set(BINDING "MRI" CACHE STRING "The Binding Type (MRI, NULL)")
 set(EXTERNAL_LIB_PATH "" CACHE PATH "External precompiled lib prefix")
 
 ## Misc setup ##
@@ -151,7 +151,7 @@ set(MAIN_HEADERS
 	src/alstream.h
 	src/audiostream.h
 	src/rgssad.h
-	src/windowvx.h
+	src/window.h
 	src/tilemapvx.h
 	src/tileatlasvx.h
 	src/sharedmidistate.h
@@ -197,7 +197,7 @@ set(MAIN_SOURCE
 	src/rgssad.cpp
 	src/bundledfont.cpp
 	src/vorbissource.cpp
-	src/windowvx.cpp
+	src/window.cpp
 	src/tilemapvx.cpp
 	src/tileatlasvx.cpp
 	src/autotilesvx.cpp
@@ -287,7 +287,7 @@ source_group("Embedded Source" FILES ${EMBEDDED_INPUT} ${EMBEDDED_SOURCE})
 ## Setup binding source ##
 
 if (BINDING STREQUAL "MRI")
-	set(MRIVERSION "2.1" CACHE STRING "Version of MRI to link with")
+	set(MRIVERSION "2.3" CACHE STRING "Version of MRI to link with")
 	pkg_check_modules(MRI REQUIRED ruby-${MRIVERSION})
 	list(APPEND DEFINES
 		BINDING_MRI
@@ -318,8 +318,8 @@ if (BINDING STREQUAL "MRI")
 		binding-mri/audio-binding.cpp
 		binding-mri/module_rpg.cpp
 		binding-mri/filesystem-binding.cpp
-		binding-mri/windowvx-binding.cpp
-		binding-mri/tilemapvx-binding.cpp
+		binding-mri/window-binding.cpp
+		binding-mri/tilemap-binding.cpp
 	)
 elseif(BINDING STREQUAL "MRUBY")
 	message(FATAL_ERROR "Mruby support in CMake needs to be finished")

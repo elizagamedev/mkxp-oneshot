@@ -207,6 +207,7 @@ class Scene_Title
     Audio.bgs_fade(800)
     Audio.me_fade(800)
     # Shutdown
+    Oneshot.exiting true
     $scene = nil
   end
 end

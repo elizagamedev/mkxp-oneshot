@@ -40,6 +40,10 @@
 #include <stack>
 
 #ifdef __APPLE__
+#define OS_OSX
+#endif
+
+#ifdef OS_OSX
 #include <iconv.h>
 #endif
 
@@ -354,7 +358,7 @@ struct CacheEnumData
 	FileSystemPrivate *p;
 	std::stack<std::vector<std::string>*> fileLists;
 
-#ifdef __APPLE__
+#ifdef OS_OSX
 	iconv_t nfd2nfc;
 	char buf[512];
 #endif
@@ -362,14 +366,14 @@ struct CacheEnumData
 	CacheEnumData(FileSystemPrivate *p)
 	    : p(p)
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		nfd2nfc = iconv_open("utf-8", "utf-8-mac");
 #endif
 	}
 
 	~CacheEnumData()
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		iconv_close(nfd2nfc);
 #endif
 	}
@@ -377,7 +381,7 @@ struct CacheEnumData
 	/* Converts in-place */
 	void toNFC(char *inout)
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		size_t srcSize = strlen(inout);
 		size_t bufSize = sizeof(buf);
 		char *bufPtr = buf;

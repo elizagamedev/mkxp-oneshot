@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 QT =
-TARGET = oneshot
+TARGET = OneShot
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
@@ -24,15 +24,6 @@ contains(BINDING, MRI) {
 	CONFIG += BINDING_MRI
 }
 
-contains(BINDING, MRUBY) {
-	contains(_HAVE_BINDING, YES) {
-		error("Only one binding may be selected")
-	}
-	_HAVE_BINDING = YES
-
-	CONFIG += BINDING_MRUBY
-}
-
 contains(BINDING, NULL) {
 	contains(_HAVE_BINDING, YES) {
 		error("Only one binding may be selected")
@@ -45,12 +36,12 @@ contains(BINDING, NULL) {
 unix {
 	CONFIG += c++11
 	PKGCONFIG += sigc++-2.0 pixman-1 vorbisfile \
-                 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
-    LIBS += -ldl
+				 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
+	LIBS += -ldl
 	macx: {
-		CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL
+		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
 	}
 	!macx: {
 		PKGCONFIG += openal zlib
@@ -252,7 +243,7 @@ BINDING_NULL {
 
 BINDING_MRI {
 	isEmpty(MRIVERSION) {
-		MRIVERSION = 2.2
+		MRIVERSION = 2.3
 	}
 
 	PKGCONFIG += ruby-$$MRIVERSION

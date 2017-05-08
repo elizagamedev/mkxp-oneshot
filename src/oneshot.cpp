@@ -6,8 +6,12 @@
 
 #include "eventthread.h"
 #include "debugwriter.h"
+#include "bitmap.h"
+#include "font.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 //OS-Specific code
 #if defined _WIN32
@@ -19,50 +23,52 @@
 	#include <security.h>
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
-#elif defined __APPLE__
-	#define OS_OSX
-	#include <pwd.h>
-#elif defined __linux__
-	#define OS_LINUX
+#elif defined __APPLE__ || __linux__
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
 
-	class GtkWidget;
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
 
-	typedef enum
-	{
-		GTK_MESSAGE_INFO,
-		GTK_MESSAGE_WARNING,
-		GTK_MESSAGE_QUESTION,
-		GTK_MESSAGE_ERROR
-	} GtkMessageType;
+		class GtkWidget;
 
-	typedef enum
-	{
-		GTK_BUTTONS_NONE,
-		GTK_BUTTONS_OK,
-		GTK_BUTTONS_CLOSE,
-		GTK_BUTTONS_CANCEL,
-		GTK_BUTTONS_YES_NO,
-		GTK_BUTTONS_OK_CANCEL
-	} GtkButtonsType;
+		typedef enum
+		{
+			GTK_MESSAGE_INFO,
+			GTK_MESSAGE_WARNING,
+			GTK_MESSAGE_QUESTION,
+			GTK_MESSAGE_ERROR
+		} GtkMessageType;
 
-	typedef enum
-	{
-		GTK_RESPONSE_NONE = -1,
-		GTK_RESPONSE_REJECT = -2,
-		GTK_RESPONSE_ACCEPT = -3,
-		GTK_RESPONSE_DELETE_EVENT = -4,
-		GTK_RESPONSE_OK = -5,
-		GTK_RESPONSE_CANCEL = -6,
-		GTK_RESPONSE_CLOSE = -7,
-		GTK_RESPONSE_YES = -8,
-		GTK_RESPONSE_NO = -9,
-		GTK_RESPONSE_APPLY = -10,
-		GTK_RESPONSE_HELP = -11
-	} GtkResponseType;
+		typedef enum
+		{
+			GTK_BUTTONS_NONE,
+			GTK_BUTTONS_OK,
+			GTK_BUTTONS_CLOSE,
+			GTK_BUTTONS_CANCEL,
+			GTK_BUTTONS_YES_NO,
+			GTK_BUTTONS_OK_CANCEL
+		} GtkButtonsType;
+
+		typedef enum
+		{
+			GTK_RESPONSE_NONE = -1,
+			GTK_RESPONSE_REJECT = -2,
+			GTK_RESPONSE_ACCEPT = -3,
+			GTK_RESPONSE_DELETE_EVENT = -4,
+			GTK_RESPONSE_OK = -5,
+			GTK_RESPONSE_CANCEL = -6,
+			GTK_RESPONSE_CLOSE = -7,
+			GTK_RESPONSE_YES = -8,
+			GTK_RESPONSE_NO = -9,
+			GTK_RESPONSE_APPLY = -10,
+			GTK_RESPONSE_HELP = -11
+		} GtkResponseType;
+	#endif
 
 	/**
 	 * xdg_user_dir_lookup_with_fallback:
@@ -208,6 +214,9 @@
     #error "Operating system not detected."
 #endif
 
+#define DEF_SCREEN_W 640
+#define DEF_SCREEN_H 480
+
 struct OneshotPrivate
 {
 	//Main SDL window
@@ -218,12 +227,14 @@ struct OneshotPrivate
 	std::string userName;
 	std::string savePath;
 	std::string docsPath;
+	std::string gamePath;
+	std::string journal;
 
 	//Dialog text
 	std::string txtYes;
 	std::string txtNo;
 
-	//Allow exiting game
+	bool exiting;
 	bool allowExit;
 
 	//Alpha texture data for portions of window obscured by screen edges
@@ -355,6 +366,130 @@ static WCHAR *w32_toWide(const char *str)
 }
 #endif
 
+LTexture::LTexture() {
+	//Initialize
+	mTexture = NULL;
+	mWidth = 0;
+	mHeight = 0;
+}
+
+LTexture::~LTexture() {
+	//Deallocate
+	free();
+}
+
+bool LTexture::loadFromFile(std::string path, SDL_Renderer *gRenderer) {
+	//Get rid of preexisting texture
+	free();
+
+	//The final texture
+	SDL_Texture *newTexture = NULL;
+
+	//Load image at specified path
+	SDL_Surface *loadedSurface = IMG_Load(path.c_str());
+	if (loadedSurface == NULL) {
+		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
+	} else {
+		//Color key image
+		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
+
+		//Create texture from surface pixels
+		newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+		if (newTexture == NULL) {
+			printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+		} else {
+			//Get image dimensions
+			mWidth = loadedSurface->w;
+			mHeight = loadedSurface->h;
+		}
+
+		//Get rid of old loaded surface
+		SDL_FreeSurface(loadedSurface);
+	}
+
+	//Return success
+	mTexture = newTexture;
+	return mTexture != NULL;
+}
+
+#ifdef _SDL_TTF_H
+bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor, SDL_Renderer *gRenderer, TTF_Font *gFont) {
+	//Get rid of preexisting texture
+	free();
+
+	//Render text surface
+	SDL_Surface *textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+	if (textSurface != NULL) {
+		//Create texture from surface pixels
+		mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+		if (mTexture == NULL) {
+			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+		} else {
+			//Get image dimensions
+			mWidth = textSurface->w;
+			mHeight = textSurface->h;
+		}
+
+		//Get rid of old surface
+		SDL_FreeSurface(textSurface);
+	} else {
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+
+
+	//Return success
+	return mTexture != NULL;
+}
+#endif
+
+void LTexture::free() {
+	//Free texture if it exists
+	if (mTexture != NULL) {
+		SDL_DestroyTexture(mTexture);
+		mTexture = NULL;
+		mWidth = 0;
+		mHeight = 0;
+	}
+}
+
+void LTexture::setColor(Uint8 red, Uint8 green, Uint8 blue) {
+	//Modulate texture rgb
+	SDL_SetTextureColorMod(mTexture, red, green, blue);
+}
+
+void LTexture::setBlendMode(SDL_BlendMode blending) {
+	//Set blending function
+	SDL_SetTextureBlendMode(mTexture, blending);
+}
+
+void LTexture::setAlpha(Uint8 alpha) {
+	//Modulate texture alpha
+	SDL_SetTextureAlphaMod(mTexture, alpha);
+}
+
+void LTexture::render(SDL_Renderer *gRenderer, int x, int y, SDL_Rect *clip, double angle, SDL_Point *center,
+                      SDL_RendererFlip flip) {
+	//Set rendering space and render to screen
+	SDL_Rect renderQuad = {x, y, mWidth, mHeight };
+
+	//Set clip rendering dimensions
+	if (clip != NULL) {
+		renderQuad.w = clip->w;
+		renderQuad.h = clip->h;
+	}
+
+	//Render to screen
+	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+}
+
+int LTexture::getWidth() {
+	return mWidth;
+}
+
+int LTexture::getHeight() {
+	return mHeight;
+}
+
 Oneshot::Oneshot(RGSSThreadData &threadData) :
     threadData(threadData)
 {
@@ -367,6 +502,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winY = 0;
 	p->winPosChanged = false;
 	p->allowExit = true;
+	p->exiting = false;
 
 	/********************
 	 * USERNAME/DOCS PATH
@@ -408,6 +544,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	WCHAR path[MAX_PATH];
 	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
 	p->docsPath = w32_fromWide(path);
+	p->gamePath = p->docsPath+"\\My Games";
+	p->journal = "_______.exe";
 #else
 	//Get language code
 	const char *lc_all = getenv("LC_ALL");
@@ -424,7 +562,11 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		p->lang = "en";
 
 	//Get user's name
-	struct passwd *pwd = getpwuid(getuid());
+	#ifdef OS_OSX
+		struct passwd *pwd = getpwuid(geteuid());
+	#elif defined OS_LINUX
+		struct passwd *pwd = getpwuid(getuid());
+	#endif
 	if (pwd)
 	{
         if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
@@ -438,13 +580,16 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 			p->userName = pwd->pw_name;
 	}
 
-#ifdef OS_LINUX
 	//Get documents path
 	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
 	p->docsPath = path;
+	p->gamePath = path;
+	#ifdef OS_OSX
+		p->journal = "_______.app";
+	#elif defined OS_LINUX
+		p->journal = "_______";
+	#endif
 	free(path);
-#elif OS_OSX
-#endif
 #endif
 
 	/**********
@@ -601,6 +746,16 @@ const std::string &Oneshot::docsPath() const
 	return p->docsPath;
 }
 
+const std::string &Oneshot::gamePath() const
+{
+	return p->gamePath;
+}
+
+const std::string &Oneshot::journal() const
+{
+	return p->journal;
+}
+
 const std::vector<uint8_t> &Oneshot::obscuredMap() const
 {
 	return p->obscuredMap;
@@ -609,6 +764,11 @@ const std::vector<uint8_t> &Oneshot::obscuredMap() const
 bool Oneshot::obscuredCleared() const
 {
 	return p->obscuredCleared;
+}
+
+bool Oneshot::exiting() const
+{
+	return p->exiting;
 }
 
 bool Oneshot::allowExit() const
@@ -620,6 +780,18 @@ void Oneshot::setYesNo(const char *yes, const char *no)
 {
 	p->txtYes = yes;
 	p->txtNo = no;
+}
+
+void Oneshot::setExiting(bool exiting)
+{
+	if (p->exiting != exiting) {
+		p->exiting = exiting;
+		if (exiting) {
+			threadData.exiting.set();
+		} else {
+			threadData.exiting.clear();
+		}
+	}
 }
 
 void Oneshot::setAllowExit(bool allowExit)
@@ -675,15 +847,16 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	//Interpret result
 	return (result == IDOK || result == IDYES);
 #else
-#if defined OS_LINUX
-	if (p->libgtk)
-	{
-		linux_DialogData data = {p, type, body, title, 0};
-		p->gdk_threads_add_idle(linux_dialog, &data);
-		p->gtk_main();
-		return data.result;
-	}
-#endif
+	#if defined OS_LINUX
+		if (p->libgtk)
+		{
+			linux_DialogData data = {p, type, body, title, 0};
+			p->gdk_threads_add_idle(linux_dialog, &data);
+			p->gtk_main();
+			return data.result;
+		}
+	#endif
+
 	//SDL message box
 
 	//Button data
@@ -695,7 +868,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 	//Messagebox data
 	SDL_MessageBoxData data;
-	data.window = p->window;
+	data.window = NULL;//p->window;
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
@@ -752,6 +925,90 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	SDL_ShowMessageBox(&data, &button);
 	return button ? true : false;
 #endif
+}
+
+std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
+	// SDL_Color textColor = {0xFF, 0xFF, 0xFF, 0xFF}; //Set text color as black
+	// SDL_Renderer *gRenderer = SDL_CreateRenderer(threadData.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	// // SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	// LTexture gPromptTextTexture;
+	// LTexture gInputTextTexture;
+
+	// //Open the font
+	// TTF_Font *gFont = TTF_OpenFont("VL-Gothic-Regular.ttf", 18); // XXX Implement font changing
+	// if (gFont == NULL) {
+	// 	printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+	// 	// success = false;
+	// } else {
+	// 	//Render the prompt
+	// 	if (!gPromptTextTexture.loadFromRenderedText(prompt, textColor, gRenderer, gFont)) {
+	// 		printf("Failed to render prompt text!\n");
+	// 		// success = false;
+	// 	}
+	// }
+
+	// gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
+	
+	std::vector<std::string> *fontNames = new std::vector<std::string>();
+	fontNames->push_back("VL Gothic");
+	Font *font = new Font(fontNames, 18);
+
+	Bitmap *promptBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	promptBmp->setInitFont(font);
+	promptBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, prompt, 1);
+
+	Bitmap *inputBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	inputBmp->setInitFont(font);
+	inputBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, "", 1);
+
+	std::string inputTextPrev = std::string("");
+	threadData.acceptingTextInput.set();
+	threadData.inputTextLimit = char_limit;
+	threadData.inputText.clear();
+	SDL_StartTextInput();
+
+	//Main loop
+	while (threadData.acceptingTextInput) {
+		if (inputTextPrev != threadData.inputText) {
+			inputBmp->clear();
+			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
+			inputTextPrev = threadData.inputText;
+			// if (threadData.inputText.length() > 0) gInputTextTexture.loadFromRenderedText(threadData.inputText.c_str(), textColor, gRenderer, gFont);
+			// else gInputTextTexture.loadFromRenderedText(" ", textColor, gRenderer, gFont);
+		}
+
+		// //Clear screen
+		// // SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		// SDL_RenderClear(gRenderer);
+
+		// //Render text textures
+		// gPromptTextTexture.render(gRenderer, (DEF_SCREEN_W - gPromptTextTexture.getWidth()) / 2,
+		//                           (DEF_SCREEN_H / 2) - gPromptTextTexture.getHeight());
+		// gInputTextTexture.render(gRenderer, (DEF_SCREEN_W - gInputTextTexture.getWidth()) / 2,
+		//                          (DEF_SCREEN_H / 2));
+
+		// //Update screen
+		// SDL_RenderPresent(gRenderer);
+	}
+
+	//Disable text input
+	SDL_StopTextInput();
+
+	// //Free loaded images
+	// gPromptTextTexture.free();
+	// gInputTextTexture.free();
+
+	// //Free global font
+	// TTF_CloseFont(gFont);
+	// gFont = NULL;
+
+	// //Destroy renderer
+	// SDL_DestroyRenderer(gRenderer);
+	// gRenderer = NULL;
+	// delete promptBmp;
+	// delete inputBmp;
+
+	return threadData.inputText;
 }
 
 void Oneshot::setWindowPos(int x, int y)
