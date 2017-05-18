@@ -233,12 +233,7 @@ class Window_Message < Window_Selectable
       end
       if c == "\003"
         # new facepic
-        face_name = ""
-        c2 = @text.slice!(0)
-        while c2 != " "
-          face_name += c2
-          c2 = @text.slice!(0)
-        end
+        face_name = @text.slice!(/^[^\s]+ */).strip()
         self.contents.fill_rect(self.contents.width - 96, 0, 96, 96, Color.new(0,0,0,0))
         $game_temp.message_face = face_name
 		if $game_player.character_name == "niko_gasmask" || $game_player.character_name == "niko_bulb_gasmask" \
