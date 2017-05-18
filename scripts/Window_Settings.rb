@@ -3,9 +3,10 @@ class Window_Settings
   TITLE_TOP_MARGIN = 32
   TITLE_MARGIN = 100
   ITEM_SPACING = 28
+  VALUE_MARGIN = 270
   ACTIVE_MARGIN = MARGIN * 2 + 20
   SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
-  
+
   def save_settings
     $persistent.save
     File.open(SETTINGS_FILE_NAME, 'w') do |file|
@@ -17,7 +18,7 @@ class Window_Settings
       file.puts('frameskip=' + Graphics.frameskip.to_s)
     end
   end
-  
+
   def self.load_settings
     return false if !FileTest.exist?(SETTINGS_FILE_NAME)
     File.foreach(SETTINGS_FILE_NAME).with_index do |line, line_num|
@@ -79,7 +80,7 @@ class Window_Settings
     Language.register_text_sprite(self.class.name + "_title", @title)
     @data_sprites = []
     @viewport.z = 9998
-	
+
 	@left_hold_timer = 0
 	@right_hold_timer = 0
 
@@ -130,17 +131,17 @@ class Window_Settings
     # Create menu options
     @data.each_with_index do |item, i|
       spr = Sprite.new(@viewport)
-      spr.bitmap = Bitmap.new(320, ITEM_SPACING)
+      spr.bitmap = Bitmap.new(400, ITEM_SPACING)
       spr.x = MARGIN
       spr.y = TITLE_MARGIN + TITLE_TOP_MARGIN + ITEM_SPACING * i
       spr.opacity = 0
       Language.register_text_sprite(self.class.name + "_option_#{i}", spr)
-	  redraw_setting(spr, i)
-      
+	    redraw_setting(spr, i)
+
       @data_sprites << spr
     end
   end
-  
+
   def redraw_setting(spr, i)
       if @visible == false
 	    return
@@ -150,36 +151,36 @@ class Window_Settings
       spr.bitmap.draw_text(0, 0, spr.bitmap.width, spr.bitmap.height, @data[i])
 	  case i
 	    when 0
-          spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, Audio.bgm_volume.to_s)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.bgm_volume.to_s)
 		when 1
-          spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, Audio.sfx_volume.to_s)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, Audio.sfx_volume.to_s)
 		when 2 #fullscreen
 		  if(Graphics.fullscreen == true)
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
 		when 3 #default movement
 		  if($game_switches[251] == true)
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("RUN"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("RUN"))
 		  else
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("WALK"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("WALK"))
 		  end
 		when 4 #colorblind mode
 		  if($game_switches[252] == true)
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
 		when 5 #frameskip
 		  if(Graphics.frameskip == true)
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
-		    spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
         when 6 # Language
           l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
-          spr.bitmap.draw_text(260, 0, spr.bitmap.width, spr.bitmap.height, l)
+          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
         end
   end
 
@@ -290,7 +291,7 @@ class Window_Settings
 	else
 	  @right_hold_timer = 0
 	end
-	
+
 	case @index
 	  when 0 #bgm vol
 		old_vol = Audio.bgm_volume
@@ -309,7 +310,7 @@ class Window_Settings
 		    redraw_setting_index(0)
 		  end
 		end
-		
+
 	  when 1 #sfx vol
 		old_vol = Audio.sfx_volume
 	    if Input.trigger?(Input::LEFT) || (Input.press?(Input::LEFT) && (@left_hold_timer >= 15))
@@ -327,10 +328,10 @@ class Window_Settings
 		    redraw_setting_index(1)
 		  end
 		end
-		
+
 	  when 2 #fullscreen
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-          
+
 		  $game_system.se_play($data_system.decision_se)
           if Graphics.fullscreen == true
 	        Graphics.fullscreen = false
@@ -343,10 +344,10 @@ class Window_Settings
 		  redraw_setting_index(2)
 	      sleep(0.500)
 		end
-		
+
 	  when 3 #default movement
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-          
+
 		  $game_system.se_play($data_system.decision_se)
           if $game_switches[251] == true
 	        $game_switches[251] = false
@@ -355,10 +356,10 @@ class Window_Settings
 	      end
 		  redraw_setting_index(3)
 		end
-		
+
 	  when 4 #colorblind mode
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-          
+
 		  $game_system.se_play($data_system.decision_se)
           if $game_switches[252] == true
 	        $game_switches[252] = false
@@ -367,10 +368,10 @@ class Window_Settings
 	      end
 		  redraw_setting_index(4)
 		end
-		
+
 	  when 5 #frameskip
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-          
+
 		  $game_system.se_play($data_system.decision_se)
           if Graphics.frameskip == true
 	        Graphics.frameskip = false
@@ -379,7 +380,7 @@ class Window_Settings
 	      end
 		  redraw_setting_index(5)
 		end
-		
+
 	  when 6 #language
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
           @lang_index += 1
@@ -389,12 +390,12 @@ class Window_Settings
           $persistent.lang = Language::LANGUAGES[@lang_index]
           redraw_all_settings()
 		end
-		if Input.trigger?(Input::LEFT) 
+		if Input.trigger?(Input::LEFT)
 		  @lang_index -= 1
 		  if @lang_index < 0
 		    @lang_index = Language::LANGUAGES.length - 1
 		  end
-          $persistent.lang = Language::LANGUAGES[@lang_index]	
+          $persistent.lang = Language::LANGUAGES[@lang_index]
           redraw_all_settings()
 		end
 	end
