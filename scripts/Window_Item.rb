@@ -80,7 +80,7 @@ class Window_Item < Window_Selectable
     x = index % 2 * (self.width / COLUMN_MAX)
     y = index / 2 * 32
     off = index == @index ? 2 : 0
-    rect = Rect.new(x, y, self.width / COLUMN_MAX - 32, 32)
+    rect = Rect.new(x + 32, y, self.width / COLUMN_MAX - 64, 32)
     self.contents.draw_text(rect, item.name, 1)
 
     bitmap = RPG::Cache.icon(item.icon_name)
