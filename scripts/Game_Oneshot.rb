@@ -12,7 +12,7 @@ class Game_Oneshot
     if $GDC
       @player_name = ''
     else
-      @player_name = Game_Oneshot.get_user_name
+      @player_name = Game_Oneshot.get_user_name.force_encoding("utf-8")
     end
     @lights = {}
     @plight_timer = nil
