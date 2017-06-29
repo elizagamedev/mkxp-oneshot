@@ -31,8 +31,6 @@
 #include <assert.h>
 #include <string>
 
-#include <libintl.h>
-
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "gl-debug.h"
