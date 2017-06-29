@@ -31,12 +31,15 @@
 #include <assert.h>
 #include <string>
 
+#include <libintl.h>
+
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "gl-debug.h"
 #include "debugwriter.h"
 #include "exception.h"
 #include "gl-fun.h"
+#include "i18n.h"
 
 #include "binding.h"
 
@@ -358,6 +361,8 @@ int main(int argc, char *argv[])
 	eventThread.cleanup();
 
 	Debug() << "Shutting down.";
+
+	unloadLocale();
 
 	alcCloseDevice(alcDev);
 	SDL_DestroyWindow(win);
