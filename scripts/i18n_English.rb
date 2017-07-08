@@ -4,7 +4,7 @@ Font.default_name = Language::FONT_WESTERN
 class Language
   def self.create_input
     input = Window_NameInput.new
-    input.set_mode_buttons [['Upper', 'Lower']]
+    input.set_mode_buttons [[tr('Upper'), tr('Lower')]]
     input.character_tables = {
       [0] => [ # Case: Upper
         "A","B","C","D","E","F","G","H","I","J",

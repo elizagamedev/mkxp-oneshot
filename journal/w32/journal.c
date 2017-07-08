@@ -13,13 +13,31 @@ static const WCHAR journal_classname[] = L"journal";
 static HBITMAP image_handle = NULL;
 static HANDLE image_mutex = NULL;
 
+static DWORD err = 0;
+
 static HWND window = NULL;
 
 static void loadImage(const char *name) {
+    char copy_space[IN_BUFFER_SIZE];
+    const char* lang_ptr;
     if (image_handle) {
         DeleteObject(image_handle);
     }
     image_handle = LoadBitmapA(GetModuleHandleW(NULL), name);
+    // In the event we can't find an image's translated value
+    // try to find a matching resource without any language code suffix
+    if (!image_handle) {
+        lang_ptr = strchr(name, '_');
+        if (lang_ptr) {
+          memset(copy_space, 0, IN_BUFFER_SIZE);
+          strncpy(copy_space, name, lang_ptr - name);
+          //terminate the string because I guess strncpy doesn't
+          image_handle = LoadBitmapA(GetModuleHandleW(NULL), copy_space);
+          if (!image_handle) {
+            err = GetLastError();
+          }
+        }
+    }
 }
 
 // Window procedure
@@ -134,7 +152,7 @@ int do_journal()
     wc.cbClsExtra       = 0;
     wc.cbWndExtra       = 0;
     wc.hInstance        = module;
-    wc.hIcon            = LoadIcon(NULL, "MAINICON");
+    wc.hIcon            = LoadIcon(NULL, L"MAINICON");
     wc.hCursor          = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground    = NULL;
     wc.lpszMenuName     = NULL;

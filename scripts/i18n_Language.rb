@@ -33,6 +33,7 @@ class Language
             else
                 Font.default_name = FONT_WESTERN
             end
+            Journal.setLang(name)
           end
         end
       end
