@@ -156,7 +156,12 @@ HEADERS += \
 	src/rgssad.h \
 	src/sdl-util.h \
 	src/oneshot.h \
-	src/pipe.h
+	src/pipe.h \
+	chromasdk/FrameController.h \
+	chromasdk/ChromaSDKImpl.h \
+	chromasdk/RzChromaSDKDefines.h \
+	chromasdk/RzChromaSDKTypes.h \
+	chromasdk/RzErrors.h
 
 SOURCES += \
 	src/main.cpp \
@@ -197,7 +202,10 @@ SOURCES += \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
 	src/screen.cpp \
-    binding-mri/journal-binding.cpp
+  binding-mri/journal-binding.cpp \
+	chromasdk/FrameController.cpp \
+	chromasdk/ChromaSdkImpl.cpp  \
+	binding-mri/chroma-binding.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h
