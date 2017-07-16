@@ -156,7 +156,8 @@ HEADERS += \
 	src/rgssad.h \
 	src/sdl-util.h \
 	src/oneshot.h \
-	src/pipe.h
+	src/pipe.h \
+	src/i18n.h
 
 SOURCES += \
 	src/main.cpp \
@@ -197,7 +198,8 @@ SOURCES += \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
 	src/screen.cpp \
-    binding-mri/journal-binding.cpp
+  binding-mri/journal-binding.cpp \
+	src/i18n.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h
