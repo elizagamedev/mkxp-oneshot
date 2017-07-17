@@ -1,4 +1,4 @@
-Font.default_name = Language::FONT_CJK
+Font.default_name = Language::FONT_J
 
 class Language
   def self.create_input

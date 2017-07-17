@@ -7,14 +7,18 @@
 
 class Language
   FONT_WESTERN = 'Terminus (TTF)'
-  FONT_CJK = 'WenQuanYi Micro Hei'
+  FONT_CK = 'WenQuanYi Micro Hei'
+  FONT_J = 'HigashiOme Gothic regular'
   LANG_WESTERN = [
     'en', 'fr', 'pt_BR', 'es'
   ]
-  LANG_CJK = [
-    'ja', 'ko', 'zh_CN'
+  LANG_J = [
+	'ja'
   ]
-  LANGUAGES = LANG_WESTERN + LANG_CJK
+  LANG_CK = [
+     'ko', 'zh_CN'
+  ]
+  LANGUAGES = LANG_WESTERN + LANG_CK + LANG_J
 
   class << self
     def set(lc)
@@ -28,12 +32,15 @@ class Language
         if FileTest.exist?(path)
           File.open(path, "rb") do |file|
             @data = Marshal.load(file)
-            if LANG_CJK.include? name
-                Font.default_name = FONT_CJK
+            if LANG_CK.include? name
+                Font.default_name = FONT_CK
+			elsif LANG_J.include? name
+				Font.default_name = FONT_J
             else
                 Font.default_name = FONT_WESTERN
             end
             Journal.setLang(name)
+			dbg_print(Font.default_name)
           end
         end
       end
