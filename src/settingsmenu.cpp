@@ -34,6 +34,9 @@
 #include "etc-internal.h"
 #include "util.h"
 #include "sharedstate.h"
+#include "i18n.h"
+#include "debugwriter.h"
+
 
 #include <algorithm>
 #include <assert.h>
@@ -45,8 +48,11 @@ const uint8_t cBgDark = 20;
 const uint8_t cLine = 0;
 const uint8_t cText = 255;
 
-const char *const fontFamily = "Terminus (TTF)";
-const uint8_t fontSize = 12;
+// const char *const fontFamilyLatin = "Terminus (TTF)";
+const char *const fontFamilyLatin = "WenQuanYi Micro Hei";
+const uint8_t fontSizeLatin = 12;
+const char *const fontFamilyAsian = "WenQuanYi Micro Hei";
+const uint8_t fontSizeAsian = 16;
 
 static bool pointInRect(const SDL_Rect &r, int x, int y)
 {
@@ -55,51 +61,86 @@ static bool pointInRect(const SDL_Rect &r, int x, int y)
 
 typedef SettingsMenuPrivate SMP;
 
-#define BTN_STRING(btn) { Input:: btn, #btn }
+#define BTN_STRING(btn, id) { Input:: btn, id, #btn }
 struct VButton
 {
 	Input::ButtonCode code;
+	int trstrId;
 	const char *str;
 } static const vButtons[] =
 {
-	BTN_STRING(Up),
-	BTN_STRING(Left),
-	BTN_STRING(Action),
-	BTN_STRING(Cancel),
-	BTN_STRING(Menu),
-	BTN_STRING(L),
+	BTN_STRING(Up, TRSTR_KEYBIND_UP),
+	BTN_STRING(Left, TRSTR_KEYBIND_LEFT),
+	BTN_STRING(Action, TRSTR_KEYBIND_ACTION),
+	BTN_STRING(Cancel, TRSTR_KEYBIND_CANCEL),
+	BTN_STRING(Menu, TRSTR_KEYBIND_MENU),
+	BTN_STRING(L, TRSTR_KEYBIND_L),
 
-	BTN_STRING(Down),
-	BTN_STRING(Right),
-	BTN_STRING(Run),
-	BTN_STRING(Deactivate),
-	BTN_STRING(Items),
-	BTN_STRING(R),
+	BTN_STRING(Down, TRSTR_KEYBIND_DOWN),
+	BTN_STRING(Right, TRSTR_KEYBIND_RIGHT),
+	BTN_STRING(Run, TRSTR_KEYBIND_RUN),
+	BTN_STRING(Deactivate, TRSTR_KEYBIND_DEACTIVATE),
+	BTN_STRING(Items, TRSTR_KEYBIND_ITEMS),
+	BTN_STRING(R, TRSTR_KEYBIND_R),
 };
 
 static elementsN(vButtons);
 
+const char* getButtonName(int buttonId) {
+	switch (buttonId) {
+		case 0:
+			return findtext(TRSTR_KEYBIND_A, "A Button");
+			break;
+		case 1:
+			return findtext(TRSTR_KEYBIND_B, "B Button");
+			break;
+		case 2:
+	    return findtext(TRSTR_KEYBIND_X, "X Button");
+			break;
+		case 3:
+	    return findtext(TRSTR_KEYBIND_Y, "Y Button");
+			break;
+		case 4:
+	    return findtext(TRSTR_KEYBIND_BACK, "Back Button");
+			break;
+		case 5:
+	    return findtext(TRSTR_KEYBIND_GUIDE, "Guide Button");
+			break;
+		case 6:
+	    return findtext(TRSTR_KEYBIND_START, "Start Button");
+			break;
+		case 7:
+	    return findtext(TRSTR_KEYBIND_LSTICK, "Left Stick");
+			break;
+		case 8:
+	    return findtext(TRSTR_KEYBIND_RSTICK, "Right Stick");
+			break;
+		case 9:
+	    return findtext(TRSTR_KEYBIND_LSHOULDER, "Left Shoulder");
+			break;
+		case 10:
+	    return findtext(TRSTR_KEYBIND_RSHOULDER, "Right Shoulder");
+			break;
+		case 11:
+	    return findtext(TRSTR_KEYBIND_PADU, "D-Pad (Up)");
+			break;
+		case 12:
+	    return findtext(TRSTR_KEYBIND_PADD, "D-Pad (Down)");
+			break;
+		case 13:
+	    return findtext(TRSTR_KEYBIND_PADL, "D-Pad (Left)");
+			break;
+		case 14:
+	    return findtext(TRSTR_KEYBIND_PADR, "D-Pad (Right)");
+			break;
+		default:
+			return findtext(TRSTR_KEYBIND_UNK, "Unknown key");
+	}
+}
+
 /* Human readable string representation */
 std::string sourceDescString(const SourceDesc &src)
 {
-	static const char *const gcButtonNames[SDL_CONTROLLER_BUTTON_MAX] = {
-	    "A Button",
-	    "B Button",
-	    "X Button",
-	    "Y Button",
-	    "Back Button",
-	    "Guide Button",
-	    "Start Button",
-	    "Left Stick",
-	    "Right Stick",
-	    "Left Shoulder",
-	    "Right Shoulder",
-	    "D-Pad (Up)",
-	    "D-Pad (Down)",
-	    "D-Pad (Left)",
-	    "D-Pad (Right)",
-	};
-
 	char buf[128];
 	char pos;
 
@@ -111,52 +152,55 @@ std::string sourceDescString(const SourceDesc &src)
 	case Key:
 	{
 		if (src.d.scan == SDL_SCANCODE_LSHIFT)
-			return "Shift";
+			return findtext(TRSTR_KEYBIND_SHIFT, "Shift");
 
 		SDL_Keycode key = SDL_GetKeyFromScancode(src.d.scan);
 		const char *str = SDL_GetKeyName(key);
 
-		if (*str == '\0')
-			return "Unknown key";
-		else
-			return std::string(str) + " Key";
+		if (*str == '\0') {
+			return findtext(TRSTR_KEYBIND_UNK, "Unknown key");
+		} else {
+			snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_KEYFMT, "%s Key"), str);
+			return buf;
+		}
 	}
 
 	case CButton:
-		snprintf(buf, sizeof(buf), "%s", gcButtonNames[src.d.jb]);
+		snprintf(buf, sizeof(buf), "%s", getButtonName(src.d.jb));
 		return buf;
 
 	case CAxis:
 		switch (src.d.ja.axis) {
 		case SDL_CONTROLLER_AXIS_LEFTX:
 			if (src.d.ja.dir == Negative)
-				return "Left Stick (Left)";
+				return findtext(TRSTR_KEYBIND_LSTICKL, "Left Stick (Left)");
 			else
-				return "Left Stick (Right)";
+				return findtext(TRSTR_KEYBIND_LSTICKR, "Left Stick (Right)");
 		case SDL_CONTROLLER_AXIS_LEFTY:
 			if (src.d.ja.dir == Negative)
-				return "Left Stick (Up)";
+				return findtext(TRSTR_KEYBIND_LSTICKU, "Left Stick (Up)");
 			else
-				return "Left Stick (Down)";
+				return findtext(TRSTR_KEYBIND_LSTICKD, "Left Stick (Down)");
 		case SDL_CONTROLLER_AXIS_RIGHTX:
 			if (src.d.ja.dir == Negative)
-				return "Right Stick (Left)";
+				return findtext(TRSTR_KEYBIND_RSTICKL, "Right Stick (Left)");
 			else
-				return "Right Stick (Right)";
+				return findtext(TRSTR_KEYBIND_RSTICKR, "Right Stick (Right)");
 		case SDL_CONTROLLER_AXIS_RIGHTY:
 			if (src.d.ja.dir == Negative)
-				return "Right Stick (Up)";
+				return findtext(TRSTR_KEYBIND_RSTICKU, "Right Stick (Up)");
 			else
-				return "Right Stick (Down)";
+				return findtext(TRSTR_KEYBIND_RSTICKD, "Right Stick (Down)");
 		case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-			return "Left Trigger";
+			return findtext(TRSTR_KEYBIND_LTRIGGER, "Left Trigger");
 		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-			return "Right Trigger";
+			return findtext(TRSTR_KEYBIND_RTRIGGER, "Right Trigger");
 		}
 		return "";
 
 	case JButton:
-		snprintf(buf, sizeof(buf), "Joy Button %d", src.d.jb);
+		snprintf(buf, sizeof(buf),
+						findtext(TRSTR_KEYBIND_JOYBTTNFMT, "Joy Button %d"), src.d.jb);
 		return buf;
 
 	case JHat:
@@ -181,12 +225,12 @@ std::string sourceDescString(const SourceDesc &src)
 		default:
 			pos = '-';
 		}
-		snprintf(buf, sizeof(buf), "Joy Hat %d:%c",
+		snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_JOYHATFMT, "Joy Hat %d:%c"),
 		         src.d.jh.hat, pos);
 		return buf;
 
 	case JAxis:
-		snprintf(buf, sizeof(buf), "Joy Axis %d%c",
+		snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_JOYAXISFMT, "Joy Axis %d%c"),
 		         src.d.ja.axis, src.d.ja.dir == Negative ? '-' : '+');
 		return buf;
 	}
@@ -495,9 +539,12 @@ struct SettingsMenuPrivate
 	              int x, int y, int alignW,
 	              Justification just, SDL_Color c, bool bold = false)
 	{
+		Debug() << "draw text:" << str;
 		SDL_Surface *txt = createTextSurface(str, c, bold);
-		blitTextSurf(surf, x, y, alignW, txt, just);
-		SDL_FreeSurface(txt);
+		if (txt) {
+			blitTextSurf(surf, x, y, alignW, txt, just);
+			SDL_FreeSurface(txt);
+		}
 	}
 
 	void drawText(SDL_Surface *surf, const char *str,
@@ -586,7 +633,9 @@ struct SettingsMenuPrivate
 		if (state == AwaitingInput)
 		{
 			char buf[64];
-			snprintf(buf, sizeof(buf), "Press key or joystick button for \"%s\"", captureName);
+			snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_KEYPROMPT,
+								"Press key or joystick button for \"%s\""),
+							captureName);
 
 			drawOff = Vec2i();
 
@@ -871,7 +920,7 @@ void BindingWidget::drawHandler(SDL_Surface *surf)
 	p->strokeRectInner(surf, cLine, 0, 0, rect.w, rect.h, 2);
 
 	/* Virtual button name */
-	p->drawText(surf, vb.str, 1, rect.h/2, cellOffX, Center, true);
+	p->drawText(surf, findtext(vb.trstrId, vb.str), 1, rect.h/2, cellOffX, Center, true);
 
 	/* Cell frames */
 	p->strokeLineV(surf, cLine, cellOffX, 0, rect.h, 2);
@@ -1027,13 +1076,18 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->hasFocus = false;
 	p->destroyReq = false;
 
-	p->window = SDL_CreateWindow("Key bindings",
+	p->window = SDL_CreateWindow(findtext(TRSTR_KEYBIND_TITLE, "Key bindings"),
 	                             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 	                             winSize.x, winSize.y, SDL_WINDOW_INPUT_FOCUS);
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
 
-	p->font = shState->fontState().getFont(fontFamily, fontSize);
+	if (getLocaleFamily() == LOCALE_FAMILY_ASIAN) {
+			p->font = shState->fontState().getFont(fontFamilyAsian, fontSizeAsian);
+	} else {
+			p->font = shState->fontState().getFont(fontFamilyLatin, fontSizeLatin);
+	}
+
 
 	p->rgb = p->winSurf->format;
 
@@ -1067,24 +1121,24 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 
 	IntRect btRects[] =
 	{
-	    IntRect(16, buttonY, 112, buttonH),
-	    IntRect(winSize.x-16-64*2-8, buttonY, 64, buttonH),
-	    IntRect(winSize.x-16-64, buttonY, 64, buttonH)
+	    IntRect(16, buttonY, 220, buttonH),
+	    IntRect(winSize.x-16-80*2-8, buttonY, 80, buttonH),
+	    IntRect(winSize.x-16-80, buttonY, 80, buttonH)
 	};
 
-	p->buttons.push_back(Button(p, btRects[0], "Reset defaults", &SMP::onResetToDefault));
-	p->buttons.push_back(Button(p, btRects[1], "Cancel", &SMP::onCancel));
-	p->buttons.push_back(Button(p, btRects[2], "Accept", &SMP::onAccept));
+	p->buttons.push_back(Button(p, btRects[0], findtext(TRSTR_KEYBIND_RESET, "Reset defaults"), &SMP::onResetToDefault));
+	p->buttons.push_back(Button(p, btRects[1], findtext(TRSTR_CANCEL, "Cancel"), &SMP::onCancel));
+	p->buttons.push_back(Button(p, btRects[2], findtext(TRSTR_ACCEPT, "Accept"), &SMP::onAccept));
 
 	for (size_t i = 0; i< p->buttons.size(); ++i)
 		p->widgets.push_back(&p->buttons[i]);
 
 	/* Labels */
-	const char *info = "Use left click to bind a slot, right click to clear its binding";
-	p->infoLabel = Label(p, IntRect(16, 16, winSize.x, 16), info, cText, cText, cText);
+	const char *info = findtext(TRSTR_KEYBIND_INSTRUCT, "Use left click to bind a slot, right click to clear its binding");
+	p->infoLabel = Label(p, IntRect(16, 16, winSize.x - 32, 16), info, cText, cText, cText);
 
-	const char *warn = "Warning: Same physical action bound to multiple slots";
-	p->dupWarnLabel = Label(p, IntRect(16, 40, winSize.x, 16), warn, 255, 0, 0);
+	const char *warn = findtext(TRSTR_KEYBIND_CONFLICT, "Warning: Same physical action bound to multiple slots");
+	p->dupWarnLabel = Label(p, IntRect(16, 40, winSize.x - 32, 16), warn, 255, 0, 0);
 
 	p->widgets.push_back(&p->infoLabel);
 	p->widgets.push_back(&p->dupWarnLabel);

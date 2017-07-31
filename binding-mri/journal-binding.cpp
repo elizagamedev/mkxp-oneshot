@@ -2,6 +2,7 @@
 #include "binding-types.h"
 #include "pipe.h"
 #include "debugwriter.h"
+#include "i18n.h"
 
 #include <SDL.h>
 
@@ -88,9 +89,14 @@ RB_METHOD(journalSet)
 	// Record message
 	SDL_LockMutex(mutex);
 	message_len = strlen(name);
-	memcpy((char*)message_buffer, name, message_len);
-	strcpy((char*)message_buffer + message_len, (char*)lang_buffer);
-	message_len += strlen((char*)lang_buffer);
+	strcpy((char*)message_buffer, name);
+	if (message_len > 0) {
+		// in the case where journal is being sent empty string
+		// do not append the language suffix, because empty string
+		// is the signifier to terminate the journal
+		strcpy((char*)message_buffer + message_len, (char*)lang_buffer);
+		message_len += strlen((char*)lang_buffer);
+	}
 	SDL_UnlockMutex(mutex);
 
 #if defined _WIN32
@@ -140,6 +146,7 @@ RB_METHOD(journalSetLang)
 	const char *lang;
 	rb_get_args(argc, argv, "z", &lang RB_ARG_END);
 	strcpy((char*)lang_buffer+1, lang);
+	loadLocale(lang);
 	return Qnil;
 }
 
