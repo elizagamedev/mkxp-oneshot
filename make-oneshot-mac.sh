@@ -57,4 +57,4 @@ rm -rf journal/mac/__pycache__
 rm -rf build
 rm -rf dist
 
-echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/mkxp-oneshot/issues${color_reset}"
+echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/synglechance/issues${color_reset}"
