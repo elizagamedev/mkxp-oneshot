@@ -39,7 +39,6 @@ static volatile int message_len = 0;
 
 #ifdef LINUX
 	#define PIPE_PATH "/tmp/oneshot-pipe"
-	static volatile int message_len = 0;
 	static volatile int out_pipe = -1;
 	void cleanup_pipe()
 	{
