@@ -473,17 +473,27 @@ module Script
   end
 
   def self.password1
-    copy_file("Graphics/Fogs/_/scenario1/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
-    copy_file("Graphics/Fogs/_/scenario1/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
-    copy_file("Graphics/Fogs/_/scenario1/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
-    copy_file("Graphics/Fogs/_/scenario1/pw4.png", Oneshot::DOCS_PATH + "/ONESHOT_password4.png")
+    locale = $persistent.langcode
+	if !Language::LANGUAGES.include? locale
+	  locale = 'en'
+	end
+    source_dir = "Graphics/Fogs/_/scenario1/" + locale.downcase
+    copy_file(source_dir + "/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
+    copy_file(source_dir + "/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
+    copy_file(source_dir + "/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
+    copy_file(source_dir + "/pw4.png", Oneshot::DOCS_PATH + "/ONESHOT_password4.png")
   end
 
   def self.password2
-    copy_file("Graphics/Fogs/_/scenario2/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
-    copy_file("Graphics/Fogs/_/scenario2/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
-    copy_file("Graphics/Fogs/_/scenario2/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
-    copy_file("Graphics/Fogs/_/scenario2/pw4.png", Oneshot::DOCS_PATH + "/ONESHOT_password4.png")
+    locale = $persistent.langcode
+	if !Language::LANGUAGES.include? locale
+	  locale = 'en'
+	end
+    source_dir = "Graphics/Fogs/_/scenario2/" + locale.downcase
+    copy_file(source_dir + "/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
+    copy_file(source_dir + "/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
+    copy_file(source_dir + "/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
+    copy_file(source_dir + "/pw4.png", Oneshot::DOCS_PATH + "/ONESHOT_password4.png")
   end
 
 =begin
@@ -556,6 +566,77 @@ def check_exit(min, max, x: -1, y: -1)
     end
   end
   Script.tmp_s1 = $game_switches[11] ? false : result
+end
+
+def loadQASave(fname)
+  filename = "testing_saves/" + fname + ".rxdata"
+    # If file doesn't exist
+    unless FileTest.exist?(filename)
+      filename = "testing_saves_postgame/" + fname + ".rxdata"
+	  unless FileTest.exist?(filename)
+        # Play buzzer SE
+        $game_system.se_play($data_system.buzzer_se)
+        return
+      end
+    end
+    # Play load SE
+    $game_system.se_play($data_system.load_se)
+
+	# Read save data
+    file = File.open(filename, "rb")
+    # Read character data for drawing save file
+    characters = Marshal.load(file)
+    # Read frame count for measuring play time
+    Graphics.frame_count = Marshal.load(file)
+    # Read each type of game object
+    $game_system        = Marshal.load(file)
+    $game_switches      = Marshal.load(file)
+    $game_variables     = Marshal.load(file)
+    $game_self_switches = Marshal.load(file)
+    $game_screen        = Marshal.load(file)
+    $game_actors        = Marshal.load(file)
+    $game_party         = Marshal.load(file)
+    $game_troop         = Marshal.load(file)
+    $game_map           = Marshal.load(file)
+    $game_player        = Marshal.load(file)
+    $game_followers     = Marshal.load(file)
+    $game_oneshot       = Marshal.load(file)
+    $game_fasttravel    = Marshal.load(file)
+	  $game_temp.footstep_sfx = Marshal.load(file)
+
+    # If magic number is different from when saving
+    # (if editing was added with editor)
+    if $game_system.magic_number != $data_system.magic_number
+      # Load map
+      $game_map.setup($game_map.map_id)
+      $game_player.center($game_player.x, $game_player.y)
+    end
+    # Refresh party members
+    $game_party.refresh
+
+	f_prev = $game_player
+    for f in $game_followers
+      f.leader = f_prev
+      f.moveto($game_player.x, $game_player.y)
+	  f_prev = f
+    end
+    file.close
+    # Restore BGM and BGS
+    $game_system.bgm_play($game_system.playing_bgm)
+    $game_system.bgs_play($game_system.playing_bgs)
+    # Update map (run parallel process event)
+    $game_map.update
+    # Switch to map screen
+    $scene = Scene_Map.new
+end
+
+def kill_perma_flags
+  for i in 151..175
+    $game_switches[i] = false
+  end
+  for i in 76..100
+    $game_variables[i] = 0
+  end
 end
 
 def bg(name)

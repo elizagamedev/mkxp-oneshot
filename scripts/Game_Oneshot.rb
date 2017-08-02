@@ -12,7 +12,7 @@ class Game_Oneshot
     if $GDC
       @player_name = ''
     else
-      @player_name = Game_Oneshot.get_user_name
+      @player_name = Game_Oneshot.get_user_name.force_encoding("utf-8")
     end
     @lights = {}
     @plight_timer = nil
@@ -32,6 +32,23 @@ end
 
 module Wallpaper
   def self.set_persistent(name, color)
+  
+    if (name == 'save_w32')
+	  case $persistent.langcode
+	    when 'fr'
+          name = $persistent.langcode + "\\" + name
+	    when 'pt_BR'
+	      name = $persistent.langcode + "\\" + name
+	    when 'es'
+	      name = $persistent.langcode + "\\" + name
+	    when 'ja'
+	      name = $persistent.langcode + "\\" + name
+	    when 'ko'
+	      name = $persistent.langcode + "\\" + name
+	    when 'zh_CN'
+	      name = $persistent.langcode + "\\" + name
+      end
+	end
     $game_oneshot.wallpaper = name
     $game_oneshot.wallpaper_color = color
     Wallpaper.set(name, color)
