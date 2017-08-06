@@ -11,7 +11,11 @@ class Interpreter
   #--------------------------------------------------------------------------
   def command_101
     # If other text has been set to message_text
-    if $game_temp.message_text != nil || $game_temp.message_ed_text != nil || $game_temp.message_doc_text != nil || $game_temp.message_desktop_text != nil || $game_temp.message_credits_text != nil
+    if $game_temp.message_text != nil ||
+      $game_temp.message_ed_text != nil ||
+      $game_temp.message_doc_text != nil ||
+      $game_temp.message_desktop_text != nil ||
+      $game_temp.message_credits_text != nil
       # End
       return false
     end
