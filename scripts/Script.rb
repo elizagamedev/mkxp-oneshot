@@ -737,6 +737,9 @@ def plight_start_timer
 end
 
 def plight_update_timer
+  if $game_oneshot.plight_timer == nil
+    plight_start_timer
+  end
   Script.tmp_v1 = ((Time.now - $game_oneshot.plight_timer) / 60).to_i
 end
 
