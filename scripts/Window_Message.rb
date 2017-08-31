@@ -101,7 +101,12 @@ class Window_Message < Window_Selectable
       text.gsub!(/\\v\[([0-9]+)\]/) do
         $game_variables[$1.to_i]
       end
-      text.gsub!("\\p", $game_oneshot.player_name)
+	  #add a space to the beginning of the player name to better deal with longer names in asian languages
+	  if (Language::FONT_WESTERN == Font.default_name)
+        text.gsub!("\\p", $game_oneshot.player_name)
+      else
+        text.gsub!("\\p", " " + $game_oneshot.player_name)
+      end
       text.gsub!("\\n", "\n")
       # Handle text-rendering escape sequences
       text.gsub!(/\\c\[([0-9]+)\]/, "\0[\\1]")
