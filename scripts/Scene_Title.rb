@@ -41,6 +41,8 @@ class Scene_Title
     end
     load_perma_flags
 	Window_Settings.load_settings
+	
+    @window_settings_title = Window_Settings.new
     # Make title graphic
     @sprite = Sprite.new
     @sprite.bitmap = RPG::Cache.title($data_system.title_name)
@@ -51,12 +53,14 @@ class Scene_Title
     @menu.z += 1
     @menu.bitmap = Bitmap.new(640, 480)
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
+    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     if !$GDC
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 28, 150, 24, tr("Exit"))
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
     end
 	if $game_switches[160] && $game_switches[152]
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 56, 150, 24, tr("..."))
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
+	Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
     # Make cursor graphic
     @cursor = Sprite.new
     @cursor.zoom_x = @cursor.zoom_y = 2
@@ -82,6 +86,7 @@ class Scene_Title
       Input.update
       # Frame update
       update
+	  @window_settings_title.update
       # Abort loop if screen is changed
       if $scene != self
         break
@@ -96,6 +101,7 @@ class Scene_Title
     @menu.dispose
     @cursor.bitmap.dispose
     @cursor.dispose
+	@window_settings_title.dispose
     Audio.bgm_fade(60)
     Graphics.transition(60)
     # Run automatic change for BGM and BGS set with map
@@ -105,8 +111,17 @@ class Scene_Title
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
-    # Handle cursor movement
+	@menu.bitmap.clear
+	@menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
+    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
     if !$GDC
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
+    end
+	if $game_switches[160] && $game_switches[152]
+      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
+	end
+    # Handle cursor movement
+    if !@window_settings_title.visible
       update_cursor = false
       if Input.trigger?(Input::UP)
         if @cursor_pos > 0
@@ -116,12 +131,12 @@ class Scene_Title
       elsif Input.trigger?(Input::DOWN)
 	    
 	    if $game_switches[160] && $game_switches[152]
-          if @cursor_pos < 2
+          if @cursor_pos < 3
             @cursor_pos += 1
             update_cursor = true
           end
 	    else
-          if @cursor_pos < 1
+          if @cursor_pos < 2
             @cursor_pos += 1
             update_cursor = true
           end
@@ -138,23 +153,27 @@ class Scene_Title
       end
       if update_cursor
         Audio.se_play('Audio/SE/title_cursor.wav', 40)
-        @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 24 * @cursor_pos
+        @cursor.y = MENU_Y + (24 - @cursor.bitmap.height) / 2 + 25 * @cursor_pos
       end
     end
 
-    # Handle confirmation
-    if Input.trigger?(Input::ACTION)
-      case @cursor_pos
-      when 0  # Continue
-	    $game_switches[157] = false
-        command_continue
-      when 1  # Shutdown
-        command_shutdown
-      when 2  # memory
-	    $game_switches[157] = true
-        command_continue
+    if !@window_settings_title.visible
+      # Handle confirmation
+      if Input.trigger?(Input::ACTION)
+        case @cursor_pos
+        when 0  # Continue
+	      $game_switches[157] = false
+          command_continue
+	    when 1  # Settings
+	      command_settings
+        when 2  # Shutdown
+          command_shutdown
+        when 3  # memory
+	      $game_switches[157] = true
+          command_continue
+        end
       end
-    end
+	end
   end
   #--------------------------------------------------------------------------
   # * initialize a new game
@@ -208,5 +227,10 @@ class Scene_Title
     Audio.me_fade(800)
     # Shutdown
     $scene = nil
+  end
+  
+  def command_settings
+    $game_system.se_play($data_system.decision_se)
+    @window_settings_title.open
   end
 end
