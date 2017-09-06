@@ -459,15 +459,15 @@ module Script
 	when 1
 	  copy_file("Graphics/Characters/blue_npc_prototype.png", portal_path + "/blue_npc_prototype.png")
 	  copy_file("Graphics/Faces/proto1.png", portal_path + "/proto1.png")
-	  write_key(portal_path + "/keyB.txt", PROTO_TEXT)
+	  write_key(portal_path + "/keyB.txt", tr(PROTO_TEXT))
 	when 2
 	  copy_file("Graphics/Characters/green_npc_cedric.png", portal_path + "/green_npc_cedric.png")
 	  copy_file("Graphics/Faces/cedric.png", portal_path + "/cedric.png")
-	  write_key(portal_path + "/keyG.txt", CEDRIC_TEXT)
+	  write_key(portal_path + "/keyG.txt", tr(CEDRIC_TEXT))
 	when 3
 	  copy_file("Graphics/Characters/red_rue.png", portal_path + "/red_rue.png")
 	  copy_file("Graphics/Faces/rue.png", portal_path + "/rue.png")
-	  write_key(portal_path + "/keyR.txt", RUE_TEXT)
+	  write_key(portal_path + "/keyR.txt", tr(RUE_TEXT))
 	end
 
   end
