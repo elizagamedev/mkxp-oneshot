@@ -3,12 +3,16 @@
 module RPG
   module Cache
     def self.character(filename, hue)
+	  filename = filename.downcase
 	  if $game_switches[160] && filename.start_with?("niko")
 	    filename.gsub!(/niko/, "en")
 	  end
       self.load_bitmap("Graphics/Characters/", filename, hue)
     end
     def self.face(filename)
+	  #lowercasing facepic name to be more case insensitive
+	  #to catch the few instances where we use "Niko" instead of "niko"
+	  filename = filename.downcase
 	  if $game_switches[160] && filename.start_with?("niko")
 	    filename.gsub!(/niko/, "en")
 	  end
@@ -40,19 +44,5 @@ class Tone
 
   def blank?
     self.red == 0 && self.green == 0 && self.blue == 0 && self.gray == 0
-  end
-end
-
-module Graphics
-  class << self
-    alias_method :update_native, :update
-    def update
-      #if $game_map.map_id == 97
-      #  Oneshot.allow_exit false
-      #elsif $game_system.map_interpreter
-      # Oneshot.allow_exit ($scene == nil)
-      #end
-      update_native
-    end
   end
 end

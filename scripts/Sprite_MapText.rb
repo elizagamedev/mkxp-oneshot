@@ -7,9 +7,14 @@ class Sprite_MapText < Sprite
     @real_x = x * 4 * 32
     @real_y = y * 4 * 32
 
-    self.zoom_x = 2
-    self.zoom_y = 2
     self.bitmap = Bitmap.new(200, 24)
+    if (Language::FONT_WESTERN == Font.default_name)
+      self.zoom_x = 2
+      self.zoom_y = 2
+    else
+      self.zoom_x = 1.5
+      self.zoom_y = 1.5
+    end
 
 	#calculate text width
     spacewidth = self.bitmap.text_size(' ').width

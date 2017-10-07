@@ -63,7 +63,7 @@ win32 {
 		w32/niko.c \
 		w32/journal.c
 
-	LIBS += -lgdi32 -lshlwapi
+	LIBS += -lgdi32 -lshell32 -luuid -lole32
 
 	RC_FILE = w32/resources.rc
 }

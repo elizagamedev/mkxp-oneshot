@@ -13,7 +13,7 @@ class Language
     'en', 'fr', 'pt_BR', 'es'
   ]
   LANG_J = [
-	'ja'
+    'ja'
   ]
   LANG_CK = [
      'ko', 'zh_CN'
@@ -34,13 +34,13 @@ class Language
             @data = Marshal.load(file)
             if LANG_CK.include? name
                 Font.default_name = FONT_CK
-			elsif LANG_J.include? name
-				Font.default_name = FONT_J
+            elsif LANG_J.include? name
+                Font.default_name = FONT_J
             else
                 Font.default_name = FONT_WESTERN
             end
             Journal.setLang(name)
-			dbg_print(Font.default_name)
+            dbg_print(Font.default_name)
           end
         end
       end
@@ -51,14 +51,13 @@ class Language
     # Translate some text
     def tr(string)
       #dbg_print(caller_locations(1, 1).first.tap{|loc| puts "#{loc.path}:#{loc.lineno}"})
-      dbg_print(string)
       if @data
         rv = @data[Zlib::crc32(string)] || string
       else
         rv = string
       end
-      dbg_print(rv)
-      return rv
+      dbg_print(string + " -> " + rv)
+      return String.new(rv)
     end
 
     # Turn all database items into translatable strings
