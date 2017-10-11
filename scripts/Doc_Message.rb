@@ -9,14 +9,26 @@ class Doc_Message
   def initialize
     @viewport = Viewport.new(0, 0, 640, 480)
     @sprite_bg = Sprite.new(@viewport)
-	if $game_switches[124] == true
-	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
-	else
+    @sprite_scroll_up = Sprite.new(@viewport)
+    @sprite_scroll_down = Sprite.new(@viewport)
+  	if $game_switches[124] == true
+  	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
+      @sprite_scroll_up.bitmap = RPG::Cache.picture('scroll_up_red')
+      @sprite_scroll_down.bitmap = RPG::Cache.picture('scroll_down_red')
+  	else
       @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue') #Bitmap.new(640, 480)
-	end
+      @sprite_scroll_up.bitmap = RPG::Cache.picture('scroll_up_blue')
+      @sprite_scroll_down.bitmap = RPG::Cache.picture('scroll_down_blue')
+  	end
     @sprite_bg.zoom_x = @sprite_bg.zoom_y = 2
     @sprite_bg.x = 120
     @sprite_bg.y = 24
+    @sprite_scroll_up.zoom_x = @sprite_scroll_up.zoom_y = 2
+    @sprite_scroll_up.x = 524
+    @sprite_scroll_up.y = 24
+    @sprite_scroll_down.zoom_x = @sprite_scroll_down.zoom_y = 2
+    @sprite_scroll_down.x = 524
+    @sprite_scroll_down.y = 424
     #@sprite_bg.bitmap.fill_rect(0, 0, 640, 480, Color.new(0, 0, 0, 128))
     @sprite_text = Sprite.new(@viewport)
     @contents = Bitmap.new(200, 216)
@@ -33,6 +45,11 @@ class Doc_Message
 
     @sprite_bg.opacity = 0
     @sprite_text.opacity = 0
+    @sprite_scroll_down.opacity = 0
+    @sprite_scroll_up.opacity = 0
+
+    @y_offset = 0
+    @scroll_limit = 0
 
     # Animation flags
     @fade_in = false
@@ -59,6 +76,7 @@ class Doc_Message
       $game_temp.message_proc = nil
     end
     $game_temp.message_doc_text = nil
+    @y_offset = 0
   end
   #--------------------------------------------------------------------------
   # * Refresh: Load new message text and pre-process it
@@ -68,11 +86,11 @@ class Doc_Message
     text = ''
     y = -1
 
-	if $game_switches[124] == true
-	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
-	else
+  	if $game_switches[124] == true
+  	  @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_red')
+  	else
       @sprite_bg.bitmap = RPG::Cache.picture('lined_paper_blue') #Bitmap.new(640, 480)
-	end
+  	end
 
     # Pre-process text
     text_raw = $game_temp.message_doc_text.to_str
@@ -92,7 +110,8 @@ class Doc_Message
     text_raw.gsub!("\\\\", "\\")
 
     # Now split text into lines by measuring text metrics
-    x = y = 0
+    x = 0
+    y = 1
     maxwidth = @contents.width - HORIZ_MARGIN * 2
     spacesize = @contents.text_size(' ')
     for i in text_raw.split(/ /)
@@ -126,6 +145,11 @@ class Doc_Message
       end
     end
 
+    @scroll_limit = 11 - y
+    if @scroll_limit > 0
+      @scroll_limit = 0
+    end
+
     # Prepare renderer
     @contents.clear
     @contents.font.color = Color.new(100, 92, 255, 255)
@@ -133,7 +157,7 @@ class Doc_Message
 	  @contents.font.color = Color.new(255, 92, 100, 255)
 	end
     x = 0
-    y = 0
+    y = 1
 
     # Get 1 text character in c (loop until unable to get text)
     while ((c = text.slice!(/./m)) != nil)
@@ -155,7 +179,7 @@ class Doc_Message
         next
       end
       # Draw text
-      @contents.draw_text(HORIZ_MARGIN + x, VERT_MARGIN + (y + 1) * 18 - spacesize.height, 40, 18, c)
+      @contents.draw_text(HORIZ_MARGIN + x, VERT_MARGIN + (y + @y_offset) * 18 - spacesize.height, 40, 18, c)
       # Add x to drawn text width
       x += @contents.text_size(c).width
     end
@@ -176,7 +200,6 @@ class Doc_Message
         @viewport.visible = false
         $game_temp.message_window_showing = false
       end
-      return
     end
 
     # Handle fade-in effect
@@ -189,6 +212,23 @@ class Doc_Message
         @fade_in = false
         $game_temp.message_window_showing = true
       end
+    end
+
+    # set the scroll indicators to the opacity of the bg,
+    # or 0 if they cannot scroll further
+    if @y_offset < 0
+      @sprite_scroll_up.opacity = @sprite_bg.opacity
+    else
+      @sprite_scroll_up.opacity = 0
+    end
+    if @y_offset > @scroll_limit
+      @sprite_scroll_down.opacity = @sprite_bg.opacity
+    else
+      @sprite_scroll_down.opacity = 0
+    end
+
+    # don't perform control actions while fading msg box
+    if @fade_in || @fade_out
       return
     end
 
@@ -196,6 +236,14 @@ class Doc_Message
       if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
         terminate_message
         @fade_out = true
+      end
+      if Input.trigger?(Input::UP) && @y_offset < 0
+        @y_offset += 1
+        refresh()
+      end
+      if Input.trigger?(Input::DOWN) && @y_offset > @scroll_limit
+        @y_offset -= 1
+        refresh()
       end
     end
 

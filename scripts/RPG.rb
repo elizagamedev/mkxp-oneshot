@@ -42,17 +42,3 @@ class Tone
     self.red == 0 && self.green == 0 && self.blue == 0 && self.gray == 0
   end
 end
-
-module Graphics
-  class << self
-    alias_method :update_native, :update
-    def update
-      #if $game_map.map_id == 97
-      #  Oneshot.allow_exit false
-      #elsif $game_system.map_interpreter
-      # Oneshot.allow_exit ($scene == nil)
-      #end
-      update_native
-    end
-  end
-end

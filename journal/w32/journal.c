@@ -1,5 +1,8 @@
+#define WINVER 0x0600
+#define _WIN32_WINNT 0x0600
 #include <windows.h>
-#include <shlwapi.h>
+#include <stdio.h>
+#include <objbase.h>
 #include <shlobj.h>
 
 #define DEFAULT_WIDTH 800
@@ -67,7 +70,6 @@ LRESULT CALLBACK journal_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 // IPC thread
-#include <stdio.h>
 DWORD WINAPI ipc_thread(LPVOID lpParam)
 {
     (void)lpParam;
@@ -110,20 +112,53 @@ DWORD WINAPI ipc_thread(LPVOID lpParam)
     return 0;
 }
 
+// check if the file "My Documents/My Games/Oneshot/save_progress.oneshot" exist
+// if not, load the "default" image background
+// if it does exist, try to read the last 8.. or so.. bytes from the file.
+// this (should) contain a string like [XX_XX] or [XX] indicating the user's
+// language code. This will be apended with an underscore to "save"
+// to give the localized image file IFF the lang str exists
+void init_check_save(WCHAR* save_path) {
+  FILE* savefile = _wfopen(save_path, L"rb");
+  char imgfile[16] = {0};
+  char langbuf[9] = {0};
+  char* openbrace = 0;
+  char* closebrace = 0;
+  if (savefile) {
+    strcpy(imgfile, "save");
+    fseek(savefile, -8, SEEK_END);
+    fread(langbuf, 1, 8, savefile);
+    fclose(savefile);
+
+    openbrace = strchr(langbuf, '[');
+    closebrace = strchr(langbuf, ']');
+    if (openbrace && closebrace && openbrace < closebrace) {
+      //we very probably have a language code here.
+      //so, lets do some hacky string manipulation to
+      //name our image file
+      imgfile[4] = '_';
+      strncpy(imgfile+5, openbrace+1, closebrace-(openbrace+1));
+    }
+
+    loadImage(imgfile);
+  } else {
+    loadImage("default");
+  }
+}
+
 int do_journal()
 {
-    // Create
-    HINSTANCE module = GetModuleHandleW(NULL);
+  // Create
+  HINSTANCE module = GetModuleHandleW(NULL);
 
 	// Default image
 	WCHAR save_path[MAX_PATH];
-	SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, 0, save_path);
+  PWSTR folder_path = NULL;
+	SHGetKnownFolderPath((REFKNOWNFOLDERID)&FOLDERID_Documents, 0, NULL, &folder_path);
+  wcscpy(save_path, folder_path);
 	wcscat(save_path, L"\\My Games\\Oneshot\\save_progress.oneshot");
-	if (PathFileExistsW(save_path)) {
-		loadImage("save");
-	} else {
-		loadImage("default");
-	}
+  CoTaskMemFree(folder_path);
+  init_check_save(save_path);
 
     // Initial image
     char message[IN_BUFFER_SIZE];

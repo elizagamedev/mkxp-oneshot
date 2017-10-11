@@ -161,7 +161,8 @@ HEADERS += \
 	chromasdk/ChromaSDKImpl.h \
 	chromasdk/RzChromaSDKDefines.h \
 	chromasdk/RzChromaSDKTypes.h \
-	chromasdk/RzErrors.h
+	chromasdk/RzErrors.h \
+	src/i18n.h
 
 SOURCES += \
 	src/main.cpp \
@@ -205,7 +206,8 @@ SOURCES += \
   binding-mri/journal-binding.cpp \
 	chromasdk/FrameController.cpp \
 	chromasdk/ChromaSdkImpl.cpp  \
-	binding-mri/chroma-binding.cpp
+	binding-mri/chroma-binding.cpp \
+	src/i18n.cpp
 
 STEAM {
 	HEADERS += src/steam.h steamshim/steamshim_child.h
