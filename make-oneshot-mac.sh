@@ -4,7 +4,7 @@ set -e
 # User-configurable variables
 mac_version="0.3.4"
 steam_game_dir=~/Library/Application\ Support/Steam/SteamApps/common/OneShot
-make_threads=4
+make_threads=8
 
 # Colors
 white="\033[0;37m"      # White - Regular
@@ -25,9 +25,29 @@ pyinstaller journal/mac/journal.spec --onefile --windowed
 
 # Create app bundles
 echo "-> ${cyan}Create app bundles...${color_reset}"
-mv OneShot.app OneShot_new.app
-cp -r patches/mac/OneShot_template.app ./OneShot.app
-cp OneShot_new.app/Contents/MacOS/OneShot OneShot.app/Contents/Resources/OneShot
+OSX_App="OneShot.app"
+ContentsDir="$OSX_App/Contents"
+LibrariesDir="$OSX_App/Contents/Libraries"
+ResourcesDir="$OSX_App/Contents/Resources"
+
+# create directories in the @target@.app bundle
+if [ ! -e $LibrariesDir ]
+	then
+	mkdir -p "$LibrariesDir"
+fi
+
+if [ ! -e $ResourcesDir ]
+	then
+	mkdir -p "$ResourcesDir"
+fi
+
+cp patches/mac/steamshim ./OneShot.app/Contents/Resources/steamshim
+cp patches/mac/libsteam_api.dylib ./OneShot.app/Contents/Libraries/libsteam_api.dylib
+cmake -P patches/mac/CompleteBundle.cmake
+cp assets/icon.icns ./OneShot.app/Contents/Resources/icon.icns
+cp steam_appid.txt ./OneShot.app/Contents/Resources/steam_appid.txt
+cp patches/mac/oneshot.sh ./OneShot.app/Contents/MacOS/oneshot.sh
+mv OneShot.app/Contents/MacOS/OneShot OneShot.app/Contents/Resources/OneShot
 cp -r dist/_______.app _______.app
 
 # Set version number
@@ -52,7 +72,6 @@ cp -r _______.app "${steam_game_dir}/_______.app"
 # Cleanup
 echo "-> ${cyan}Cleanup files...${color_reset}"
 # make clean
-rm -rf OneShot_new.app
 rm -rf journal/mac/__pycache__
 rm -rf build
 rm -rf dist

@@ -33,10 +33,11 @@ contains(BINDING, NULL) {
 	CONFIG += BINDING_NULL
 }
 
+PKGCONFIG = sigc++-2.0 pixman-1 zlib sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile 
+
 unix {
 	CONFIG += c++11
-	PKGCONFIG += sigc++-2.0 pixman-1 vorbisfile \
-				 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
+	PKGCONFIG += physfs
 	LIBS += -ldl
 	macx: {
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
@@ -44,7 +45,7 @@ unix {
 		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
 	}
 	!macx: {
-		PKGCONFIG += openal zlib
+		# PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		SOURCES += src/xdg-user-dir-lookup.c
 		LIBS += -lX11
@@ -55,8 +56,7 @@ win32 {
 	QMAKE_CXXFLAGS += -std=gnu++11
 	QMAKE_LFLAGS += -std=gnu++11
 
-	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
-	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
+	PKGCONFIG += freetype2
 	LIBS += -lphysfs -lsecur32 -lwinmm
 
 	release {
