@@ -9,19 +9,23 @@ bool INIT_SUCCESS = false;
 CChromaSDKImpl* chromaImpl = NULL;
 
 void _attemptLinkSdk() {
+  Debug() << "Attempting to bind Chroma SDK";
   #if !defined(_WIN32) && !defined(_WIN64)
     // currently razr chroma is windows-only.
     // so, if we are not building for windows platform
     // then don't bother with chroma stuff
+    Debug() << "Chroma: Unsupported Platform";
     return;
   #endif
 
   chromaImpl = new CChromaSDKImpl();
+  Debug() << "Chroma Impl @" << chromaImpl;
   chromaImpl->Initialize();
   INIT_SUCCESS = true;
 }
 
 RB_METHOD(chromaSetBase) {
+  Debug() << "Chroma: Attempting to set base colour";
   	RB_UNUSED_PARAM;
     if (INIT_SUCCESS) {
       ChromaSDK::Keyboard::CUSTOM_EFFECT_TYPE effect = {};
@@ -34,6 +38,7 @@ RB_METHOD(chromaSetBase) {
           ChromaSDK::Keyboard::CHROMA_CUSTOM,
           &effect,
           NULL);
+      Debug() << "Chroma: Set base colour effect";
     }
     return Qnil;
 }
