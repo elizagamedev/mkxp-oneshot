@@ -1,6 +1,5 @@
 *.o
 *.pro.*
-*.cmake
 *.bak
 *.xxd
 *.exe
