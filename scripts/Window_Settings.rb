@@ -81,6 +81,7 @@ class Window_Settings
     @version.bitmap = Bitmap.new(60, 20)
     @version.x = 10
     @version.y = 450
+	@version.opacity = 128
     Language.register_text_sprite(self.class.name + "_title", @title)
     Language.register_text_sprite(self.class.name + "_ver", @version)
     @data_sprites = []
@@ -218,6 +219,9 @@ class Window_Settings
 
 
   def update
+    
+	@version.opacity = 128
+  
     if @fade_in
       self.opacity += 20
       active_spr = nil
@@ -232,6 +236,7 @@ class Window_Settings
       elsif self.opacity == 255
         @fade_in = false
       end
+	  @version.opacity = 128
       return
     end
 
