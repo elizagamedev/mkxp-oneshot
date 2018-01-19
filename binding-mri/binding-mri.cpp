@@ -78,6 +78,7 @@ void wallpaperBindingInit();
 void nikoBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
+void chromaBindingInit();
 
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
@@ -112,6 +113,7 @@ static void mriBindingInit()
 	nikoBindingInit();
 	oneshotBindingInit();
 	steamBindingInit();
+	chromaBindingInit();
 
 	if (rgssVer >= 3)
 	{

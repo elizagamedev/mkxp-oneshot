@@ -236,7 +236,7 @@ class Scene_Map
     # Update fast travel
     @fast_travel.update
 	@window_settings.update
-	
+
     if Input.trigger?(Input::F8) && !$game_switches[123]
       if Graphics.fullscreen == true
 	    Graphics.fullscreen = false
@@ -276,11 +276,24 @@ class Scene_Map
       $game_temp.player_new_x = $data_system.start_x
       $game_temp.player_new_y = $data_system.start_y
     end
-    # If debug mode is ON and F9 key was pressed
-    if $debug and Input.press?(Input::F9)
-      # Set debug calling flag
-      $game_temp.debug_calling = true
+    # debug && F6
+    if $debug and Input.press?(Input::F6) and $lastpress != 6
+      $lastpress = 6
+      Chroma.playAnim("chroma/blank_keyboard.chroma", false);
     end
+    if $debug and Input.press?(Input::F7) and $lastpress != 7
+      $lastpress = 7
+      Chroma.playAnim("chroma/Fire_Keyboard.chroma", true);
+    end
+    if $debug and Input.press?(Input::F9) and $lastpress != 9
+      $lastpress = 9
+      Chroma.playAnim("chroma/Random_Keyboard.chroma", false);
+    end
+    # If debug mode is ON and F9 key was pressed
+    # if $debug and Input.press?(Input::F9)
+    #   # Set debug calling flag
+    #   $game_temp.debug_calling = true
+    # end
     # If player is not moving
     unless $game_player.moving?
       # Run calling of each screen
