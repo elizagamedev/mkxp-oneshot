@@ -2,11 +2,21 @@
 #include "binding-types.h"
 #include "debugwriter.h"
 
-#include "chromasdk/ChromaSDKImpl.h"
+#include "chromasdk/ChromaApi.h"
 
 bool INIT_SUCCESS = false;
 
-CChromaSDKImpl* chromaImpl = NULL;
+HINSTANCE hLib = NULL;
+
+//dynamic-loaded proc pointers
+PluginPlayAnimation _playAnimation = NULL;
+PluginOpenAnimation _openAnimation = NULL;
+PluginIsInitialized _pluginIsInitialized = NULL;
+PluginInit _pluginInit = NULL;
+PluginUninit _pluginUninit = NULL;
+
+int lastAnimId = -1;
+
 
 void _attemptLinkSdk() {
   Debug() << "Attempting to bind Chroma SDK";
@@ -18,43 +28,65 @@ void _attemptLinkSdk() {
     return;
   #endif
 
-  chromaImpl = new CChromaSDKImpl();
-  Debug() << "Chroma Impl @" << chromaImpl;
-  chromaImpl->Initialize();
-  INIT_SUCCESS = true;
+  hLib = LoadLibrary(L"ChromaApi.dll");
+  if (hLib != NULL) {
+    Debug() << "Chroma Impl @" << hLib;
+    INIT_SUCCESS = true;
+
+    _playAnimation = (PluginPlayAnimation) GetProcAddress(hLib, "PluginPlayAnimation");
+    INIT_SUCCESS &= _playAnimation != NULL;
+    Debug() << "Plugin method @" << (long)_playAnimation;
+
+    _openAnimation = (PluginOpenAnimation) GetProcAddress(hLib, "PluginOpenAnimation");
+    INIT_SUCCESS &= _openAnimation != NULL;
+
+    _pluginInit = (PluginInit) GetProcAddress(hLib, "PluginInit");
+    INIT_SUCCESS &= _pluginInit != NULL;
+
+    _pluginIsInitialized = (PluginIsInitialized) GetProcAddress(hLib, "PluginIsInitialized");
+    INIT_SUCCESS &= _pluginInit != NULL;
+    if (INIT_SUCCESS && !_pluginIsInitialized()) {
+      Debug() << "Initializing chroma plugin";
+      _pluginInit();
+    }
+    _pluginUninit = (PluginUninit) GetProcAddress(hLib, "PluginUninit");
+    INIT_SUCCESS &= _pluginUninit != NULL;
+    Debug() << "Plugin init success:" << INIT_SUCCESS;
+  }
 }
 
-RB_METHOD(chromaSetBase) {
-  Debug() << "Chroma: Attempting to set base colour";
-  	RB_UNUSED_PARAM;
-    if (INIT_SUCCESS) {
-      ChromaSDK::Keyboard::CUSTOM_EFFECT_TYPE effect = {};
-      for (unsigned int y = 0; y < ChromaSDK::Keyboard::MAX_ROW; y++) {
-        for (unsigned int x = 0; x < ChromaSDK::Keyboard::MAX_COLUMN; x++) {
-          effect.Color[y][x] = RGB(0xFF, 0, 0xFF);
-        }
-      }
-      chromaImpl->CreateKeyboardEffectImpl(
-          ChromaSDK::Keyboard::CHROMA_CUSTOM,
-          &effect,
-          NULL);
-      Debug() << "Chroma: Set base colour effect";
-    }
-    return Qnil;
+
+RB_METHOD(chromaPlayAnimation) {
+  RB_UNUSED_PARAM;
+
+  Debug() << "Chroma: Attempting to play animation.";
+  const char* animfile;
+  bool loop;
+
+  rb_get_args(argc, argv, "zb", &animfile, &loop RB_ARG_END);
+
+  if (INIT_SUCCESS) {
+    Debug() << "Opening animation:" << animfile;
+    lastAnimId = _openAnimation(animfile);
+    Debug() << "ID:" << lastAnimId;
+    _playAnimation(lastAnimId);
+  }
+
+  return Qnil;
 }
 
 void chromaBindingInit() {
   _attemptLinkSdk();
 
 	VALUE module = rb_define_module("Chroma");
-	_rb_define_module_function(module, "setBase", chromaSetBase);
+	_rb_define_module_function(module, "playAnim", chromaPlayAnimation);
 }
 
 void chromaBindingRelease() {
-  if (chromaImpl) {
-    chromaImpl->UnInitialize();
-    delete chromaImpl;
-    chromaImpl = NULL;
+  if (hLib != NULL) {
+    _pluginUninit();
+    FreeLibrary(hLib);
+    hLib = NULL;
     INIT_SUCCESS = false;
   }
 }

@@ -16,7 +16,6 @@ begin
 
   # Load persistent data
   Persistent.load
-  Chroma.setBase
 
   # Prepare for transition
   Graphics.freeze
