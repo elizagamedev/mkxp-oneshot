@@ -3,12 +3,16 @@
 module RPG
   module Cache
     def self.character(filename, hue)
+	  filename = filename.downcase
 	  if $game_switches[160] && filename.start_with?("niko")
 	    filename.gsub!(/niko/, "en")
 	  end
       self.load_bitmap("Graphics/Characters/", filename, hue)
     end
     def self.face(filename)
+	  #lowercasing facepic name to be more case insensitive
+	  #to catch the few instances where we use "Niko" instead of "niko"
+	  filename = filename.downcase
 	  if $game_switches[160] && filename.start_with?("niko")
 	    filename.gsub!(/niko/, "en")
 	  end

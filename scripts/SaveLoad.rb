@@ -32,6 +32,7 @@ def fake_save
     Marshal.dump($game_oneshot, file)
     Marshal.dump($game_fasttravel, file)
     Marshal.dump($game_temp.footstep_sfx , file)
+	file.puts('HeyNoxidHeresTheLanguage[' + $persistent.langcode + ']')
   end
   write_perma_flags(PERMA_FLAGS_NAME)
 end
