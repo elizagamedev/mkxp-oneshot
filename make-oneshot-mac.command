@@ -6,6 +6,7 @@ cd `dirname $0`
 # User-configurable variables
 mac_version="0.4.1"
 make_threads=8
+ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
 
 # Colors
 white="\033[0;37m"      # White - Regular
@@ -60,7 +61,7 @@ m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.a
 
 # Compile scripts
 echo "-> ${cyan}Compile xScripts.rxdata...${color_reset}"
-ruby rpgscript.rb ./scripts "${steam_game_dir}"
+ruby rpgscript.rb ./scripts "$ONESHOT_PATH"
 
 # Cleanup
 echo "-> ${cyan}Cleanup files...${color_reset}"
