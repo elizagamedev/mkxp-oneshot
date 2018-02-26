@@ -1,0 +1,5 @@
+bin/upx: https://github.com/upx/upx
+The Ultimate Packer for eXecutables Copyright (c) 1996-2017 Markus Oberhumer, Laszlo Molnar & John Reiser. Licensed under GPL with exceptions.
+
+bin/convert: https://github.com/ImageMagick/ImageMagick
+ImageMagick, Copyright 1999-2018 ImageMagick Studio LLC, a non-profit organization dedicated to making software imaging solutions freely available.

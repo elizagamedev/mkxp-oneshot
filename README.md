@@ -54,3 +54,13 @@ All option entries can alternatively be specified as command line options. Any o
 The syntax is: `--<option>=<value>`
 
 Example: `./oneshot --gameFolder="oneshot" --vsync=true`
+
+## Troubleshooting (macOS)
+
+### cannot open `~.command` file or `OneShot.app`: unidentified developer
+
+Right-click the file and select 'Open'.
+
+### An error `Unable to open 'Data/xScripts.rxdata'` occurs
+
+Move `_______.app` and `OneShot.app` to somewhere outside the OneShot directory, open and quit them, then move them again to OneShot directory.
