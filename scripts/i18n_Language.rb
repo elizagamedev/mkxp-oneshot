@@ -51,11 +51,11 @@ class Language
     # Translate some text
     def tr(string)
       #dbg_print(caller_locations(1, 1).first.tap{|loc| puts "#{loc.path}:#{loc.lineno}"})
-      # if @data
-      #   rv = @data[Zlib::crc32(string)] || string
-      # else
+      if @data
+        rv = @data[Zlib::crc32(string)] || string
+      else
         rv = string
-      # end
+      end
       dbg_print(string + " -> " + rv)
       return String.new(rv)
     end
