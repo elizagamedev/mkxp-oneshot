@@ -77,7 +77,13 @@ class Window_Settings
     @title.bitmap.font.size = 40
     @title.y = TITLE_TOP_MARGIN
     @title.x = MARGIN
+    @version = Sprite.new(@viewport)
+    @version.bitmap = Bitmap.new(60, 20)
+    @version.x = 10
+    @version.y = 450
+	@version.opacity = 128
     Language.register_text_sprite(self.class.name + "_title", @title)
+    Language.register_text_sprite(self.class.name + "_ver", @version)
     @data_sprites = []
     @viewport.z = 9998
 
@@ -96,6 +102,7 @@ class Window_Settings
   def dispose
     @bg.dispose
     @title.dispose
+    @version.dispose
     @data_sprites.each do |spr|
       spr.dispose
     end
@@ -127,6 +134,10 @@ class Window_Settings
     # Create title
     @title.bitmap.clear
     @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"))
+
+    # Create version string
+    @version.bitmap.clear
+    @version.bitmap.draw_text(0, 0, @version.bitmap.width, @version.bitmap.height, tr("POT_VERSION"))
 
     # Create menu options
     @data.each_with_index do |item, i|
@@ -199,6 +210,8 @@ class Window_Settings
   def redraw_all_settings
     @title.bitmap.clear
     @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"))
+    @version.bitmap.clear
+    @version.bitmap.draw_text(0, 0, @version.bitmap.width, @version.bitmap.height, tr("POT_VERSION"))
     for i in 0..7
       redraw_setting_index(i)
     end
@@ -206,6 +219,9 @@ class Window_Settings
 
 
   def update
+    
+	@version.opacity = 128
+  
     if @fade_in
       self.opacity += 20
       active_spr = nil
@@ -220,6 +236,7 @@ class Window_Settings
       elsif self.opacity == 255
         @fade_in = false
       end
+	  @version.opacity = 128
       return
     end
 
@@ -418,6 +435,7 @@ class Window_Settings
   def opacity=(val)
     @bg.opacity = val
     @title.opacity = val
+    @version.opacity = val
   end
   def opacity
     @bg.opacity

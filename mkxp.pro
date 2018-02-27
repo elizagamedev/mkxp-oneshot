@@ -148,6 +148,10 @@ HEADERS += \
 	src/sdl-util.h \
 	src/oneshot.h \
 	src/pipe.h \
+	chromasdk/RzChromaSDKDefines.h \
+	chromasdk/RzChromaSDKTypes.h \
+	chromasdk/RzErrors.h \
+	chromasdk/ChromaApi.h \
 	src/i18n.h
 
 SOURCES += \
@@ -189,7 +193,6 @@ SOURCES += \
 	src/vorbissource.cpp \
 	src/oneshot.cpp \
 	src/screen.cpp \
-  binding-mri/journal-binding.cpp \
 	src/i18n.cpp
 
 STEAM {
@@ -288,6 +291,8 @@ BINDING_MRI {
 	binding-mri/oneshot-binding.cpp \
 	binding-mri/steam-binding.cpp \
 	binding-mri/wallpaper-binding.cpp \
+	binding-mri/journal-binding.cpp \
+	binding-mri/chroma-binding.cpp \
 	binding-mri/niko-binding.cpp
 }
 
