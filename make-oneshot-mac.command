@@ -4,7 +4,7 @@ set -e
 cd `dirname $0`
 
 # User-configurable variables
-mac_version="0.4.1"
+mac_version="1.0.0"
 make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
 
