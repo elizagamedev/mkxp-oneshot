@@ -1,6 +1,6 @@
 # mkxp-oneshot
 
-This is a specialized fork of [mkxp by Ancurio](https://github.com/Ancurio/mkxp) designed for [*OneShot*](http://oneshot-game.com/) and *OneShot: Fragments of Providence*.
+This is a specialized fork of [mkxp by Ancurio](https://github.com/Ancurio/mkxp) designed for [*OneShot*](http://oneshot-game.com/).
 
 Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux [reimplementation of the journal program](https://github.com/hunternet93/OneShot-Journal)!
 
