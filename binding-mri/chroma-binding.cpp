@@ -6,7 +6,11 @@
 
 bool INIT_SUCCESS = false;
 
-HINSTANCE hLib = NULL;
+#ifdef _WIN32
+  HINSTANCE hLib = NULL;
+#else
+  int* hLib = NULL;
+#endif
 
 //dynamic-loaded proc pointers
 PluginPlayAnimation _playAnimation = NULL;
@@ -20,39 +24,38 @@ int lastAnimId = -1;
 
 void _attemptLinkSdk() {
   Debug() << "Attempting to bind Chroma SDK";
-  #if !defined(_WIN32) && !defined(_WIN64)
-    // currently razr chroma is windows-only.
-    // so, if we are not building for windows platform
-    // then don't bother with chroma stuff
-    Debug() << "Chroma: Unsupported Platform";
-    return;
-  #endif
+  #ifdef _WIN32
+    hLib = LoadLibrary(L"ChromaApi.dll");
+    if (hLib != NULL) {
+      Debug() << "Chroma Impl @" << hLib;
+      INIT_SUCCESS = true;
 
-  hLib = LoadLibrary(L"ChromaApi.dll");
-  if (hLib != NULL) {
-    Debug() << "Chroma Impl @" << hLib;
-    INIT_SUCCESS = true;
+      _playAnimation = (PluginPlayAnimation) GetProcAddress(hLib, "PluginPlayAnimation");
+      INIT_SUCCESS &= _playAnimation != NULL;
+      Debug() << "Plugin method @" << (long)_playAnimation;
 
-    _playAnimation = (PluginPlayAnimation) GetProcAddress(hLib, "PluginPlayAnimation");
-    INIT_SUCCESS &= _playAnimation != NULL;
-    Debug() << "Plugin method @" << (long)_playAnimation;
+      _openAnimation = (PluginOpenAnimation) GetProcAddress(hLib, "PluginOpenAnimation");
+      INIT_SUCCESS &= _openAnimation != NULL;
 
-    _openAnimation = (PluginOpenAnimation) GetProcAddress(hLib, "PluginOpenAnimation");
-    INIT_SUCCESS &= _openAnimation != NULL;
+      _pluginInit = (PluginInit) GetProcAddress(hLib, "PluginInit");
+      INIT_SUCCESS &= _pluginInit != NULL;
 
-    _pluginInit = (PluginInit) GetProcAddress(hLib, "PluginInit");
-    INIT_SUCCESS &= _pluginInit != NULL;
-
-    _pluginIsInitialized = (PluginIsInitialized) GetProcAddress(hLib, "PluginIsInitialized");
-    INIT_SUCCESS &= _pluginInit != NULL;
-    if (INIT_SUCCESS && !_pluginIsInitialized()) {
-      Debug() << "Initializing chroma plugin";
-      _pluginInit();
+      _pluginIsInitialized = (PluginIsInitialized) GetProcAddress(hLib, "PluginIsInitialized");
+      INIT_SUCCESS &= _pluginInit != NULL;
+      if (INIT_SUCCESS && !_pluginIsInitialized()) {
+        Debug() << "Initializing chroma plugin";
+        _pluginInit();
+      }
+      _pluginUninit = (PluginUninit) GetProcAddress(hLib, "PluginUninit");
+      INIT_SUCCESS &= _pluginUninit != NULL;
+      Debug() << "Plugin init success:" << INIT_SUCCESS;
     }
-    _pluginUninit = (PluginUninit) GetProcAddress(hLib, "PluginUninit");
-    INIT_SUCCESS &= _pluginUninit != NULL;
-    Debug() << "Plugin init success:" << INIT_SUCCESS;
-  }
+  #else
+    // Currently the Razor Chroma API is Windows-only.
+    // So, if we are not building for Windows platform,
+    // then don't bother with Chroma stuff.
+    Debug() << "Chroma: Unsupported Platform";
+  #endif
 }
 
 
@@ -83,10 +86,12 @@ void chromaBindingInit() {
 }
 
 void chromaBindingRelease() {
-  if (hLib != NULL) {
-    _pluginUninit();
-    FreeLibrary(hLib);
-    hLib = NULL;
-    INIT_SUCCESS = false;
-  }
+  #ifdef _WIN32
+    if (hLib != NULL) {
+      _pluginUninit();
+      FreeLibrary(hLib);
+      hLib = NULL;
+      INIT_SUCCESS = false;
+    }
+  #endif
 }
