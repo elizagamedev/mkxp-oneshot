@@ -6,6 +6,7 @@
 #include "eventthread.h"
 
 #include <SDL.h>
+#include <boost/crc.hpp>
 
 RB_METHOD(oneshotSetYesNo)
 {
@@ -88,6 +89,17 @@ RB_METHOD(oneshotShake)
 	return Qnil;
 }
 
+RB_METHOD(oneshotCRC32)
+{
+    RB_UNUSED_PARAM;
+    VALUE string;
+    boost::crc_32_type result;
+    rb_get_args(argc, argv, "S", &string RB_ARG_END);
+    std::string str = std::string(RSTRING_PTR(string), RSTRING_LEN(string));
+    result.process_bytes(str.data(), str.length());
+    return UINT2NUM(result.checksum());
+}
+
 void oneshotBindingInit()
 {
     VALUE module = rb_define_module("Oneshot");
@@ -113,5 +125,6 @@ void oneshotBindingInit()
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
     _rb_define_module_function(module, "allow_exit", oneshotAllowExit);
 	_rb_define_module_function(module, "exiting", oneshotExiting);
-	_rb_define_module_function(module, "shake", oneshotShake);
+    _rb_define_module_function(module, "shake", oneshotShake);
+	_rb_define_module_function(module, "crc32", oneshotCRC32);
 }
