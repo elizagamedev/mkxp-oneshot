@@ -63,6 +63,10 @@ m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.a
 echo "-> ${cyan}Compile xScripts.rxdata...${color_reset}"
 ruby rpgscript.rb ./scripts "$ONESHOT_PATH"
 
+echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
+cp -rf "./OneShot.app" "$ONESHOT_PATH"
+cp -rf "./_______.app" "$ONESHOT_PATH"
+
 # Cleanup
 echo "-> ${cyan}Cleanup files...${color_reset}"
 # make clean
