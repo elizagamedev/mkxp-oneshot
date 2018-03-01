@@ -581,7 +581,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	}
 
 	//Get documents path
-	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
+	char *path = getenv("HOME")+"/Documents"; //xdg_user_dir_lookup_with_fallback("Documents", getenv("HOME"));
 	p->docsPath = path;
 	p->gamePath = path;
 	#ifdef OS_OSX
