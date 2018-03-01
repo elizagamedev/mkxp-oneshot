@@ -41,8 +41,10 @@ unix {
 	LIBS += -ldl
 	macx: {
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
-		LIBS += -framework OpenAL
+		LIBS += -framework OpenAL -framework AppKit
 		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
+		HEADERS += src/mac-desktop.h
+		SOURCES += src/mac-desktop.mm
 	}
 	!macx: {
 		# PKGCONFIG += openal zlib

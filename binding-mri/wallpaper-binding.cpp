@@ -7,15 +7,21 @@
 static bool isCached = false;
 
 #ifdef _WIN32
-#include <windows.h>
-static WCHAR szStyle[8] = {0};
-static WCHAR szTile[8] = {0};
-static WCHAR szFile[MAX_PATH+1] = {0};
-static DWORD oldcolor = 0;
-static DWORD szStyleSize = sizeof(szStyle) - 1;
-static DWORD szTileSize = sizeof(szTile) - 1;
-static bool setStyle = false;
-static bool setTile = false;
+	#include <windows.h>
+	static WCHAR szStyle[8] = {0};
+	static WCHAR szTile[8] = {0};
+	static WCHAR szFile[MAX_PATH+1] = {0};
+	static DWORD oldcolor = 0;
+	static DWORD szStyleSize = sizeof(szStyle) - 1;
+	static DWORD szTileSize = sizeof(szTile) - 1;
+	static bool setStyle = false;
+	static bool setTile = false;
+#else
+	#ifdef __APPLE__
+		#include "mac-desktop.h"
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 
 RB_METHOD(wallpaperSet)
@@ -93,6 +99,11 @@ end:
 	if (hKey)
 		RegCloseKey(hKey);
 #else
+	#ifdef __APPLE__
+		// XXX Implement me!
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 	return Qnil;
 }
@@ -126,6 +137,11 @@ RB_METHOD(wallpaperReset)
 			RegCloseKey(hKey);
 	}
 #else
+	#ifdef __APPLE__
+		// XXX Implement me!
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 	return Qnil;
 }
