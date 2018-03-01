@@ -100,7 +100,11 @@ end:
 		RegCloseKey(hKey);
 #else
 	#ifdef __APPLE__
-		// XXX Implement me!
+	if (!isCached) {
+		MacDesktop::CacheCurrentBackground();
+		isCached = true;
+	}
+	MacDesktop::ChangeBackground(imgname);
 	#else
 		// XXX Implement me!
 	#endif
@@ -138,7 +142,7 @@ RB_METHOD(wallpaperReset)
 	}
 #else
 	#ifdef __APPLE__
-		// XXX Implement me!
+		MacDesktop::ResetBackground();
 	#else
 		// XXX Implement me!
 	#endif
