@@ -8,5 +8,8 @@
 
 #include <string>
 
-bool ChangeBackground(std::string imageURL);
-bool ResetBackground();
+namespace MacDesktop {
+	void CacheCurrentBackground();
+	bool ChangeBackground(std::string imageURL);
+	bool ResetBackground();
+}
