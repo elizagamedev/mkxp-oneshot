@@ -26,10 +26,15 @@ ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
 # echo "-> ${cyan}Copy images to application...${color_reset}"
 # cp -rf ./images ./_______.app/Contents/Resources/
 
+echo "-> ${cyan}Removing old OneShot apps...${color_reset}"
+rm -rf "$ONESHOT_PATH/OneShot.app"
+rm -rf "$ONESHOT_PATH/_______.app"
+rm -f "$ONESHOT_PATH/Data/xScripts.rxdata"
+
 echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
-cp -f "./xScripts.rxdata" "$ONESHOT_PATH/Data"
-cp -rf "./OneShot.app" "$ONESHOT_PATH/OneShot.app"
-cp -rf "./_______.app" "$ONESHOT_PATH/_______.app"
+cp -f "./xScripts.rxdata" "$ONESHOT_PATH/Data/xScripts.rxdata"
+cp -rf "./OneShot.app" "$ONESHOT_PATH"
+cp -rf "./_______.app" "$ONESHOT_PATH"
 ln -sfh "$ONESHOT_PATH/OneShot.app" "$HOME/Applications/OneShot.app"
 
 # echo "-> ${cyan}Cleaning up...${color_reset}"
