@@ -15,6 +15,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 * Qt5
 * Boost.Unordered (headers only)
 * Boost.Program_options
+* Boost.CRC
 * libsigc++ 2.0
 * PhysFS (latest hg)
 * OpenAL
@@ -26,9 +27,9 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 * pixman
 * zlib (only ruby bindings)
 * OpenGL header (alternatively GLES2 with `DEFINES+=GLES2_HEADER`)
-* Ruby (make sure to use 2.3 on macOS (and Linux(?)) due to a save formatting bug)
-* Python 3 (journal reimplementation only)
-* PyQt5 (journal reimplementation only)
+* Ruby (make sure to use 2.3 on macOS and Linux(?) due to a save formatting bug)
+* Python 3 (macOS/Linux journal reimplementation only)
+* PyQt5 (macOS/Linux journal reimplementation only)
 
 *SyngleChance* employs Qt's qmake build system, so you'll need to install that beforehand. (The cmake build hasn't been maintained since the fork.)
 
