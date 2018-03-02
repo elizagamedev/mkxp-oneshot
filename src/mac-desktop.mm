@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-NSBool isCached = NO;
+BOOL isCached = NO;
 NSURL *originalBackground;
 NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *originalOptions;
 
