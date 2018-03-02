@@ -104,7 +104,8 @@ end:
 		MacDesktop::CacheCurrentBackground();
 		isCached = true;
 	}
-	MacDesktop::ChangeBackground(imgname);
+	// imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + "2x.bmp";
+	MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
 	#else
 		// XXX Implement me!
 	#endif

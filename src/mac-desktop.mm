@@ -11,28 +11,28 @@
 #import <AppKit/AppKit.h>
 
 BOOL isCached = NO;
+
 NSURL *originalBackground;
 NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *originalOptions;
 
-NSScreen *mainscreen = [NSScreen mainScreen];
+NSScreen *screen = [NSScreen mainScreen];
 NSWorkspace *sharedworkspace = [NSWorkspace sharedWorkspace];
 
 void MacDesktop::CacheCurrentBackground() {
-	originalBackground = [sharedworkspace desktopImageURLForScreen:mainscreen];
-	originalOptions = [sharedworkspace desktopImageOptionsForScreen:mainscreen];
+	if (isCached == NO) {
+		originalBackground = [sharedworkspace desktopImageURLForScreen:screen];
+		originalOptions = [sharedworkspace desktopImageOptionsForScreen:screen];
+	}
 	isCached = YES;
 }
 
-bool MacDesktop::ChangeBackground(std::string imageURL) {
+void MacDesktop::ChangeBackground(std::string imageURL, double red, double green, double blue) {
 	NSURL *URL = [NSURL fileURLWithPath:@(imageURL.c_str())];
-	NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *options = @{NSWorkspaceDesktopImageScalingKey : @0, NSWorkspaceDesktopImageAllowClippingKey : @NO, NSWorkspaceDesktopImageFillColorKey : [NSColor blackColor]};
+	NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *options = @{NSWorkspaceDesktopImageScalingKey : @3, NSWorkspaceDesktopImageAllowClippingKey : @0, NSWorkspaceDesktopImageFillColorKey : [NSColor colorWithSRGBRed:red green:green blue:blue alpha:1.0]};
 
-	BOOL success = [sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:mainscreen options:options error:nil];
-	return (bool)success;
+	[sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:screen options:options error:nil];
 }
 
-bool MacDesktop::ResetBackground() {
-	if (isCached == NO) return true;
-	BOOL success = [sharedworkspace setDesktopImageURL:originalBackground forScreen:mainscreen options:originalOptions error:nil];
-	return (bool)success;
+void MacDesktop::ResetBackground() {
+	if (isCached) [sharedworkspace setDesktopImageURL:originalBackground forScreen:screen options:originalOptions error:nil];
 }

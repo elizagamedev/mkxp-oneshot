@@ -10,6 +10,6 @@
 
 namespace MacDesktop {
 	void CacheCurrentBackground();
-	bool ChangeBackground(std::string imageURL);
-	bool ResetBackground();
+	void ChangeBackground(std::string imageURL, double red, double green, double blue);
+	void ResetBackground();
 }
