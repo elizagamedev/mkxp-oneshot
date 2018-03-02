@@ -23,8 +23,9 @@ void MacDesktop::CacheCurrentBackground() {
 
 bool MacDesktop::ChangeBackground(std::string imageURL) {
 	NSURL *URL = [NSURL fileURLWithPath:@(imageURL.c_str())];
+	NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *options = @{NSWorkspaceDesktopImageScalingKey : @0, NSWorkspaceDesktopImageAllowClippingKey : @NO, NSWorkspaceDesktopImageFillColorKey : [NSColor blackColor]};
 
-	BOOL success = [sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:mainscreen options:[sharedworkspace desktopImageOptionsForScreen:mainscreen] error:nil];
+	BOOL success = [sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:mainscreen options:options error:nil];
 	return (bool)success;
 }
 
