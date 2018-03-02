@@ -3,8 +3,7 @@
 *.bak
 *.xxd
 *.exe
-OneShot.app
-_______.app
+*.app
 *.bmp
 *.lproj
 
