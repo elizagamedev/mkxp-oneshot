@@ -99,13 +99,16 @@ end:
 	if (hKey)
 		RegCloseKey(hKey);
 #else
+	std::size_t found = imgname.find("w32");
+	if (found != std::string::npos) imgname.replace(imgname.end()-3, imgname.end(), "unix");
+	imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".png";
+
 	#ifdef __APPLE__
-	if (!isCached) {
-		MacDesktop::CacheCurrentBackground();
-		isCached = true;
-	}
-	// imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + "2x.bmp";
-	MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
+		if (!isCached) {
+			MacDesktop::CacheCurrentBackground();
+			isCached = true;
+		}
+		MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
 	#else
 		// XXX Implement me!
 	#endif
