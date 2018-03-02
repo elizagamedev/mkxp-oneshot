@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+NSBool isCached = NO;
 NSURL *originalBackground;
 NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *originalOptions;
 
@@ -19,6 +20,7 @@ NSWorkspace *sharedworkspace = [NSWorkspace sharedWorkspace];
 void MacDesktop::CacheCurrentBackground() {
 	originalBackground = [sharedworkspace desktopImageURLForScreen:mainscreen];
 	originalOptions = [sharedworkspace desktopImageOptionsForScreen:mainscreen];
+	isCached = YES;
 }
 
 bool MacDesktop::ChangeBackground(std::string imageURL) {
@@ -30,6 +32,7 @@ bool MacDesktop::ChangeBackground(std::string imageURL) {
 }
 
 bool MacDesktop::ResetBackground() {
+	if (isCached == NO) return true;
 	BOOL success = [sharedworkspace setDesktopImageURL:originalBackground forScreen:mainscreen options:originalOptions error:nil];
 	return (bool)success;
 }
