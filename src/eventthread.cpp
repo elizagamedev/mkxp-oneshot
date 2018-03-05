@@ -283,7 +283,7 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_TEXTINPUT:
-			if (rtData.inputText.length() < rtData.inputTextLimit) rtData.inputText += event.text.text;
+			if (rtData.inputText.length() < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
 			break;
 
 		case SDL_KEYDOWN :
