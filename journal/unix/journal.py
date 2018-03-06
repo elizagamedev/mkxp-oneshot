@@ -8,7 +8,8 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal, QRect, QRectF, QTimer
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QIcon, QPixmap, QPainter
 
-pipe_path = '/tmp/oneshot-pipe'
+if sys.platform == "win32": pipe_path = '\\\\.\\pipe\\oneshot-journal-to-game'
+else: pipe_path = '/tmp/oneshot-pipe'
 
 try: base_path = sys._MEIPASS
 except AttributeError: base_path = os.path.abspath('.')
