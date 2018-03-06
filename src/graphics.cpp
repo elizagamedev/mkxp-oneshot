@@ -52,6 +52,14 @@
 #define DEF_SCREEN_H  (rgssVer == 1 ? 480 : 416)
 #define DEF_FRAMERATE (rgssVer == 1 ?  40 :  60)
 
+#if defined _WIN32
+	#define OS_W32
+#elif defined __APPLE__
+	#define OS_OSX
+#else
+	#define OS_LINUX
+#endif
+
 struct PingPong
 {
 	TEXFBO rt[2];
@@ -816,7 +824,9 @@ void Graphics::transition(int duration,
 			simpleShader.setProg(prog);
 		}
 
-		if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
+		#ifndef OS_LINUX
+			if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
+		#endif
 
 		/* Draw the composed frame to a buffer first
 		 * (we need this because we're skipping PingPong) */
