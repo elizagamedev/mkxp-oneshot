@@ -23,7 +23,7 @@ qmake MRIVERSION=2.3
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
 echo "-> ${cyan}Compile journal...${color_reset}"
-pyinstaller journal/mac/journal.spec --onefile --windowed
+pyinstaller journal/unix/journal.spec --onefile --windowed
 
 # Create app bundles
 echo "-> ${cyan}Create app bundles...${color_reset}"
@@ -70,7 +70,7 @@ cp -rf "./_______.app" "$ONESHOT_PATH"
 # Cleanup
 echo "-> ${cyan}Cleanup files...${color_reset}"
 # make clean
-rm -rf journal/mac/__pycache__
+rm -rf journal/unix/__pycache__
 rm -rf build
 rm -rf dist
 
