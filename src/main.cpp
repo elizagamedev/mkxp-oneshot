@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
 	SDL_Surface *iconImg = IMG_Load_RW(iconSrc, SDL_TRUE);
 
 	SDL_Window *win;
-	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS;
+	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_RESIZABLE; //| SDL_WINDOW_ALLOW_HIGHDPI;
 
 	if (conf.fullscreen)
 		winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
 #endif
 
 	int winW, winH;
-	SDL_GetWindowSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
 	/* Load and post key bindings */

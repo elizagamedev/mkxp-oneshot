@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 QT =
-TARGET = oneshot
+TARGET = OneShot
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
@@ -24,15 +24,6 @@ contains(BINDING, MRI) {
 	CONFIG += BINDING_MRI
 }
 
-contains(BINDING, MRUBY) {
-	contains(_HAVE_BINDING, YES) {
-		error("Only one binding may be selected")
-	}
-	_HAVE_BINDING = YES
-
-	CONFIG += BINDING_MRUBY
-}
-
 contains(BINDING, NULL) {
 	contains(_HAVE_BINDING, YES) {
 		error("Only one binding may be selected")
@@ -42,18 +33,21 @@ contains(BINDING, NULL) {
 	CONFIG += BINDING_NULL
 }
 
+PKGCONFIG = sigc++-2.0 pixman-1 zlib sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile 
+
 unix {
 	CONFIG += c++11
-	PKGCONFIG += sigc++-2.0 pixman-1 vorbisfile \
-                 sdl2 SDL2_image SDL2_ttf SDL_sound physfs
-    LIBS += -ldl
+	PKGCONFIG += physfs
+	LIBS += -ldl
 	macx: {
-		CONFIG -= app_bundle
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
-		LIBS += -framework OpenAL
+		LIBS += -framework OpenAL -framework AppKit
+		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
+		HEADERS += src/mac-desktop.h
+		SOURCES += src/mac-desktop.mm
 	}
 	!macx: {
-		PKGCONFIG += openal zlib
+		# PKGCONFIG += openal zlib
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		SOURCES += src/xdg-user-dir-lookup.c
 		LIBS += -lX11
@@ -64,8 +58,7 @@ win32 {
 	QMAKE_CXXFLAGS += -std=gnu++11
 	QMAKE_LFLAGS += -std=gnu++11
 
-	PKGCONFIG += sigc++-2.0 pixman-1 zlib \
-	             sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile freetype2
+	PKGCONFIG += freetype2
 	LIBS += -lphysfs -lsecur32 -lwinmm
 
 	release {
@@ -257,7 +250,7 @@ BINDING_NULL {
 
 BINDING_MRI {
 	isEmpty(MRIVERSION) {
-		MRIVERSION = 2.2
+		MRIVERSION = 2.3
 	}
 
 	PKGCONFIG += ruby-$$MRIVERSION

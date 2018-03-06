@@ -7,15 +7,21 @@
 static bool isCached = false;
 
 #ifdef _WIN32
-#include <windows.h>
-static WCHAR szStyle[8] = {0};
-static WCHAR szTile[8] = {0};
-static WCHAR szFile[MAX_PATH+1] = {0};
-static DWORD oldcolor = 0;
-static DWORD szStyleSize = sizeof(szStyle) - 1;
-static DWORD szTileSize = sizeof(szTile) - 1;
-static bool setStyle = false;
-static bool setTile = false;
+	#include <windows.h>
+	static WCHAR szStyle[8] = {0};
+	static WCHAR szTile[8] = {0};
+	static WCHAR szFile[MAX_PATH+1] = {0};
+	static DWORD oldcolor = 0;
+	static DWORD szStyleSize = sizeof(szStyle) - 1;
+	static DWORD szTileSize = sizeof(szTile) - 1;
+	static bool setStyle = false;
+	static bool setTile = false;
+#else
+	#ifdef __APPLE__
+		#include "mac-desktop.h"
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 
 RB_METHOD(wallpaperSet)
@@ -93,6 +99,19 @@ end:
 	if (hKey)
 		RegCloseKey(hKey);
 #else
+	std::size_t found = imgname.find("w32");
+	if (found != std::string::npos) imgname.replace(imgname.end()-3, imgname.end(), "unix");
+	imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".png";
+
+	#ifdef __APPLE__
+		if (!isCached) {
+			MacDesktop::CacheCurrentBackground();
+			isCached = true;
+		}
+		MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 	return Qnil;
 }
@@ -126,6 +145,11 @@ RB_METHOD(wallpaperReset)
 			RegCloseKey(hKey);
 	}
 #else
+	#ifdef __APPLE__
+		MacDesktop::ResetBackground();
+	#else
+		// XXX Implement me!
+	#endif
 #endif
 	return Qnil;
 }

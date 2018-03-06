@@ -472,6 +472,7 @@ struct GraphicsPrivate
 	int frameRate;
 	int frameCount;
 	int brightness;
+	bool smooth;
 
 	FPSLimiter fpsLimiter;
 
@@ -814,6 +815,8 @@ void Graphics::transition(int duration,
 			simpleShader.bind();
 			simpleShader.setProg(prog);
 		}
+
+		if (p->threadData->exiting) SDL_SetWindowOpacity(p->threadData->window, 1.0f - prog);
 
 		/* Draw the composed frame to a buffer first
 		 * (we need this because we're skipping PingPong) */

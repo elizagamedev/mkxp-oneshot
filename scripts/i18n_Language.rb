@@ -52,7 +52,7 @@ class Language
     def tr(string)
       #dbg_print(caller_locations(1, 1).first.tap{|loc| puts "#{loc.path}:#{loc.lineno}"})
       if @data
-        rv = @data[Zlib::crc32(string)] || string
+        rv = @data[Oneshot::crc32(string)] || string
       else
         rv = string
       end

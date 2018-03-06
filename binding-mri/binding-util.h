@@ -90,7 +90,7 @@ raiseRbExc(const Exception &exc);
 template<rb_data_type_t *rbType>
 static VALUE classAllocate(VALUE klass)
 {
-	return rb_data_typed_object_alloc(klass, 0, rbType);
+	return rb_data_typed_object_wrap(klass, 0, rbType);
 }
 
 template<class C>

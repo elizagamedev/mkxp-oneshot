@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleDisplayName</key>
+		<string>_______</string>
+		<key>CFBundleName</key>
+		<string>_______</string>
+		<key>CFBundleIdentifier</key>
+		<string>queengooborg.oneshot-game.osx-journal</string>
+		<key>CFBundleExecutable</key>
+		<string>MacOS/_______</string>
+		<key>CFBundleIconFile</key>
+		<string>icon_journal.icns</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>ONESHOTMACVERSION</string>
+		<key>LSBackgroundOnly</key>
+		<string>0</string>
+		<key>CFBundleGetInfoString</key>
+		<string>You only have one shot.</string>
+		<key>CFBundleVersion</key>
+		<string>ONESHOTMACVERSION</string>
+		<key>LSApplicationCategoryType</key>
+		<string>public.app-category.games</string>
+		<key>LSMinimumSystemVersion</key>
+		<string>10.7</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright © 2017, OneShot team, all rights reserved.  View CREDITS.txt for more.  Port for macOS copyright © 2018, hunternet93 and Vinyl Darkscratch, MIT License. https://github.com/hunternet93/OneShot-Journal</string>
+		<key>NSHighResolutionCapable</key>
+		<string>True</string>
+	</dict>
+</plist>

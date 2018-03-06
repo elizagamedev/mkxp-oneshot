@@ -1099,8 +1099,8 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	const int bWidgetH = 64;
 	const int bWidgetY = winSize.y - layoutH*bWidgetH - 48;
 
-	for (int y = 0; y < layoutH; ++y)
-		for (int x = 0; x < layoutW; ++x)
+	for (int y = 0; y < (int)(layoutH); ++y)
+		for (int x = 0; x < (int)(layoutW); ++x)
 		{
 			int i = x*layoutH+y;
 			BindingWidget w(i, p, IntRect(x*bWidgetW, bWidgetY+y*bWidgetH,
