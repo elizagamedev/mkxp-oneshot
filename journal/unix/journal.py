@@ -37,18 +37,24 @@ class Journal(QWidget):
         super().__init__(*args, **kwargs)
                 
         self.label = QLabel(self)
-        self.change_image('default')
+        self.change_image('default_en')
         
         self.setWindowFlags(self.windowFlags())
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowTitle('OneShot Journal')
+        self.setAttribute(Qt.WA_NoSystemBackground)
+        self.setWindowTitle('')
         self.setMinimumSize(800, 600)
         self.setMaximumSize(800, 600)
         self.setGeometry(0, 0, 800, 600)
         self.show()
     
-    def change_image(self, name):
-        self.pixmap = QPixmap(os.path.join(base_path, 'images', '{}.png'.format(name)))
+    def change_image(self, image):
+        name, lang = image.split('_', 1)
+        img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
+        if not os.path.exists(img):
+            img = os.path.join(base_path, 'images', '{}.png'.format(name))
+            if not os.path.exists(img): return
+        self.pixmap = QPixmap(img) # XXX Use QImage instead to support transparency!
         self.label.setPixmap(self.pixmap)
 
 class Niko(QWidget):
