@@ -115,15 +115,6 @@ DEF_PLAY_STOP( se )
 DEF_AUD_PROP_I(BGM_Volume)
 DEF_AUD_PROP_I(SFX_Volume)
 
-RB_METHOD(audioSetupMidi)
-{
-	RB_UNUSED_PARAM;
-
-	shState->audio().setupMidi();
-
-	return Qnil;
-}
-
 RB_METHOD(audioReset)
 {
 	RB_UNUSED_PARAM;
@@ -167,8 +158,6 @@ audioBindingInit()
 	{
 	BIND_POS( bgm );
 	BIND_POS( bgs );
-
-	_rb_define_module_function(module, "setup_midi", audioSetupMidi);
 	}
 
 	BIND_PLAY_STOP( se )
