@@ -24,6 +24,7 @@
 		#include <sys/inotify.h>
 	#endif
 	#include <unistd.h>
+	#include <stdio.h>
 #else
     #error "Operating system not detected."
 #endif
@@ -43,6 +44,7 @@ static volatile int message_len = 0;
 	void cleanup_pipe()
 	{
 		unlink(PIPE_PATH);
+		remove(PIPE_PATH);
 	}
 #endif
 
