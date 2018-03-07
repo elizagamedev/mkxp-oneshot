@@ -205,6 +205,11 @@ set(MAIN_SOURCE
 	src/fluid-fun.cpp
 )
 
+if(WIN32)
+	list(APPEND MAIN_HEADERS windows/resource.h)
+	list(APPEND MAIN_SOURCE windows/resource.rc)
+endif()
+
 source_group("MKXP Source" FILES ${MAIN_SOURCE} ${MAIN_HEADERS})
 
 ## Setup embedded source ##
@@ -405,6 +410,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
 	src
+	windows
 	${SIGCXX_INCLUDE_DIRS}
 	${PIXMAN_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIRS}

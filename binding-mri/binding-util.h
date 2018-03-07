@@ -67,7 +67,7 @@ raiseRbExc(const Exception &exc);
 
 /* 2.1 has added a new field (flags) to rb_data_type_t */
 #include <ruby/version.h>
-#if RUBY_API_VERSION_MINOR > 0
+#if RUBY_API_VERSION_MAJOR >= 2 && RUBY_API_VERSION_MINOR >= 1
 /* TODO: can mkxp use RUBY_TYPED_FREE_IMMEDIATELY here? */
 #define DEF_TYPE_FLAGS 0
 #else

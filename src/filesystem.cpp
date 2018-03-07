@@ -465,7 +465,7 @@ struct FontSetsCBData
 };
 
 static PHYSFS_EnumerateCallbackResult
-fontSetEnumCB(void *data, const char *, const char *fname)
+fontSetEnumCB (void *data, const char *dir, const char *fname)
 {
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
@@ -486,7 +486,7 @@ fontSetEnumCB(void *data, const char *, const char *fname)
 		return PHYSFS_ENUM_STOP;
 
 	char filename[512];
-	snprintf(filename, sizeof(filename), "Fonts/%s", fname);
+	snprintf(filename, sizeof(filename), "%s/%s", dir, fname);
 
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
 
@@ -499,6 +499,26 @@ fontSetEnumCB(void *data, const char *, const char *fname)
 	d->sfs->initFontSetCB(ops, filename);
 
 	SDL_RWclose(&ops);
+
+	return PHYSFS_ENUM_OK;
+}
+
+/* Basically just a case-insensitive search
+ * for the folder "Fonts"... */
+static PHYSFS_EnumerateCallbackResult
+findFontsFolderCB(void *data, const char *, const char *fname)
+{
+	size_t i = 0;
+	char buffer[512];
+	const char *s = fname;
+
+	while (*s && i < sizeof(buffer))
+		buffer[i++] = tolower(*s++);
+
+	buffer[i] = '\0';
+
+	if (strcmp(buffer, "fonts") == 0)
+		PHYSFS_enumerate(fname, fontSetEnumCB, data);
 
 	return PHYSFS_ENUM_OK;
 }

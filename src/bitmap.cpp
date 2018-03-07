@@ -221,9 +221,9 @@ struct BitmapPrivate
 		surf = surfConv;
 	}
 
-	void onModified()
+	void onModified(bool freeSurface = true)
 	{
-		if (surface)
+		if (surface && freeSurface)
 		{
 			SDL_FreeSurface(surface);
 			surface = 0;
@@ -768,6 +768,14 @@ void Bitmap::clear()
 	p->onModified();
 }
 
+static uint32_t &getPixelAt(SDL_Surface *surf, SDL_PixelFormat *form, int x, int y)
+{
+	size_t offset = x*form->BytesPerPixel + y*surf->pitch;
+	uint8_t *bytes = (uint8_t*) surf->pixels + offset;
+
+	return *((uint32_t*) bytes);
+}
+
 Color Bitmap::getPixel(int x, int y) const
 {
 	guardDisposed();
@@ -790,9 +798,7 @@ Color Bitmap::getPixel(int x, int y) const
 		glState.viewport.pop();
 	}
 
-	size_t offset = x*p->format->BytesPerPixel + y*p->surface->pitch;
-	uint8_t *bytes = (uint8_t*) p->surface->pixels + offset;
-	uint32_t pixel = *((uint32_t*) bytes);
+	uint32_t pixel = getPixelAt(p->surface, p->format, x, y);
 
 	return Color((pixel >> p->format->Rshift) & 0xFF,
 	             (pixel >> p->format->Gshift) & 0xFF,
@@ -819,7 +825,16 @@ void Bitmap::setPixel(int x, int y, const Color &color)
 
 	p->addTaintedArea(IntRect(x, y, 1, 1));
 
-	p->onModified();
+	/* Setting just a single pixel is no reason to throw away the
+	 * whole cached surface; we can just apply the same change */
+
+	if (p->surface)
+	{
+		uint32_t &surfPixel = getPixelAt(p->surface, p->format, x, y);
+		surfPixel = SDL_MapRGBA(p->format, pixel[0], pixel[1], pixel[2], pixel[3]);
+	}
+
+	p->onModified(false);
 }
 
 void Bitmap::hueChange(int hue)
@@ -839,13 +854,10 @@ void Bitmap::hueChange(int hue)
 	quad.setTexPosRect(texRect, texRect);
 	quad.setColor(Vec4(1, 1, 1, 1));
 
-	/* Calculate hue parameter */
-	hue = wrapRange(hue, 0, 359);
-	float hueAdj = -((M_PI * 2) / 360) * hue;
-
 	HueShader &shader = shState->shaders().hue;
 	shader.bind();
-	shader.setHueAdjust(hueAdj);
+	/* Shader expects normalized value */
+	shader.setHueAdjust(wrapRange(hue, 0, 359) / 360.0f);
 
 	FBO::bind(newTex.fbo);
 	p->pushSetViewport(shader);
