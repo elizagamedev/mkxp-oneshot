@@ -39,7 +39,7 @@ class Journal(QWidget):
 		self.label = QLabel(self)
 		self.change_image('default_en')
 		
-		self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
+		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setAttribute(Qt.WA_NoSystemBackground)
 		self.setWindowTitle('')
