@@ -4,8 +4,8 @@ import os
 import sys
 import time
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QRect, QRectF, QTimer
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtCore import Qt, QEvent, QThread, pyqtSignal, QRect, QRectF, QTimer, QPoint
+from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QLabel
 from PyQt5.QtGui import QIcon, QPixmap, QPainter
 
 if sys.platform == "win32": pipe_path = '\\\\.\\pipe\\oneshot-journal-to-game'
@@ -35,18 +35,35 @@ class WatchPipe(QThread):
 class Journal(QWidget):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-				
+
+		self.mousedown = False
+		self.mousedownpos = QPoint(0, 0)
+
 		self.label = QLabel(self)
 		self.change_image('default_en')
 		
 		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setAttribute(Qt.WA_NoSystemBackground)
+		self.setMouseTracking(True)
 		self.setWindowTitle('')
 		self.setMinimumSize(800, 600)
 		self.setMaximumSize(800, 600)
 		self.setGeometry(0, 0, 800, 600)
 		self.show()
+
+	def mousePressEvent(self, event):
+		self.mousedown = True
+		self.mousedownpos = event.pos()
+
+	def mouseReleaseEvent(self, event):
+		self.mousedown = False
+
+	def mouseMoveEvent(self, event):
+		if event.buttons() == Qt.LeftButton:
+			pos = event.pos()
+			frameGm = self.frameGeometry()
+			self.setGeometry(frameGm.x() + pos.x() - self.mousedownpos.x(), frameGm.y() + pos.y() - self.mousedownpos.y(), 800, 600)
 	
 	def change_image(self, image):
 		name, lang = image.split('_', 1)
