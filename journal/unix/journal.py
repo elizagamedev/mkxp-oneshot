@@ -44,7 +44,6 @@ class Journal(QWidget):
 		
 		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.setAttribute(Qt.WA_NoSystemBackground)
 		self.setMouseTracking(True)
 		self.setWindowTitle('')
 		self.setMinimumSize(800, 600)
@@ -84,7 +83,6 @@ class Niko(QWidget):
 
 		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.setAttribute(Qt.WA_NoSystemBackground)
 		self.setMouseTracking(True)
 		self.setWindowTitle('')
 		self.setMinimumSize(self.screen_width, self.screen_height)
