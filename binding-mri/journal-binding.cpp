@@ -70,7 +70,7 @@ int server_thread(void *data)
 	}
 	CloseHandle(pipe);
 #else
-	out_pipe = open(PIPE_PATH, O_WRONLY);
+	out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	active = true;
 	SDL_LockMutex(mutex);
 	if (message_len > 0)
