@@ -72,7 +72,7 @@ class Journal(QWidget):
 		if not os.path.exists(img):
 			img = os.path.join(base_path, 'images', '{}.png'.format(name))
 			if not os.path.exists(img): return
-		self.pixmap = QPixmap(img) # XXX Use QImage instead to support transparency!
+		self.pixmap = QPixmap(img)
 		self.label.setPixmap(self.pixmap)
 
 class Niko(QWidget):
