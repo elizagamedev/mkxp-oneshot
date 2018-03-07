@@ -121,9 +121,10 @@ void EventThread::process(RGSSThreadData &rtData)
 
 	initALCFunctions(rtData.alcDev);
 
-	// XXX apparently this function breaks input focus on OSX
-	// Doesn't seem to be causing issues right now though.  - VD
-	SDL_SetEventFilter(eventFilter, &rtData);
+	// XXX this function breaks input focus on OSX
+	#ifndef __APPLE__
+		SDL_SetEventFilter(eventFilter, &rtData);
+	#endif
 
 	fullscreen = rtData.config.fullscreen;
 
@@ -273,6 +274,14 @@ void EventThread::process(RGSSThreadData &rtData)
 
 				break;
 			}
+
+			#ifdef __APPLE__
+				case SDL_WINDOWEVENT_MOVED:
+					if (event.window.data1 && event.window.data2)
+						shState->oneshot().setWindowPos(event.window.data1, event.window.data2);
+					break;
+			#endif
+
 			break;
 
 		case SDL_QUIT :
