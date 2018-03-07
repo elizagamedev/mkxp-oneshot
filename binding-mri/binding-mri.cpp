@@ -85,6 +85,7 @@ RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
 RB_METHOD(mkxpPuts);
 RB_METHOD(mkxpRawKeyStates);
+RB_METHOD(mkxpMouseInWindow);
 
 RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
@@ -140,8 +141,18 @@ static void mriBindingInit()
 	_rb_define_module_function(mod, "data_directory", mkxpDataDirectory);
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
+	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
 
+	/* Load global constants */
 	rb_gv_set("MKXP", Qtrue);
+
+	VALUE debug = rb_bool_new(shState->config().editor.debug);
+	if (rgssVer == 1)
+		rb_gv_set("DEBUG", debug);
+	else if (rgssVer >= 2)
+		rb_gv_set("TEST", debug);
+
+	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 }
 
 static void
@@ -220,6 +231,13 @@ RB_METHOD(mkxpRawKeyStates)
 	memcpy(RSTRING_PTR(str), EventThread::keyStates, sizeof(EventThread::keyStates));
 
 	return str;
+}
+
+RB_METHOD(mkxpMouseInWindow)
+{
+	RB_UNUSED_PARAM;
+
+	return rb_bool_new(EventThread::mouseState.inWindow);
 }
 
 static VALUE rgssMainCb(VALUE block)
@@ -455,8 +473,9 @@ static void runRMXPScripts(BacktraceData &btData)
 	}
 
 	/* Execute preloaded scripts */
-	for (size_t i = 0; i < conf.preloadScripts.size(); ++i)
-		runCustomScript(conf.preloadScripts[i]);
+	for (std::set<std::string>::iterator i = conf.preloadScripts.begin();
+	     i != conf.preloadScripts.end(); ++i)
+		runCustomScript(*i);
 
 	VALUE exc = rb_gv_get("$!");
 	if (exc != Qnil)
