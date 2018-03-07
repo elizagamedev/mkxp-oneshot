@@ -19,18 +19,20 @@ class WatchPipe(QThread):
 	
 	def run(self):
 		while True:
-			if os.path.exists(pipe_path): break
-			else: time.sleep(0.1)
+			while True:
+				if os.path.exists(pipe_path): break
+				else: time.sleep(0.1)
 
-		pipe = open(pipe_path, 'r')
-		pipe.flush()
+			pipe = open(pipe_path, 'r')
+			pipe.flush()
 
-		while True:
-			message = os.read(pipe.fileno(), 256)
-			if len(message) > 0:
-				self.change_image.emit(message.decode())
+			while True:
+				if not os.path.exists(pipe_path): break # Handle game quitting cleanup
+				message = os.read(pipe.fileno(), 256)
+				if len(message) > 0:
+					self.change_image.emit(message.decode())
 
-			time.sleep(0.05)
+				time.sleep(0.05)
 			
 class Journal(QWidget):
 	def __init__(self, *args, **kwargs):
