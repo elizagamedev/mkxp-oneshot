@@ -77,9 +77,9 @@ class Journal(QWidget):
 
 class Niko(QWidget):
 	def __init__(self, *args, **kwargs):
-		self.start_x, self.start_y = kwargs['start_x'], kwargs['start_y']
+		self.x, self.y = kwargs['x'], kwargs['y']
 		self.screen_width, self.screen_height = kwargs['screen_width'], kwargs['screen_height']
-		del kwargs['start_x'], kwargs['start_y'], kwargs['screen_width'], kwargs['screen_height']
+		del kwargs['x'], kwargs['y'], kwargs['screen_width'], kwargs['screen_height']
 		
 		super().__init__(*args, **kwargs)
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 		x, y = int(sys.argv[1]), int(sys.argv[2])
 		screensize = app.primaryScreen().size()
 
-		niko = Niko(start_x = x, start_y = y, screen_width = screensize.width(), screen_height = screensize.height())
+		niko = Niko(x = x, y = y, screen_width = screensize.width(), screen_height = screensize.height())
 
 	else:
 		# Author's Journal mode
