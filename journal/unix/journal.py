@@ -91,7 +91,7 @@ class Niko(QWidget):
 		self.setMaximumSize(self.screen_width, self.screen_height)
 		self.setGeometry(0, 0, self.screen_width, self.screen_height)
 		
-		self.frames = [QPixmap(os.path.join(base_path, 'images', 'niko{}.png'.format(n)) for n in range(1,4))]
+		self.frames = [QPixmap(os.path.join(base_path, 'images', 'niko{}.png'.format(n))) for n in range(1,4)]
 
 		self.setBackgroundRole(QPalette.Base)
 		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)        
@@ -106,7 +106,6 @@ if __name__ == '__main__':
 
 		niko = Niko(start_x = x, start_y = y, screen_width = screensize.width(), screen_height = screensize.height())
 
-	
 	else:
 		# Author's Journal mode
 		journal = Journal()
