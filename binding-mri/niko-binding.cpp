@@ -78,7 +78,7 @@ RB_METHOD(nikoStart)
 	// Run the binary
 	pid_t pid = fork();
 	if (pid == 0) {
-		execl(journal.c_str(), x_str, y_str, (char*)0);
+		execl(journal.c_str(), journal.c_str(), x_str, y_str, (char*)0);
 		exit(1);
 	}
 
