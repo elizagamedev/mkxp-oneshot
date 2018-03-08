@@ -36,17 +36,17 @@ module Wallpaper
     if (name == 'save_w32')
 	  case $persistent.langcode
 	    when 'fr'
-          name = $persistent.langcode + "\\" + name
+          name = $persistent.langcode + "/" + name
 	    when 'pt_BR'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'es'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'ja'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'ko'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'zh_CN'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
       end
 	end
     $game_oneshot.wallpaper = name
