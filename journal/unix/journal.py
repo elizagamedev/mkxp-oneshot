@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import time
+import os, sys, time
 
 from PyQt5.QtCore import Qt, QEvent, QThread, pyqtSignal, QRect, QRectF, QTimer, QPoint
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QLabel
