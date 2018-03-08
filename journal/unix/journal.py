@@ -93,9 +93,6 @@ class Niko(QWidget):
 		
 		self.frames = [QPixmap(os.path.join(base_path, 'images', 'niko{}.png'.format(n))) for n in range(1,4)]
 
-		self.setBackgroundRole(QPalette.Base)
-		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)        
-
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 
