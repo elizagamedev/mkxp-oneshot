@@ -2,7 +2,7 @@
 
 This is a specialized fork of [mkxp by Ancurio](https://github.com/Ancurio/mkxp) designed for [*OneShot*](http://oneshot-game.com/).
 
-Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux [reimplementation of the journal program](https://github.com/hunternet93/OneShot-Journal)!
+Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimplementation of the journal program!
 
 > mkxp is a project that seeks to provide a fully open source implementation of the Ruby Game Scripting System (RGSS) interface used in the popular game creation software "RPG Maker XP", "RPG Maker VX" and "RPG Maker VX Ace" (trademark by Enterbrain, Inc.), with focus on Linux. The goal is to be able to run games created with the above software natively without changing a single file.
 >
@@ -13,6 +13,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 ## Dependencies / Building
 
 * Qt5
+* CMake (macOS only)
 * Boost.Unordered (headers only)
 * Boost.Program_options
 * Boost.CRC
@@ -27,9 +28,9 @@ Thanks to [hunternet93](https://github.com/hunternet93) for the macOS and Linux 
 * pixman
 * zlib (only ruby bindings)
 * OpenGL header (alternatively GLES2 with `DEFINES+=GLES2_HEADER`)
-* Ruby (make sure to use 2.3 on macOS and Linux(?) due to a save formatting bug)
-* Python 3 (macOS/Linux journal reimplementation only)
-* PyQt5 (macOS/Linux journal reimplementation only)
+* Ruby (make sure to use 2.3 on macOS and Linux(?) due to a save formatting bug in newer versions)
+* Python 3 (journal reimplementation only)
+* PyQt5 for Python 3 (journal reimplementation only)
 
 *SyngleChance* employs Qt's qmake build system, so you'll need to install that beforehand. (The cmake build hasn't been maintained since the fork.)
 
@@ -39,10 +40,10 @@ The exception is boost, which is weird in that it still hasn't managed to pull o
 
 By default, *SyngleChance* switches into the directory where its binary is contained and then starts reading the configuration and resolving relative paths. In case this is undesired (eg. when the binary is to be installed to a system global, read-only location), it can be turned off by adding `DEFINES+=WORKDIR_CURRENT` to qmake's arguments.
 
-pkg-config will look for `ruby-2.2.pc`, but you can override the version with `MRIVERSION=2.3` ('2.3' being an example). This is the default binding, so no arguments to qmake needed (`BINDING=MRI` to be explicit).
+pkg-config will look for `ruby-2.3.pc`, but you can override the version with `MRIVERSION=2.5` ('2.5' being an example). This is the default binding, so no arguments to qmake needed (`BINDING=MRI` to be explicit).
 
 ### Supported image/audio formats
-These depend on the SDL auxiliary libraries. *SyngleChance* only makes use of png for images and oggvorbis/wav for audio.
+These depend on the SDL auxiliary libraries. *SyngleChance* only makes use of bmp/png for images and oggvorbis/wav for audio.
 
 To run *SyngleChance*, you should have a graphics card capable of at least **OpenGL (ES) 2.0** with an up-to-date driver installed.
 
