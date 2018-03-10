@@ -6,26 +6,33 @@ from PyQt5.QtCore import Qt, QEvent, QThread, pyqtSignal, QRect, QRectF, QTimer,
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QLabel
 from PyQt5.QtGui import QIcon, QPixmap, QPainter
 
-if sys.platform == "win32": pipe_path = '\\\\.\\pipe\\oneshot-journal-to-game'
-else: pipe_path = '/tmp/oneshot-pipe'
+if sys.platform == "win32":
+	pipe_path = '\\\\.\\pipe\\oneshot-journal-to-game'
+	import ctypes.wintypes
+	buff = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+	ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
+	documents_path = os.path.join(buf.value, 'My Games')
+else:
+	pipe_path = '/tmp/oneshot-pipe'
+	documents_path = os.path.expanduser('~/Documents')
 
 try: base_path = sys._MEIPASS
 except AttributeError: base_path = os.path.abspath('.')
 
 class WatchPipe(QThread):
 	change_image = pyqtSignal(str)
-	
+
 	def run(self):
 		while True:
 			while True:
 				if os.path.exists(pipe_path): break
 				else: time.sleep(0.1)
-
 			pipe = open(pipe_path, 'r')
 			pipe.flush()
 
 			while True:
-				if not os.path.exists(pipe_path): break # Handle game quitting cleanup
+				if not os.path.exists(pipe_path):
+					break # Handle game quitting cleanup
 				message = os.read(pipe.fileno(), 256)
 				if len(message) > 0:
 					self.change_image.emit(message.decode())
@@ -38,8 +45,8 @@ class AnimationTimer(QThread):
 	def run(self):
 		while True:
 			self.next_frame.emit()
-			time.sleep(1.0/60)
-			
+			time.sleep(1.0 / 60)
+
 class Journal(QWidget):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -49,11 +56,11 @@ class Journal(QWidget):
 
 		self.label = QLabel(self)
 		self.change_image('default_en')
-		
+
 		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
-		self.setWindowTitle('')
+		self.setWindowTitle(' ')
 		self.setMinimumSize(800, 600)
 		self.setMaximumSize(800, 600)
 		self.setGeometry(0, 0, 800, 600)
@@ -71,13 +78,14 @@ class Journal(QWidget):
 			pos = event.pos()
 			frameGm = self.frameGeometry()
 			self.setGeometry(frameGm.x() + pos.x() - self.mousedownpos.x(), frameGm.y() + pos.y() - self.mousedownpos.y(), 800, 600)
-	
+
 	def change_image(self, image):
 		name, lang = image.split('_', 1)
-		img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
-		if not os.path.exists(img):
+		if lang == 'en':
 			img = os.path.join(base_path, 'images', '{}.png'.format(name))
-			if not os.path.exists(img): return
+		else:
+			img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
+		if not os.path.exists(img): return
 		self.pixmap = QPixmap(img)
 		self.label.setPixmap(self.pixmap)
 
@@ -132,9 +140,18 @@ if __name__ == '__main__':
 	else:
 		# Author's Journal mode
 		journal = Journal()
-	
-		thread = WatchPipe()
-		thread.change_image.connect(journal.change_image)
-		thread.start()
+		save_path = os.path.join(documents_path, 'Oneshot', 'save_progress.oneshot')
+		if os.path.exists(save_path):
+			with open(save_path, 'rb') as save:
+				save.seek(-8, os.SEEK_END)
+				lang = save.read().decode('utf-8')
+				lang = lang[lang.find('[') + 1:lang.find(']')]
+				if lang == 'en_US':
+					lang = 'en'
+				journal.change_image('save_' + lang)
+		else:
+			thread = WatchPipe()
+			thread.change_image.connect(journal.change_image)
+			thread.start()
 	
 	app.exec_()
