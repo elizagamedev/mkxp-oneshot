@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import time
+import os, sys, time
 
 from PyQt5.QtCore import Qt, QEvent, QThread, pyqtSignal, QRect, QRectF, QTimer, QPoint
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QLabel
@@ -33,6 +31,14 @@ class WatchPipe(QThread):
 					self.change_image.emit(message.decode())
 
 				time.sleep(0.05)
+
+class AnimationTimer(QThread):
+	next_frame = pyqtSignal()
+
+	def run(self):
+		while True:
+			self.next_frame.emit()
+			time.sleep(1.0/60)
 			
 class Journal(QWidget):
 	def __init__(self, *args, **kwargs):
@@ -77,24 +83,37 @@ class Journal(QWidget):
 
 class Niko(QWidget):
 	def __init__(self, *args, **kwargs):
-		self.start_x, self.start_y = kwargs['start_x'], kwargs['start_y']
+		self.x, self.y, self.start_y, self.app, self.thread = kwargs['x'], kwargs['y'], kwargs['y'], kwargs['app'], kwargs['thread']
 		self.screen_width, self.screen_height = kwargs['screen_width'], kwargs['screen_height']
-		del kwargs['start_x'], kwargs['start_y'], kwargs['screen_width'], kwargs['screen_height']
+		del kwargs['x'], kwargs['y'], kwargs['screen_width'], kwargs['screen_height'], kwargs['app'], kwargs['thread']
 		
 		super().__init__(*args, **kwargs)
 
-		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.setMouseTracking(True)
 		self.setWindowTitle('')
 		self.setMinimumSize(self.screen_width, self.screen_height)
 		self.setMaximumSize(self.screen_width, self.screen_height)
-		self.setGeometry(0, 0, self.screen_width, self.screen_height)
+		self.setGeometry(self.x, self.y, self.x+48, self.y+64)
 		
+		self.label = QLabel(self)
 		self.frames = [QPixmap(os.path.join(base_path, 'images', 'niko{}.png'.format(n))) for n in range(1,4)]
+		self.label.setPixmap(self.frames[1])
 
-		self.setBackgroundRole(QPalette.Base)
-		self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)        
+		self.show()
+
+		self.thread.start()
+
+	def getFrame(self):
+		if ((self.y - self.start_y) % 32 >= 16): return 1
+		if ((self.y - self.start_y) % 64 >= 32): return 0
+		else: return 2
+
+	def update(self):
+		self.label.setPixmap(self.frames[self.getFrame()])
+		self.y += 2
+		self.setGeometry(self.x, self.y, self.x+48, self.y+64)
+		if self.y > self.screen_height: self.app.quit()
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
@@ -104,7 +123,11 @@ if __name__ == '__main__':
 		x, y = int(sys.argv[1]), int(sys.argv[2])
 		screensize = app.primaryScreen().size()
 
-		niko = Niko(start_x = x, start_y = y, screen_width = screensize.width(), screen_height = screensize.height())
+		thread = AnimationTimer()
+
+		niko = Niko(x = x, y = y, screen_width = screensize.width(), screen_height = screensize.height(), app = app, thread = thread)
+
+		thread.next_frame.connect(niko.update)
 
 	else:
 		# Author's Journal mode
