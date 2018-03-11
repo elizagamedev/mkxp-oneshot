@@ -57,7 +57,6 @@ class Journal(QWidget):
 		self.label = QLabel(self)
 		self.change_image('default_en')
 
-		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
 		self.setWindowTitle(' ')
@@ -94,16 +93,14 @@ class Niko(QWidget):
 		self.x, self.y, self.start_y, self.app, self.thread = kwargs['x'], kwargs['y'], kwargs['y'], kwargs['app'], kwargs['thread']
 		self.screen_width, self.screen_height = kwargs['screen_width'], kwargs['screen_height']
 		del kwargs['x'], kwargs['y'], kwargs['screen_width'], kwargs['screen_height'], kwargs['app'], kwargs['thread']
-		
+
 		super().__init__(*args, **kwargs)
 
-		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+		self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.setWindowTitle('')
-		self.setMinimumSize(self.screen_width, self.screen_height)
-		self.setMaximumSize(self.screen_width, self.screen_height)
-		self.setGeometry(self.x, self.y, self.x+48, self.y+64)
-		
+		self.setMinimumSize(48, 64)
+		self.setMaximumSize(48, 64)
+
 		self.label = QLabel(self)
 		self.frames = [QPixmap(os.path.join(base_path, 'images', 'niko{}.png'.format(n))) for n in range(1,4)]
 		self.label.setPixmap(self.frames[1])
@@ -120,8 +117,13 @@ class Niko(QWidget):
 	def update(self):
 		self.label.setPixmap(self.frames[self.getFrame()])
 		self.y += 2
-		self.setGeometry(self.x, self.y, self.x+48, self.y+64)
-		if self.y > self.screen_height: self.app.quit()
+		if self.y > self.screen_height:
+			self.app.quit()
+			return
+		elif self.y > self.screen_height - 64:
+			self.setMinimumSize(48, self.screen_height - self.y)
+			self.resize(48, self.screen_height - self.y)
+		self.move(self.x, self.y)
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
@@ -153,5 +155,5 @@ if __name__ == '__main__':
 			thread = WatchPipe()
 			thread.change_image.connect(journal.change_image)
 			thread.start()
-	
+
 	app.exec_()
