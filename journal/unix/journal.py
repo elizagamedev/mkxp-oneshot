@@ -49,6 +49,9 @@ class AnimationTimer(QThread):
 
 class Journal(QWidget):
 	def __init__(self, *args, **kwargs):
+		self.app = kwargs['app']
+		del kwargs['app']
+
 		super().__init__(*args, **kwargs)
 
 		self.mousedown = False
@@ -56,6 +59,9 @@ class Journal(QWidget):
 
 		self.label = QLabel(self)
 		self.change_image('default_en')
+
+		self.close_label = QLabel(self)
+		self.close_label.setPixmap(QPixmap(os.path.join(base_path, 'images', 'close.png')))
 
 		self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
@@ -69,6 +75,9 @@ class Journal(QWidget):
 	def mousePressEvent(self, event):
 		self.mousedown = True
 		self.mousedownpos = event.pos()
+
+		if self.mousedownpos.x() <= 24 and self.mousedownpos.y() < 24:
+			self.app.quit()
 
 	def mouseReleaseEvent(self, event):
 		self.mousedown = False
@@ -142,7 +151,7 @@ if __name__ == '__main__':
 
 	else:
 		# Author's Journal mode
-		journal = Journal()
+		journal = Journal(app = app)
 		save_path = os.path.join(documents_path, 'Oneshot', 'save_progress.oneshot')
 		if os.path.exists(save_path):
 			with open(save_path, 'rb') as save:
