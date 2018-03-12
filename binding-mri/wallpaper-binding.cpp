@@ -20,7 +20,13 @@ static bool isCached = false;
 	#ifdef __APPLE__
 		#include "mac-desktop.h"
 	#else
-		// XXX Implement me!
+		#include <giomm/settings.h>
+		#include <unistd.h>
+		#include <sstream>
+		Glib::RefPtr<Gio::Settings> bgsetting = Gio::Settings::create("org.gnome.desktop.background");
+		std::string defPictureURI = bgsetting->get_string("picture-uri");
+		std::string defPictureOptions = bgsetting->get_string("picture-options");
+		std::string defPrimaryColor = bgsetting->get_string("primary-color");
 	#endif
 #endif
 
@@ -110,7 +116,17 @@ end:
 		}
 		MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
 	#else
-		// XXX Implement me!
+		char gameDir[1024];
+		if (getcwd(gameDir, sizeof(gameDir)) != NULL) {
+			std::string gameDirStr(gameDir);
+            std::stringstream hexColor;
+            hexColor << "#" << std::hex << color;
+			bgsetting->set_string("picture-uri", "file://" + gameDirStr + "/Wallpaper/" + imageName + ".png");
+			bgsetting->set_string("picture-options", "scaled");
+			bgsetting->set_string("primary-color", hexColor.str());
+		} else {
+			// Error handling?
+		}
 	#endif
 #endif
 	return Qnil;
@@ -148,7 +164,9 @@ RB_METHOD(wallpaperReset)
 	#ifdef __APPLE__
 		MacDesktop::ResetBackground();
 	#else
-		// XXX Implement me!
+		bgsetting->set_string("picture-uri", defPictureURI);
+		bgsetting->set_string("picture-options", defPictureOptions);
+		bgsetting->set_string("primary-color", defPrimaryColor);
 	#endif
 #endif
 	return Qnil;
@@ -156,9 +174,9 @@ RB_METHOD(wallpaperReset)
 
 void wallpaperBindingInit()
 {
-    VALUE module = rb_define_module("Wallpaper");
+	VALUE module = rb_define_module("Wallpaper");
 
-    //Functions
-    _rb_define_module_function(module, "set", wallpaperSet);
-    _rb_define_module_function(module, "reset", wallpaperReset);
+	// Functions
+	_rb_define_module_function(module, "set", wallpaperSet);
+	_rb_define_module_function(module, "reset", wallpaperReset);
 }

@@ -29,6 +29,7 @@ oneshot_JA_2_ver3_checked.pot
 oneshot_JA_Mariko1_WIP.pot
 *.pot
 xScripts.rxdata
+OneShot
 
 .qmake.stash
 CMakeCache.txt
