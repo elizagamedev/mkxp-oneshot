@@ -33,23 +33,24 @@ static bool isCached = false;
 RB_METHOD(wallpaperSet)
 {
 	RB_UNUSED_PARAM;
-	const char *imageName;
+	const char *name;
 	int color;
-	rb_get_args(argc, argv, "zi", &imageName, &color RB_ARG_END);
-	std::string imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".bmp";
+	rb_get_args(argc, argv, "zi", &name, &color RB_ARG_END);
+	std::string path;
 #ifdef _WIN32
+	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
-		index = imgname.find("/", index);
+		index = path.find("/", index);
 		if (index == std::string::npos)
 			break;
-		imgname.replace(index, 1, "\\");
+		path.replace(index, 1, "\\");
 		index += 1;
 	}
 	WCHAR imgnameW[MAX_PATH];
 	WCHAR imgnameFull[MAX_PATH];
-	MultiByteToWideChar(CP_UTF8, 0, imgname.c_str(), -1, imgnameW, MAX_PATH);
+	MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, imgnameW, MAX_PATH);
 	GetFullPathNameW(imgnameW, MAX_PATH, imgnameFull, NULL);
 
 
@@ -105,23 +106,26 @@ end:
 	if (hKey)
 		RegCloseKey(hKey);
 #else
-	std::size_t found = imgname.find("w32");
-	if (found != std::string::npos) imgname.replace(imgname.end()-3, imgname.end(), "unix");
-	imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".png";
+	std::string nameFix(name);
+	std::size_t found = nameFix.find("w32");
+	if (found != std::string::npos) {
+		nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
+	}
+	path = "/Wallpaper/" + nameFix + ".png";
 
 	#ifdef __APPLE__
 		if (!isCached) {
 			MacDesktop::CacheCurrentBackground();
 			isCached = true;
 		}
-		MacDesktop::ChangeBackground(imgname, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
+		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
 	#else
 		char gameDir[1024];
 		if (getcwd(gameDir, sizeof(gameDir)) != NULL) {
 			std::string gameDirStr(gameDir);
-            std::stringstream hexColor;
-            hexColor << "#" << std::hex << color;
-			bgsetting->set_string("picture-uri", "file://" + gameDirStr + "/Wallpaper/" + imageName + ".png");
+			std::stringstream hexColor;
+			hexColor << "#" << std::hex << color;
+			bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
 			bgsetting->set_string("picture-options", "scaled");
 			bgsetting->set_string("primary-color", hexColor.str());
 		} else {
