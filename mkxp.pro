@@ -47,7 +47,7 @@ unix {
 		SOURCES += src/mac-desktop.mm
 	}
 	!macx: {
-		# PKGCONFIG += openal zlib
+		PKGCONFIG += giomm-2.4
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		SOURCES += src/xdg-user-dir-lookup.c
 		LIBS += -lX11
