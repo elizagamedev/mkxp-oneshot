@@ -16,6 +16,9 @@ else:
 	pipe_path = '/tmp/oneshot-pipe'
 	documents_path = os.path.expanduser('~/Documents')
 
+left_close = False
+if sys.platform == "darwin": left_close = True
+
 try: base_path = sys._MEIPASS
 except AttributeError: base_path = os.path.abspath('.')
 
@@ -62,6 +65,7 @@ class Journal(QWidget):
 
 		self.close_label = QLabel(self)
 		self.close_label.setPixmap(QPixmap(os.path.join(base_path, 'images', 'close.png')))
+		if not left_close: self.close_label.move(776, 0) # X = 800-24
 
 		if "linux" in sys.platform: self.setWindowFlags(Qt.FramelessWindowHint)
 		else: self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
@@ -77,7 +81,7 @@ class Journal(QWidget):
 		self.mousedown = True
 		self.mousedownpos = event.pos()
 
-		if self.mousedownpos.x() <= 24 and self.mousedownpos.y() < 24:
+		if ((left_close and self.mousedownpos.x() <= 24) or (not left_close and self.mousedownpos.x() >= 776)) and self.mousedownpos.y() < 24:
 			self.app.quit()
 
 	def mouseReleaseEvent(self, event):
