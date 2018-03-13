@@ -64,7 +64,7 @@ class Journal(QWidget):
 		self.close_label.setPixmap(QPixmap(os.path.join(base_path, 'images', 'close.png')))
 
 		if "linux" in sys.platform: self.setWindowFlags(Qt.FramelessWindowHint)
-		else: self.setWindowFlags(self.WindowFlags() | Qt.FramelessWindowHint)
+		else: self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
 		self.setWindowTitle(' ')
