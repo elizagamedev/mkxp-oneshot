@@ -72,7 +72,7 @@ RB_METHOD(nikoStart)
 	#ifdef OS_OSX
 		journal = std::string(path) + std::string("/_______.app/Contents/MacOS/_______");
 	#else
-		journal = std::string(path) + std::string("_______");
+		journal = std::string(path) + std::string("/_______");
 	#endif
 
 	// Run the binary
