@@ -67,12 +67,14 @@ RB_METHOD(nikoStart)
 	std::string journal;
 
 	// Get current path
-	getcwd(path, sizeof(path));
+	if (getcwd(path, sizeof(path)) == NULL) {
+		return Qnil;
+	}
 
 	#ifdef OS_OSX
-		journal = std::string(path) + std::string("/_______.app/Contents/MacOS/_______");
+		journal = std::string(path) + "/_______.app/Contents/MacOS/_______";
 	#else
-		journal = std::string(path) + std::string("/_______");
+		journal = std::string(path) + "/_______";
 	#endif
 
 	// Run the binary
@@ -81,24 +83,6 @@ RB_METHOD(nikoStart)
 		execl(journal.c_str(), journal.c_str(), x_str, y_str, (char*)0);
 		exit(1);
 	}
-
-	// ssize_t len = readlink("/proc/self/exe", path, PATH_MAX);
-	// if (len > 0) {
-	// 	// Replace filename
-	// 	for (size_t i = len; i > 0; --i) {
-	// 		if (path[i-1] == '/') {
-	// 			strcpy(path + i, "_______");
-	// 			break;
-	// 		}
-	// 	}
-	// 	// Run the binary
-	// 	pid_t pid = fork();
-	// 	if (pid == 0) {
-	// 		execl(path, "_______", x_str, y_str, (char*)0);
-
-	// 		exit(1);
-	// 	}
-	// }
 #endif
 	return Qnil;
 }

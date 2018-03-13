@@ -4,8 +4,6 @@
 #include "binding-types.h"
 #include "config.h"
 
-static bool isCached = false;
-
 #ifdef _WIN32
 	#include <windows.h>
 	static WCHAR szStyle[8] = {0};
@@ -16,9 +14,11 @@ static bool isCached = false;
 	static DWORD szTileSize = sizeof(szTile) - 1;
 	static bool setStyle = false;
 	static bool setTile = false;
+	static bool isCached = false;
 #else
 	#ifdef __APPLE__
 		#include "mac-desktop.h"
+		static bool isCached = false;
 	#else
 		#include <giomm/settings.h>
 		#include <unistd.h>
@@ -120,7 +120,7 @@ end:
 		}
 		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
 	#else
-		char gameDir[1024];
+		char gameDir[PATH_MAX];
 		if (getcwd(gameDir, sizeof(gameDir)) != NULL) {
 			std::string gameDirStr(gameDir);
 			std::stringstream hexColor;
