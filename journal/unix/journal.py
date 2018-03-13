@@ -102,8 +102,8 @@ class Journal(QWidget):
 class Niko(QWidget):
 	def __init__(self, *args, **kwargs):
 		self.x, self.y, self.start_y, self.app, self.thread = kwargs['x'], kwargs['y'], kwargs['y'], kwargs['app'], kwargs['thread']
-		self.screen_width, self.screen_height = kwargs['screen_width'], kwargs['screen_height']
-		del kwargs['x'], kwargs['y'], kwargs['screen_width'], kwargs['screen_height'], kwargs['app'], kwargs['thread']
+		self.screen_height = kwargs['screen_height']
+		del kwargs['x'], kwargs['y'], kwargs['screen_height'], kwargs['app'], kwargs['thread']
 
 		super().__init__(*args, **kwargs)
 
@@ -142,11 +142,10 @@ if __name__ == '__main__':
 	if len(sys.argv) == 3:
 		# "Niko-leaves-the-screen" mode
 		x, y = int(sys.argv[1]), int(sys.argv[2])
-		screensize = app.primaryScreen().size()
 
 		thread = AnimationTimer()
 
-		niko = Niko(x = x, y = y, screen_width = screensize.width(), screen_height = screensize.height(), app = app, thread = thread)
+		niko = Niko(x = x, y = y, screen_height = app.primaryScreen().size().height(), app = app, thread = thread)
 
 		thread.next_frame.connect(niko.update)
 
