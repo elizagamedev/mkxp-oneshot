@@ -275,7 +275,11 @@ int main(int argc, char *argv[])
 	}
 
 	SDL_Window *win;
-	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_RESIZABLE; //| SDL_WINDOW_ALLOW_HIGHDPI;
+	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS; //| SDL_WINDOW_ALLOW_HIGHDPI;
+
+	#ifdef __APPLE__
+		winFlags |= SDL_WINDOW_RESIZABLE;
+	#endif
 
 	if (conf.fullscreen)
 		winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
