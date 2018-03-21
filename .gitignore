@@ -34,3 +34,5 @@ OneShot
 .qmake.stash
 CMakeCache.txt
 CMakeFiles/
+
+oclint/
