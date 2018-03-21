@@ -8,7 +8,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 >
 > It is licensed under the GNU General Public License v2+.
 
-*OneShot* and *OneShot: Fragments of Providence* also make use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
+*SyngleChance* also makes use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
 
 ## Dependencies / Building
 
