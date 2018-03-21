@@ -19,7 +19,7 @@ echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for m
 
 # Generate makefile and build main + journal
 echo "-> ${cyan}Generate makefile...${color_reset}"
-qmake MRIVERSION=2.3
+qmake MRIVERSION=2.5
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
 echo "-> ${cyan}Compile journal...${color_reset}"

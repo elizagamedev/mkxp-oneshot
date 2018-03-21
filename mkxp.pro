@@ -33,7 +33,7 @@ contains(BINDING, NULL) {
 	CONFIG += BINDING_NULL
 }
 
-PKGCONFIG = sigc++-2.0 pixman-1 zlib sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile 
+PKGCONFIG = sigc++-2.0 pixman-1 zlib sdl2 SDL2_image SDL2_ttf openal SDL_sound vorbisfile
 
 unix {
 	CONFIG += c++11
@@ -42,7 +42,7 @@ unix {
 	macx: {
 		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
 		LIBS += -framework OpenAL -framework AppKit
-		QMAKE_LFLAGS += -L/usr/local/opt/ruby@2.3/lib -L/usr/local/opt/openal-soft/lib
+		QMAKE_LFLAGS += -L/usr/local/opt/ruby/lib -L/usr/local/opt/openal-soft/lib
 		HEADERS += src/mac-desktop.h
 		SOURCES += src/mac-desktop.mm
 	}
