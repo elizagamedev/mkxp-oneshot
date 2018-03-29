@@ -444,7 +444,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->docsPath = path.c_str();
 	p->gamePath = path.c_str();
 	#ifdef OS_OSX
-		p->journal = "_______.app/Contents/MacOS/_______";
+		p->journal = "_______.app";
 	#elif defined OS_LINUX
 		p->journal = "_______";
 	#endif
