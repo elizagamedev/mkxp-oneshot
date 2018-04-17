@@ -378,7 +378,7 @@ module Script
   begin
     if File.file?(Oneshot::JOURNAL)
       File.open(Oneshot::JOURNAL, "rb") do |input|
-        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL,"wb") do |output|
+        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL, "wb") do |output|
           while buff = input.read(4096)
             output.write(buff)
           end
