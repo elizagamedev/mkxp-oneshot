@@ -33,9 +33,10 @@ static bool isCached = false;
 RB_METHOD(wallpaperSet)
 {
 	RB_UNUSED_PARAM;
-	const char *imageName;
+	const char *iname;
 	int color;
-	rb_get_args(argc, argv, "zi", &imageName, &color RB_ARG_END);
+	rb_get_args(argc, argv, "zi", &iname, &color RB_ARG_END);
+	std::string imageName = iname;
 	std::string imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".bmp";
 #ifdef _WIN32
 	// Crapify the slashes
@@ -105,8 +106,8 @@ end:
 	if (hKey)
 		RegCloseKey(hKey);
 #else
-	std::size_t found = imgname.find("w32");
-	if (found != std::string::npos) imgname.replace(imgname.end()-3, imgname.end(), "unix");
+	std::size_t found = imageName.find("w32");
+	if (found != std::string::npos) imageName.replace(imageName.end()-3, imageName.end(), "unix");
 	imgname = shState->config().gameFolder + "/Wallpaper/" + imageName + ".png";
 
 	#ifdef __APPLE__
