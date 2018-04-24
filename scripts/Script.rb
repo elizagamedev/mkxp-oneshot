@@ -389,6 +389,8 @@ module Script
     end
 	rescue Errno::EACCES => e
 	  #this probably means the clover.exe already exists and is running, so no need to create it again
+  rescue Errno::EEXIST => e
+    #this means that the journal file already exists, so no need to create it again
 	end
 	if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
