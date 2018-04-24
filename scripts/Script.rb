@@ -450,6 +450,8 @@ module Script
       end
 	rescue Errno::EACCES => e
 	  #this probably means the file already exists and is open, so no need to create it again
+  rescue Errno::EEXIST => e
+    #this probably means the file already exists, so no need to create it again
 	end
   end
 
