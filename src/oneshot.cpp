@@ -69,9 +69,6 @@ struct OneshotPrivate
 	bool winPosChanged;
 	std::vector<uint8_t> obscuredMap;
 	bool obscuredCleared;
-#if defined OS_LINUX
-	std::string desktopEnv;
-#endif
 
 	OneshotPrivate()
 		: window(0),
@@ -282,10 +279,10 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		desktop.find("gnome") != std::string::npos ||
 		desktop.find("unity") != std::string::npos
 	) {
-		p->desktopEnv = "gnome";
+		desktopEnv = "gnome";
 		gtk_init(0, 0);
 	} else if (desktop.find("xfce") != std::string::npos) {
-		p->desktopEnv = "xfce";
+		desktopEnv = "xfce";
 	}
 #endif
 
@@ -458,7 +455,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	if (!title)
 		title = "";
 	#if defined OS_LINUX
-	if (p->desktopEnv == "gnome") {
+	if (desktopEnv == "gnome") {
 		linux_DialogData data = {type, body, title, 0};
 		gdk_threads_add_idle(linux_dialog, &data);
 		gtk_main();
