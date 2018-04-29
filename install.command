@@ -21,10 +21,13 @@ rm -f "$ONESHOT_PATH/Data/xScripts.rxdata"
 
 echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
 cp -f "./xScripts.rxdata" "$ONESHOT_PATH/Data/xScripts.rxdata"
+cp -f "./CommonEvents.rxdata" "$ONESHOT_PATH/Data/CommonEvents.rxdata"
 cp -rf "./OneShot.app" "$ONESHOT_PATH"
 cp -rf "./_______.app" "$ONESHOT_PATH"
 cp -R "./Graphics/" "$ONESHOT_PATH/Wallpaper"
 ln -sfh "$ONESHOT_PATH/OneShot.app" "$HOME/Applications/OneShot.app"
+
+rm -f /tmp/oneshot-pipe # Important for pre-release version cleanup
 
 echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/synglechance/issues${color_reset}"
 open "$ONESHOT_PATH"

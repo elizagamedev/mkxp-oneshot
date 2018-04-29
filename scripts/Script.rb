@@ -378,7 +378,7 @@ module Script
   begin
     if File.file?(Oneshot::JOURNAL)
       File.open(Oneshot::JOURNAL, "rb") do |input|
-        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL,"wb") do |output|
+        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL, "wb") do |output|
           while buff = input.read(4096)
             output.write(buff)
           end
@@ -389,6 +389,8 @@ module Script
     end
 	rescue Errno::EACCES => e
 	  #this probably means the clover.exe already exists and is running, so no need to create it again
+  rescue Errno::EEXIST => e
+    #this means that the journal file already exists, so no need to create it again
 	end
 	if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
@@ -448,6 +450,8 @@ module Script
       end
 	rescue Errno::EACCES => e
 	  #this probably means the file already exists and is open, so no need to create it again
+  rescue Errno::EEXIST => e
+    #this probably means the file already exists, so no need to create it again
 	end
   end
 

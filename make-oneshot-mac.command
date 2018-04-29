@@ -4,7 +4,7 @@ set -e
 cd `dirname $0`
 
 # User-configurable variables
-mac_version="0.8.0"
+mac_version="1.0.0"
 make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
 
@@ -19,7 +19,7 @@ echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for m
 
 # Generate makefile and build main + journal
 echo "-> ${cyan}Generate makefile...${color_reset}"
-qmake MRIVERSION=2.3
+qmake MRIVERSION=2.5
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
 echo "-> ${cyan}Compile journal...${color_reset}"

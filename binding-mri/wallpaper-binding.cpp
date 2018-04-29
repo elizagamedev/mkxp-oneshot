@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "etc.h"
 #include "sharedstate.h"
 #include "binding-util.h"
@@ -85,6 +87,7 @@ RB_METHOD(wallpaperSet)
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
+	std::cout << "Setting wallpaper to " << path << std::endl;
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -158,6 +161,8 @@ end:
 		nameFix.replace(nameFix.end()-3, nameFix.end(), "unix");
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
+
+	std::cout << "Setting wallpaper to " << path << std::endl;
 
 	#ifdef __APPLE__
 		if (!isCached) {

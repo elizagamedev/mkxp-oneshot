@@ -75,6 +75,7 @@ class Journal(QWidget):
 		self.setMinimumSize(800, 600)
 		self.setMaximumSize(800, 600)
 		self.setGeometry(0, 0, 800, 600)
+
 		self.show()
 
 	def mousePressEvent(self, event):
@@ -162,12 +163,20 @@ if __name__ == '__main__':
 				save.seek(-8, os.SEEK_END)
 				lang = save.read().decode('utf-8')
 				lang = lang[lang.find('[') + 1:lang.find(']')]
-				if lang == 'en_US':
-					lang = 'en'
+				if lang == 'en_US': lang = 'en'
 				journal.change_image('save_' + lang)
 		else:
 			thread = WatchPipe()
 			thread.change_image.connect(journal.change_image)
 			thread.start()
 
+	pipe_file = open(pipe_path, "w+")
+	pipe_file.close()
+
 	app.exec_()
+
+	try:
+		os.remove(pipe_path)
+	except:
+		# Most likely due to the file being in use.  Ignore.
+		pass

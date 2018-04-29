@@ -8,7 +8,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 >
 > It is licensed under the GNU General Public License v2+.
 
-*OneShot* and *OneShot: Fragments of Providence* also make use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
+*SyngleChance* also makes use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
 
 ## Dependencies / Building
 
@@ -26,9 +26,8 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 * [Ancurio's SDL_sound fork](https://github.com/Ancurio/SDL_sound)
 * vorbisfile
 * pixman
-* zlib (only ruby bindings)
 * OpenGL header (alternatively GLES2 with `DEFINES+=GLES2_HEADER`)
-* Ruby (make sure to use 2.3 on macOS due to a save formatting bug in newer versions -- @Yummychickenblue reports this may not be an issue anymore)
+* Ruby
 * Python 3 (journal reimplementation only)
 * PyQt5 for Python 3 (journal reimplementation only)
 
