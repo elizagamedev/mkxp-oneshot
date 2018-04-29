@@ -3,6 +3,7 @@
 #include "binding-util.h"
 #include "binding-types.h"
 #include "config.h"
+#include "oneshot.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -21,13 +22,58 @@
 		static bool isCached = false;
 	#else
 		#include <giomm/settings.h>
+		#include <xfconf/xfconf.h>
 		#include <unistd.h>
+		#include <algorithm>
+		#include <iostream>
+		#include <string>
 		#include <sstream>
-		Glib::RefPtr<Gio::Settings> bgsetting = Gio::Settings::create("org.gnome.desktop.background");
-		std::string defPictureURI = bgsetting->get_string("picture-uri");
-		std::string defPictureOptions = bgsetting->get_string("picture-options");
-		std::string defPrimaryColor = bgsetting->get_string("primary-color");
+		static std::string desktop = "uninitialized";
+		// GNOME settings
+		static Glib::RefPtr<Gio::Settings> bgsetting;
+		static std::string defPictureURI, defPictureOptions, defPrimaryColor;
+		// XFCE settings
+		static XfconfChannel* bgchannel;
+		static int defPictureStyle;
+		static int defColorStyle;
+		static GValue defColor = G_VALUE_INIT;
+		static bool defColorExists;
+		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
 	#endif
+#endif
+
+#ifdef __linux__
+void desktopEnvironmentInit()
+{
+	if (desktop != "uninitialized") {
+		return;
+	}
+	desktop = shState->oneshot().desktopEnv;
+	if (desktop == "gnome") {
+		bgsetting = Gio::Settings::create("org.gnome.desktop.background");
+		defPictureURI = bgsetting->get_string("picture-uri");
+		defPictureOptions = bgsetting->get_string("picture-options");
+		defPrimaryColor = bgsetting->get_string("primary-color");
+	} else if (desktop == "xfce") {
+		GError *xferror = NULL;
+		if (xfconf_init(&xferror)) {
+			bgchannel = xfconf_channel_get("xfce4-desktop");
+			std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
+			optionImage = optionPrefix + "last-image";
+			optionColor = optionPrefix + "color1";
+			optionImageStyle = optionPrefix + "image-style";
+			optionColorStyle = optionPrefix + "color-style";
+			defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
+			defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
+			defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
+			defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
+		} else {
+			// Configuration failed to initialize, we won't set the wallpaper
+			desktop = "xfce_error";
+			g_error_free(xferror);
+		}
+	}
+}
 #endif
 
 RB_METHOD(wallpaperSet)
@@ -118,18 +164,68 @@ end:
 			MacDesktop::CacheCurrentBackground();
 			isCached = true;
 		}
-		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, ((color) & 0xFF) / 255.0);
+		MacDesktop::ChangeBackground(shState->config().gameFolder + path, ((color >> 16) & 0xFF) / 255.0, ((color >> 8) & 0xFF) / 255.0, (color & 0xFF) / 255.0);
 	#else
 		char gameDir[PATH_MAX];
-		if (getcwd(gameDir, sizeof(gameDir)) != NULL) {
-			std::string gameDirStr(gameDir);
+		if (getcwd(gameDir, sizeof(gameDir)) == NULL) {
+			return Qnil;
+		}
+		std::string gameDirStr(gameDir);
+		desktopEnvironmentInit();
+		if (desktop == "gnome") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
 			bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
 			bgsetting->set_string("picture-options", "scaled");
 			bgsetting->set_string("primary-color", hexColor.str());
-		} else {
-			// Error handling?
+		} else if (desktop == "xfce") {
+			int r = (color >> 16) & 0xFF;
+			int g = (color >> 8) & 0xFF;
+			int b = color & 0xFF;
+			unsigned int ur = r * 256 + r;
+			unsigned int ug = g * 256 + g;
+			unsigned int ub = b * 256 + b;
+			unsigned int alpha = 65535;
+			std::string concatPath(gameDirStr + path);
+			xfconf_channel_set_string(bgchannel, optionImage.c_str(), concatPath.c_str());
+			xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), 0);
+			xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), 4);
+			GValue colorValue = G_VALUE_INIT;
+			GPtrArray *colorArr = g_ptr_array_sized_new(4);
+			GType colorArrType = g_type_from_name("GPtrArray_GValue_");
+			if (!colorArrType) {
+				std::stringstream colorCommand;
+				colorCommand << "xfconf-query -c xfce4-desktop -n -p " << optionImage
+							 << " -t uint -t uint -t uint -t uint -s " << ub
+							 << " -s " << ug << " -s " << ub << " -s " << alpha;
+				int colorCommandRes = system(colorCommand.str().c_str());
+				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
+				colorArrType = g_type_from_name("GPtrArray_GValue_");
+				if (!colorArrType) {
+					// Let's do some debug output here and skip changing the color
+					std::cout << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
+					return Qnil;
+				}
+			}
+			g_value_init(&colorValue, colorArrType);
+			GValue *vr = g_new0(GValue, 1);
+			GValue *vg = g_new0(GValue, 1);
+			GValue *vb = g_new0(GValue, 1);
+			GValue *va = g_new0(GValue, 1);
+			g_value_init(vr, G_TYPE_UINT);
+			g_value_init(vg, G_TYPE_UINT);
+			g_value_init(vb, G_TYPE_UINT);
+			g_value_init(va, G_TYPE_UINT);
+			g_value_set_uint(vr, ur);
+			g_value_set_uint(vg, ug);
+			g_value_set_uint(vb, ub);
+			g_value_set_uint(va, alpha);
+			g_ptr_array_add(colorArr, vr);
+			g_ptr_array_add(colorArr, vg);
+			g_ptr_array_add(colorArr, vb);
+			g_ptr_array_add(colorArr, va);
+			g_value_set_boxed(&colorValue, colorArr);
+			xfconf_channel_set_property(bgchannel, optionColor.c_str(), &colorValue);
 		}
 	#endif
 #endif
@@ -168,9 +264,33 @@ RB_METHOD(wallpaperReset)
 	#ifdef __APPLE__
 		MacDesktop::ResetBackground();
 	#else
-		bgsetting->set_string("picture-uri", defPictureURI);
-		bgsetting->set_string("picture-options", defPictureOptions);
-		bgsetting->set_string("primary-color", defPrimaryColor);
+		desktopEnvironmentInit();
+		if (desktop == "gnome") {
+			bgsetting->set_string("picture-uri", defPictureURI);
+			bgsetting->set_string("picture-options", defPictureOptions);
+			bgsetting->set_string("primary-color", defPrimaryColor);
+		} else if (desktop == "xfce") {
+			if (defColorExists) {
+				xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defColor);
+			} else {
+				xfconf_channel_reset_property(bgchannel, optionColor.c_str(), false);
+			}
+			if (defPictureURI == "") {
+				xfconf_channel_reset_property(bgchannel, optionImage.c_str(), false);
+			} else {
+				xfconf_channel_set_string(bgchannel, optionImage.c_str(), defPictureURI.c_str());
+			}
+			if (defPictureStyle == -1) {
+				xfconf_channel_reset_property(bgchannel, optionImageStyle.c_str(), false);
+			} else {
+				xfconf_channel_set_int(bgchannel, optionImageStyle.c_str(), defPictureStyle);
+			}
+			if (defColorStyle == -1) {
+				xfconf_channel_reset_property(bgchannel, optionColorStyle.c_str(), false);
+			} else {
+				xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), defColorStyle);
+			}
+		}
 	#endif
 #endif
 	return Qnil;
@@ -184,3 +304,14 @@ void wallpaperBindingInit()
 	_rb_define_module_function(module, "set", wallpaperSet);
 	_rb_define_module_function(module, "reset", wallpaperReset);
 }
+
+#ifdef __linux__
+void wallpaperBindingTerminate()
+{
+	// Clean up
+	// We assume Gio::Settings destructor will be automatically called
+	if (desktop == "xfce") {
+		xfconf_shutdown();
+	}
+}
+#endif

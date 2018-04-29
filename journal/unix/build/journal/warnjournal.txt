@@ -1,0 +1,15 @@
+missing module named 'org.python' - imported by pickle, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py, xml.sax
+excluded module named _frozen_importlib - imported by importlib, importlib.abc, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named _frozen_importlib_external - imported by importlib._bootstrap, importlib, importlib.abc, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named _winreg - imported by platform, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named _scproxy - imported by urllib.request
+missing module named java - imported by platform, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named 'java.lang' - imported by platform, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py, xml.sax._exceptions
+missing module named vms_lib - imported by platform, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named winreg - imported by platform, mimetypes, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py, urllib.request
+missing module named org - imported by copy, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named nt - imported by os, ntpath, shutil, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named ce - imported by os, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named msvcrt - imported by subprocess, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py, getpass
+missing module named _winapi - imported by subprocess, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
+missing module named _dummy_threading - imported by dummy_threading, /home/perapisar/Temp/mkxp/synglechance/journal/unix/journal.py
