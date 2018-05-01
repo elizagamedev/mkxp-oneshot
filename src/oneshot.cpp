@@ -277,10 +277,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	if (
 		desktop.find("cinnamon") != std::string::npos ||
 		desktop.find("gnome") != std::string::npos ||
-		desktop.find("unity") != std::string::npos ||
-		desktop.find("mate") != std::string::npos
+		desktop.find("unity") != std::string::npos
 	) {
 		desktopEnv = "gnome";
+		gtk_init(0, 0);
+	} else if (desktop.find("mate") != std::string::npos) {
+		desktopEnv = "mate";
 		gtk_init(0, 0);
 	} else if (desktop.find("xfce") != std::string::npos) {
 		desktopEnv = "xfce";
@@ -456,7 +458,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	if (!title)
 		title = "";
 	#if defined OS_LINUX
-	if (desktopEnv == "gnome") {
+	if (desktopEnv == "gnome" || desktopEnv == "mate") {
 		linux_DialogData data = {type, body, title, 0};
 		gdk_threads_add_idle(linux_dialog, &data);
 		gtk_main();

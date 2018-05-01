@@ -33,7 +33,7 @@
 		static std::string desktop = "uninitialized";
 		// GNOME settings
 		static Glib::RefPtr<Gio::Settings> bgsetting;
-		static std::string defPictureURI, defPictureOptions, defPrimaryColor;
+		static std::string defPictureURI, defPictureOptions, defPrimaryColor, defColorShading;
 		// XFCE settings
 		static XfconfChannel* bgchannel;
 		static int defPictureStyle;
@@ -51,11 +51,17 @@ void desktopEnvironmentInit()
 		return;
 	}
 	desktop = shState->oneshot().desktopEnv;
-	if (desktop == "gnome") {
-		bgsetting = Gio::Settings::create("org.gnome.desktop.background");
-		defPictureURI = bgsetting->get_string("picture-uri");
+	if (desktop == "gnome" || desktop == "mate") {
+		if (desktop == "gnome") {
+			bgsetting = Gio::Settings::create("org.gnome.desktop.background");
+			defPictureURI = bgsetting->get_string("picture-uri");
+		} else {
+			bgsetting = Gio::Settings::create("org.mate.background");
+			defPictureURI = bgsetting->get_string("picture-filename");
+		}
 		defPictureOptions = bgsetting->get_string("picture-options");
 		defPrimaryColor = bgsetting->get_string("primary-color");
+		defColorShading = bgsetting->get_string("color-shading-type");
 	} else if (desktop == "xfce") {
 		GError *xferror = NULL;
 		if (xfconf_init(&xferror)) {
@@ -177,12 +183,17 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "gnome") {
+		if (desktop == "gnome" || desktop == "mate") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
-			bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
+			if (desktop == "gnome") {
+				bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
+			} else {
+				bgsetting->set_string("picture-filename", gameDirStr + path);
+			}
 			bgsetting->set_string("picture-options", "scaled");
 			bgsetting->set_string("primary-color", hexColor.str());
+			bgsetting->set_string("color-shading-type", "solid");
 		} else if (desktop == "xfce") {
 			int r = (color >> 16) & 0xFF;
 			int g = (color >> 8) & 0xFF;
@@ -270,10 +281,15 @@ RB_METHOD(wallpaperReset)
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "gnome") {
-			bgsetting->set_string("picture-uri", defPictureURI);
+		if (desktop == "gnome" || desktop == "mate") {
+			if (desktop == "gnome") {
+				bgsetting->set_string("picture-uri", defPictureURI);
+			} else {
+				bgsetting->set_string("picture-filename", defPictureURI);
+			}
 			bgsetting->set_string("picture-options", defPictureOptions);
 			bgsetting->set_string("primary-color", defPrimaryColor);
+			bgsetting->set_string("color-shading-type", defColorShading);
 		} else if (desktop == "xfce") {
 			if (defColorExists) {
 				xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defColor);
