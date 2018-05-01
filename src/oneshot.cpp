@@ -277,7 +277,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	if (
 		desktop.find("cinnamon") != std::string::npos ||
 		desktop.find("gnome") != std::string::npos ||
-		desktop.find("unity") != std::string::npos
+		desktop.find("unity") != std::string::npos ||
+		desktop.find("mate") != std::string::npos
 	) {
 		desktopEnv = "gnome";
 		gtk_init(0, 0);
