@@ -200,7 +200,7 @@ end:
 			GType colorArrType = g_type_from_name("GPtrArray_GValue_");
 			if (!colorArrType) {
 				std::stringstream colorCommand;
-				colorCommand << "xfconf-query -c xfce4-desktop -n -p " << optionImage
+				colorCommand << "xfconf-query -c xfce4-desktop -n -p " << optionColor
 							 << " -t uint -t uint -t uint -t uint -s " << ub
 							 << " -s " << ug << " -s " << ub << " -s " << alpha;
 				int colorCommandRes = system(colorCommand.str().c_str());
