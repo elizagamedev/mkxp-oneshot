@@ -22,12 +22,7 @@ rm -rf "$ONESHOT_PATH/*.exe"
 rm -rf "$ONESHOT_PATH/*.dll"
 
 echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
-cp -f "./xScripts.rxdata" "$ONESHOT_PATH/Data/xScripts.rxdata"
-cp -f "./CommonEvents.rxdata" "$ONESHOT_PATH/Data/CommonEvents.rxdata"
-cp -f "./Map243.rxdata" "$ONESHOT_PATH/Data/Map243.rxdata"
-cp -rf "./OneShot.app" "$ONESHOT_PATH"
-cp -rf "./_______.app" "$ONESHOT_PATH"
-cp -R "./Graphics/" "$ONESHOT_PATH/Wallpaper"
+cp -rf "./*" "$ONESHOT_PATH"
 ln -sfh "$ONESHOT_PATH/OneShot.app" "$HOME/Applications/OneShot.app"
 
 rm -f /tmp/oneshot-pipe # Important for pre-release version cleanup
