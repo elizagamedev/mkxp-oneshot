@@ -27,20 +27,24 @@ class WatchPipe(QThread):
 
 	def run(self):
 		while True:
-			while True:
-				if os.path.exists(pipe_path): break
-				else: time.sleep(0.1)
+			while not os.path.exists(pipe_path): time.sleep(0.1)
+
 			pipe = open(pipe_path, 'r')
 			pipe.flush()
 
-			while True:
-				if not os.path.exists(pipe_path):
-					break # Handle game quitting cleanup
+			was_nonzero = False
+
+			while os.path.exists(pipe_path): # Make sure the file still exists and wasn't cleaned up by SyngleChance
 				message = os.read(pipe.fileno(), 256)
 				if len(message) > 0:
+					was_nonzero = True
 					self.change_image.emit(message.decode())
+				else:
+					st = os.stat(pipe_path)
+					if st.st_size == 0 and was_nonzero:
+						self.change_image.emit("CLOSE")
 
-				time.sleep(0.05)
+					time.sleep(0.05)
 
 class AnimationTimer(QThread):
 	next_frame = pyqtSignal()
@@ -95,12 +99,16 @@ class Journal(QWidget):
 			self.setGeometry(frameGm.x() + pos.x() - self.mousedownpos.x(), frameGm.y() + pos.y() - self.mousedownpos.y(), 800, 600)
 
 	def change_image(self, image):
+		if image == "CLOSE":
+			self.app.quit()
+			return
+		if not "_" in image: return
+
 		name, lang = image.split('_', 1)
-		if lang == 'en':
-			img = os.path.join(base_path, 'images', '{}.png'.format(name))
-		else:
-			img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
+		if lang == 'en': img = os.path.join(base_path, 'images', '{}.png'.format(name))
+		else: img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
 		if not os.path.exists(img): return
+		
 		self.pixmap = QPixmap(img)
 		self.label.setPixmap(self.pixmap)
 
