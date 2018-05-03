@@ -1,3 +1,5 @@
+#pragma once
+
 #include "binding-util.h"
 #include "binding-types.h"
 #include "pipe.h"
