@@ -75,6 +75,9 @@ void fileIntBindingInit();
 
 void journalBindingInit();
 void wallpaperBindingInit();
+#ifdef __linux__
+void wallpaperBindingTerminate();
+#endif
 void nikoBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
@@ -621,6 +624,9 @@ static void mriBindingExecute()
 static void mriBindingTerminate()
 {
 	rb_raise(rb_eSystemExit, " ");
+#ifdef __linux__
+	wallpaperBindingTerminate();
+#endif
 }
 
 static void mriBindingReset()
