@@ -1,4 +1,3 @@
-#include "journal-binding.h"
 #include "binding-util.h"
 #include "binding-types.h"
 #include "sharedstate.h"
@@ -15,7 +14,14 @@
 		#define OS_LINUX
 	#endif
 
+	#include <fcntl.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+	#ifdef OS_LINUX
+		#include <sys/inotify.h>
+	#endif
 	#include <unistd.h>
+	#include <stdio.h>
 #endif
 
 #include <SDL.h>
@@ -25,6 +31,61 @@ namespace syswm {
 
 #define NIKO_X (320 - 16)
 #define NIKO_Y ((13 * 16) * 2)
+
+#define BUFFER_SIZE 256
+
+static SDL_Thread *thread = NULL;
+static SDL_mutex *mutex = NULL;
+static volatile char message_buffer[BUFFER_SIZE];
+static volatile bool active = false;
+static volatile int message_len = 0;
+
+#ifdef LINUX
+	#define PIPE_PATH "/tmp/oneshot-pipe"
+	static volatile int out_pipe = -1;
+	void niko_cleanup_pipe()
+	{
+		unlink(PIPE_PATH);
+		remove(PIPE_PATH);
+	}
+#endif
+
+int niko_server_thread(void *data)
+{
+	(void)data;
+#if defined OS_W32
+	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
+	                               PIPE_ACCESS_OUTBOUND,
+	                               PIPE_TYPE_BYTE | PIPE_WAIT,
+	                               PIPE_UNLIMITED_INSTANCES,
+	                               BUFFER_SIZE,
+	                               BUFFER_SIZE,
+	                               0,
+	                               NULL);
+	for (;;) {
+		ConnectNamedPipe(pipe, NULL);
+		SDL_LockMutex(mutex);
+		DWORD written;
+		WriteFile(pipe, (const void*)message_buffer, BUFFER_SIZE, &written, NULL);
+		active = true;
+		SDL_UnlockMutex(mutex);
+		FlushFileBuffers(pipe);
+		DisconnectNamedPipe(pipe);
+	}
+	CloseHandle(pipe);
+#else
+	if (FILE *file = fopen(PIPE_PATH, "r")) {
+		fclose(file);
+		out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		SDL_LockMutex(mutex);
+		active = true;
+		if (message_len > 0)
+			write(out_pipe, (char*)message_buffer, message_len);
+		SDL_UnlockMutex(mutex);
+	}
+	return 0;
+#endif
+}
 
 RB_METHOD(nikoPrepare)
 {
@@ -49,7 +110,7 @@ RB_METHOD(nikoPrepare)
 	// Run the binary
 	pid_t pid = fork();
 	if (pid == 0) {
-		execl(journal.c_str(), journal.c_str(), "niko", (char*)0);
+		execl(journal.c_str(), journal.c_str(), (char*)"niko", (char*)0);
 		exit(1);
 	}
 #endif
@@ -102,6 +163,10 @@ RB_METHOD(nikoStart)
 		SDL_WaitThread(thread, NULL);
 		thread = NULL;
 	}
+	if (out_pipe == -1) {
+		// We don't have a pipe open, so spawn the connection thread
+		thread = SDL_CreateThread(niko_server_thread, "journal", NULL);
+	}
 	// Attempt to send it over the tubes
 	if (out_pipe != -1) {
 		// We have a connection, so send it over
@@ -111,16 +176,18 @@ RB_METHOD(nikoStart)
 			out_pipe = -1;
 		}
 	}
-	if (out_pipe == -1) {
-		// We don't have a pipe open, so spawn the connection thread
-		thread = SDL_CreateThread(server_thread, "journal", NULL);
-	}
 #endif
 	return Qnil;
 }
 
 void nikoBindingInit()
 {
+	mutex = SDL_CreateMutex();
+#if defined __linux
+	mkfifo(PIPE_PATH, 0666);
+	atexit(niko_cleanup_pipe);
+#endif
+
 	VALUE module = rb_define_module("Niko");
 
 	//Functions
