@@ -107,6 +107,7 @@ void oneshotBindingInit()
 	VALUE msg = rb_define_module_under(module, "Msg");
 
 	// Constants
+	rb_const_set(module, rb_intern("OS"), rb_str_new2(shState->oneshot().os().c_str()));
 	rb_const_set(module, rb_intern("USER_NAME"), rb_str_new2(shState->oneshot().userName().c_str()));
 	rb_const_set(module, rb_intern("SAVE_PATH"), rb_str_new2(shState->oneshot().savePath().c_str()));
 	rb_const_set(module, rb_intern("DOCS_PATH"), rb_str_new2(shState->oneshot().docsPath().c_str()));

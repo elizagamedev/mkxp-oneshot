@@ -49,6 +49,7 @@ struct OneshotPrivate
 	SDL_Window *window;
 
 	// String data
+	std::string os;
 	std::string lang;
 	std::string userName;
 	std::string savePath;
@@ -183,6 +184,13 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winPosChanged = false;
 	p->allowExit = true;
 	p->exiting = false;
+	#ifdef OS_W32
+		p->os = "windows";
+	#elif defined OS_OSX
+		p->os = "macos";
+	#else
+		p->os = "linux";
+	#endif
 
 	/********************
 	 * USERNAME/DOCS PATH
@@ -371,6 +379,11 @@ void Oneshot::update()
 		//Flag as dirty
 		obscuredDirty = true;
 	}
+}
+
+const std::string &Oneshot::os() const
+{
+	return p->os;
 }
 
 const std::string &Oneshot::lang() const

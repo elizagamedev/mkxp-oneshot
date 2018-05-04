@@ -49,6 +49,7 @@ public:
 	void update();
 
 	//Accessors
+	const std::string &os() const;
 	const std::string &lang() const;
 	const std::string &userName() const;
 	const std::string &savePath() const;
