@@ -88,6 +88,8 @@ class Journal(QWidget):
 		self.close_label.setPixmap(QPixmap(os.path.join(base_path, 'images', 'close.png')))
 		if not left_close: self.close_label.move(776, 0) # X = 800-24
 
+		self.close_button = True
+
 		if "linux" in sys.platform: self.setWindowFlags(Qt.FramelessWindowHint)
 		else: self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
 		self.setAttribute(Qt.WA_TranslucentBackground)
@@ -103,7 +105,7 @@ class Journal(QWidget):
 		self.mousedown = True
 		self.mousedownpos = event.pos()
 
-		if ((left_close and self.mousedownpos.x() <= 24) or (not left_close and self.mousedownpos.x() >= 776)) and self.mousedownpos.y() < 24:
+		if self.close_button and (((left_close and self.mousedownpos.x() <= 24) or (not left_close and self.mousedownpos.x() >= 776)) and self.mousedownpos.y() < 24):
 			self.app.quit()
 
 	def mouseReleaseEvent(self, event):
@@ -122,6 +124,11 @@ class Journal(QWidget):
 		if not "_" in image: return
 
 		name, lang = image.split('_', 1)
+
+		if name != "default":
+			self.close_label.hide()
+			self.close_button = False
+
 		if lang == 'en': img = os.path.join(base_path, 'images', '{}.png'.format(name))
 		else: img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
 		if not os.path.exists(img): return
