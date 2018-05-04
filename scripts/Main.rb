@@ -36,6 +36,11 @@ begin
   # Fade out
   Oneshot.exiting true
   Graphics.transition(20)
+
+  if Journal.active?
+    Journal.set ''
+  end
+  
   Oneshot.allow_exit true
 rescue Errno::ENOENT
   # Supplement Errno::ENOENT exception
