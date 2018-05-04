@@ -62,6 +62,7 @@ m4 patches/mac/JournalInfo.plist.in -DONESHOTMACVERSION=$mac_version > _______.a
 # Compile scripts
 echo "-> ${cyan}Compile xScripts.rxdata...${color_reset}"
 ruby rpgscript.rb ./scripts "$ONESHOT_PATH"
+cp "$ONESHOT_PATH/Data/xScripts.rxdata" .
 
 echo "-> ${cyan}Install OneShot apps to Steam directory...${color_reset}"
 cp -rf "./OneShot.app" "$ONESHOT_PATH"
