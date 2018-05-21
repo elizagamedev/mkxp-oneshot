@@ -32,6 +32,16 @@ end
 
 module Wallpaper
   def self.set_persistent(name, color)
+    if Graphics.fullscreen
+      Graphics.fullscreen = false
+      $console = false
+      if Oneshot::OS == "macos"
+        sleep 0.65
+      else
+        sleep 0.2
+      end
+      Graphics.update
+    end
   
     if (name == 'save_w32')
 	  case $persistent.langcode
@@ -55,6 +65,17 @@ module Wallpaper
   end
 
   def self.reset_persistent
+    if Graphics.fullscreen
+      Graphics.fullscreen = false
+      $console = false
+      if Oneshot::OS == "macos"
+        sleep 0.65
+      else
+        sleep 0.2
+      end
+      Graphics.update
+    end
+    
     $game_oneshot.wallpaper = nil
     $game_oneshot.wallpaper_color = nil
     Wallpaper.reset

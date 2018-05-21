@@ -17,6 +17,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 * Boost.Unordered (headers only)
 * Boost.Program_options
 * Boost.CRC
+* Vim XXD (vim-common in apt)
 * libsigc++ 2.0
 * PhysFS (latest hg)
 * OpenAL
