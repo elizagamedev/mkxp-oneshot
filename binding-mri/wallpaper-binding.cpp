@@ -23,7 +23,7 @@
 		#include "mac-desktop.h"
 		static bool isCached = false;
 	#else
-		#include <giomm/settings.h>
+		#include <gio/gio.h>
 		#include <xfconf/xfconf.h>
 		#include <unistd.h>
 		#include <algorithm>
@@ -32,7 +32,7 @@
 		#include <sstream>
 		static std::string desktop = "uninitialized";
 		// GNOME settings
-		static Glib::RefPtr<Gio::Settings> bgsetting;
+		static GSettings *bgsetting;
 		static std::string defPictureURI, defPictureOptions, defPrimaryColor, defColorShading;
 		// XFCE settings
 		static XfconfChannel* bgchannel;
@@ -45,43 +45,44 @@
 #endif
 
 #ifdef __linux__
-void desktopEnvironmentInit()
-{
-	if (desktop != "uninitialized") {
-		return;
-	}
-	desktop = shState->oneshot().desktopEnv;
-	if (desktop == "gnome" || desktop == "mate") {
-		if (desktop == "gnome") {
-			bgsetting = Gio::Settings::create("org.gnome.desktop.background");
-			defPictureURI = bgsetting->get_string("picture-uri");
-		} else {
-			bgsetting = Gio::Settings::create("org.mate.background");
-			defPictureURI = bgsetting->get_string("picture-filename");
+	void desktopEnvironmentInit()
+	{
+		if (desktop != "uninitialized") {
+			return;
 		}
-		defPictureOptions = bgsetting->get_string("picture-options");
-		defPrimaryColor = bgsetting->get_string("primary-color");
-		defColorShading = bgsetting->get_string("color-shading-type");
-	} else if (desktop == "xfce") {
-		GError *xferror = NULL;
-		if (xfconf_init(&xferror)) {
-			bgchannel = xfconf_channel_get("xfce4-desktop");
-			std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
-			optionImage = optionPrefix + "last-image";
-			optionColor = optionPrefix + "color1";
-			optionImageStyle = optionPrefix + "image-style";
-			optionColorStyle = optionPrefix + "color-style";
-			defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
-			defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
-			defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
-			defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
-		} else {
-			// Configuration failed to initialize, we won't set the wallpaper
-			desktop = "xfce_error";
-			g_error_free(xferror);
+		desktop = shState->oneshot().desktopEnv;
+		if (desktop == "gnome" || desktop == "mate") {
+			if (desktop == "gnome") {
+				bgsetting = g_settings_new("org.gnome.desktop.background");
+				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
+				std::cout << defPictureURI << std::endl;
+			} else {
+				bgsetting = g_settings_new("org.mate.background");
+				defPictureURI = g_settings_get_string(bgsetting, "picture-filename");
+			}
+			defPictureOptions = g_settings_get_string(bgsetting, "picture-options");
+			defPrimaryColor = g_settings_get_string(bgsetting, "primary-color");
+			defColorShading = g_settings_get_string(bgsetting, "color-shading-type");
+		} else if (desktop == "xfce") {
+			GError *xferror = NULL;
+			if (xfconf_init(&xferror)) {
+				bgchannel = xfconf_channel_get("xfce4-desktop");
+				std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
+				optionImage = optionPrefix + "last-image";
+				optionColor = optionPrefix + "color1";
+				optionImageStyle = optionPrefix + "image-style";
+				optionColorStyle = optionPrefix + "color-style";
+				defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
+				defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
+				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
+				defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
+			} else {
+				// Configuration failed to initialize, we won't set the wallpaper
+				desktop = "xfce_error";
+				g_error_free(xferror);
+			}
 		}
 	}
-}
 #endif
 
 RB_METHOD(wallpaperSet)
@@ -187,13 +188,13 @@ end:
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
 			if (desktop == "gnome") {
-				bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
+				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
-				bgsetting->set_string("picture-filename", gameDirStr + path);
+				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
 			}
-			bgsetting->set_string("picture-options", "scaled");
-			bgsetting->set_string("primary-color", hexColor.str());
-			bgsetting->set_string("color-shading-type", "solid");
+			g_settings_set_string(bgsetting, "picture-options", "scaled");
+			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
+			g_settings_set_string(bgsetting, "color-shading-type", "solid");
 		} else if (desktop == "xfce") {
 			int r = (color >> 16) & 0xFF;
 			int g = (color >> 8) & 0xFF;
@@ -283,13 +284,13 @@ RB_METHOD(wallpaperReset)
 		desktopEnvironmentInit();
 		if (desktop == "gnome" || desktop == "mate") {
 			if (desktop == "gnome") {
-				bgsetting->set_string("picture-uri", defPictureURI);
+				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
-				bgsetting->set_string("picture-filename", defPictureURI);
+				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
 			}
-			bgsetting->set_string("picture-options", defPictureOptions);
-			bgsetting->set_string("primary-color", defPrimaryColor);
-			bgsetting->set_string("color-shading-type", defColorShading);
+			g_settings_set_string(bgsetting, "picture-options", defPictureOptions.c_str());
+			g_settings_set_string(bgsetting, "primary-color", defPrimaryColor.c_str());
+			g_settings_set_string(bgsetting, "color-shading-type", defColorShading.c_str());
 		} else if (desktop == "xfce") {
 			if (defColorExists) {
 				xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defColor);
