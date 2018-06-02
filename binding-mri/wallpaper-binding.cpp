@@ -51,11 +51,11 @@
 			return;
 		}
 		desktop = shState->oneshot().desktopEnv;
-		if (desktop == "gnome" || desktop == "mate") {
-			if (desktop == "gnome") {
-				bgsetting = g_settings_new("org.gnome.desktop.background");
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
+			if (desktop == "cinnamon" || desktop == "gnome") {
+				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
+				else bgsetting = g_settings_new("org.gnome.desktop.background");
 				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
-				std::cout << defPictureURI << std::endl;
 			} else {
 				bgsetting = g_settings_new("org.mate.background");
 				defPictureURI = g_settings_get_string(bgsetting, "picture-filename");
@@ -184,10 +184,10 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "gnome" || desktop == "mate") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
-			if (desktop == "gnome") {
+			if (desktop == "cinnamon" || desktop == "gnome") {
 				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
@@ -282,8 +282,8 @@ RB_METHOD(wallpaperReset)
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "gnome" || desktop == "mate") {
-			if (desktop == "gnome") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
+			if (desktop == "cinnamon" || desktop == "gnome") {
 				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());

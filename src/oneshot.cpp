@@ -282,8 +282,9 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 #ifdef OS_LINUX
 	std::string desktop(getenv("XDG_CURRENT_DESKTOP"));
 	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
-	if (
-		desktop.find("cinnamon") != std::string::npos ||
+	if (desktop.find("cinnamon") != std::string::npos) {
+		desktopEnv = "cinnamon";
+	} else if (
 		desktop.find("gnome") != std::string::npos ||
 		desktop.find("unity") != std::string::npos
 	) {
