@@ -279,7 +279,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	#endif
 #endif
 
-#ifdef __linux__
+#ifdef OS_LINUX
 	std::string desktop(getenv("XDG_CURRENT_DESKTOP"));
 	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
 	if (
