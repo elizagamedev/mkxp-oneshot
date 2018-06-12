@@ -295,6 +295,10 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		gtk_init(0, 0);
 	} else if (desktop.find("xfce") != std::string::npos) {
 		desktopEnv = "xfce";
+	} else if (desktop.find("kde") != std::string::npos) {
+		desktopEnv = "kde";
+	} else if (desktop.find("lxde") != std::string::npos) {
+		desktopEnv = "lxde";
 	}
 #endif
 
