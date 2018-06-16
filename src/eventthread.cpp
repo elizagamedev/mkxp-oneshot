@@ -166,7 +166,6 @@ void EventThread::process(RGSSThreadData &rtData)
 	char buffer[128];
 
 	char pendingTitle[128];
-	bool havePendingTitle = false;
 
 	bool resetting = false;
 
@@ -330,8 +329,6 @@ void EventThread::process(RGSSThreadData &rtData)
 						/* Prevent fullscreen flicker */
 						strncpy(pendingTitle, rtData.config.windowTitle.c_str(),
 						        sizeof(pendingTitle));
-						havePendingTitle = true;
-
 						break;
 					}
 
@@ -510,8 +507,6 @@ void EventThread::process(RGSSThreadData &rtData)
 				if (fullscreen)
 				{
 					strncpy(pendingTitle, buffer, sizeof(pendingTitle));
-					havePendingTitle = true;
-
 					break;
 				}
 
