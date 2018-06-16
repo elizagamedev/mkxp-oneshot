@@ -593,14 +593,6 @@ int EventThread::eventFilter(void *data, SDL_Event *event)
 			return 0;
 		}
 		return 1;
-
-//	case SDL_RENDER_TARGETS_RESET :
-//		Debug() << "****** SDL_RENDER_TARGETS_RESET";
-//		return 0;
-
-//	case SDL_RENDER_DEVICE_RESET :
-//		Debug() << "****** SDL_RENDER_DEVICE_RESET";
-//		return 0;
 	}
 
 	return 1;
