@@ -124,7 +124,7 @@ static int linux_dialog(void *rawData)
 	}
 
 	// Display dialog and get result
-	GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, gtktype, gtkbuttons, data->body);
+	GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, gtktype, gtkbuttons, "%s", data->body);
 	gtk_window_set_title(GTK_WINDOW(dialog), data->title);
 	int result = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
@@ -284,6 +284,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
 	if (desktop.find("cinnamon") != std::string::npos) {
 		desktopEnv = "cinnamon";
+		gtk_init(0, 0);
 	} else if (
 		desktop.find("gnome") != std::string::npos ||
 		desktop.find("unity") != std::string::npos
@@ -476,7 +477,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	if (!title)
 		title = "";
 	#if defined OS_LINUX
-	if (desktopEnv == "gnome" || desktopEnv == "mate") {
+	if (desktopEnv == "gnome" || desktopEnv == "mate" || desktopEnv == "cinnamon") {
 		linux_DialogData data = {type, body, title, 0};
 		gdk_threads_add_idle(linux_dialog, &data);
 		gtk_main();
