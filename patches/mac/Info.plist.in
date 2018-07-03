@@ -19,7 +19,7 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleVersion</key>
-		<string>macOS Port v.ONESHOTMACVERSION (OneShot Solstice Update)</string>
+		<string>macOS Port v.ONESHOTMACVERSION</string>
 		<key>CFBundleShortVersionString</key>
 		<string>ONESHOTMACVERSION</string>
 		<key>LSApplicationCategoryType</key>
