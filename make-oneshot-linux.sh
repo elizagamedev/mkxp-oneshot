@@ -22,6 +22,10 @@ echo "-> ${cyan}Generate makefile...${color_reset}"
 qmake
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
+echo "-> ${cyan}Compile steamshim...${color_reset}"
+cd steamshim_parent
+HOST=linux64 make -j${make_threads}
+cd ..
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/unix/journal.spec --onefile --windowed
 

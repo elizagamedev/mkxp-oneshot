@@ -22,6 +22,10 @@ echo "-> ${cyan}Generate makefile...${color_reset}"
 qmake MRIVERSION=2.5
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
+echo "-> ${cyan}Compile steamshim...${color_reset}"
+cd steamshim_parent
+HOST=osx make -j${make_threads}
+cd ..
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/unix/journal.spec --onefile --windowed
 
@@ -43,7 +47,7 @@ if [ ! -e $ResourcesDir ]
 	mkdir -p "$ResourcesDir"
 fi
 
-cp patches/mac/steamshim ./OneShot.app/Contents/Resources/steamshim
+cp steamshim_parent/steamshim ./OneShot.app/Contents/Resources/steamshim
 cp patches/mac/libsteam_api.dylib ./OneShot.app/Contents/Libraries/libsteam_api.dylib
 cmake -P patches/mac/CompleteBundle.cmake
 cp assets/icon.icns ./OneShot.app/Contents/Resources/icon.icns
