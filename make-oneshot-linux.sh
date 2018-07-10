@@ -22,6 +22,10 @@ echo "-> ${cyan}Generate makefile...${color_reset}"
 qmake -qt=5
 echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
+echo "-> ${cyan}Compile steamshim...${color_reset}"
+cd steamshim_parent
+HOST=linux64 make -j${make_threads}
+cd ..
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/unix/journal.spec --onefile --windowed
 
@@ -42,4 +46,4 @@ rm -rf journal/unix/__pycache__
 rm -rf build
 rm -rf dist
 
-echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/vinyldarkscratch/synglechance/issues${color_reset}"
+echo "\n${green}Complete!  ${white}Please report any issues to https://github.com/GooborgStudios/synglechance/issues${color_reset}"
