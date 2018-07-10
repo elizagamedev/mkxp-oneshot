@@ -1,4 +1,9 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
+
+#include <boost/algorithm/string/replace.hpp>
 
 #include "etc.h"
 #include "sharedstate.h"
@@ -6,6 +11,7 @@
 #include "binding-types.h"
 #include "config.h"
 #include "oneshot.h"
+#include "debugwriter.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -41,6 +47,8 @@
 		static GValue defColor = G_VALUE_INIT;
 		static bool defColorExists;
 		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
+		// KDE settings
+		static std::map<std::string, std::string> defPlugins, defPictures, defColors;
 	#endif
 #endif
 
@@ -81,6 +89,67 @@
 				desktop = "xfce_error";
 				g_error_free(xferror);
 			}
+		} else if (desktop == "kde") {
+			std::ifstream configFile;
+			configFile.open(std::string(getenv("HOME")) + "/.config/plasma-org.kde.plasma.desktop-appletsrc", std::ios::in);
+			if (configFile.is_open()) {
+				std::string line;
+				std::vector<std::string> sections;
+				std::size_t undefined = 999999999;
+				bool readPlugin = false, readOther = false;
+				std::string containment;
+				while (getline(configFile, line)) {
+					std::size_t index = undefined, lastIndex = undefined;
+					if (line.size() == 0) {
+						readPlugin = false;
+						readOther = false;
+					} else if (readPlugin) {
+						index = line.find('=');
+						if (line.substr(0, index) == "wallpaperplugin") {
+							defPlugins[containment] = line.substr(index + 1);
+						}
+					} else if (readOther) {
+						index = line.find('=');
+						std::string key = line.substr(0, index);
+						std::string val = line.substr(index + 1);
+						if (key == "Image") {
+							defPictures[containment] = val;
+						} else if (key == "Color") {
+							defColors[containment] = val;
+						}
+					} else if (line.at(0) == '[') {
+						sections.clear();
+						while (true) {
+							index = line.find(lastIndex == undefined ? '[' : ']', index == undefined ? 0 : index);
+							if (index == std::string::npos) {
+								break;
+							}
+							if (lastIndex == undefined) {
+								lastIndex = index;
+							} else {
+								sections.push_back(line.substr(lastIndex + 1, index - lastIndex - 1));
+								lastIndex = undefined;
+							}
+						}
+						if (sections.size() == 2 && sections[0] == "Containments") {
+							readPlugin = true;
+							containment = sections[1];
+						} else if (
+							sections.size() == 5 &&
+							sections[0] == "Containments" &&
+							sections[2] == "Wallpaper" &&
+							sections[3] == "org.kde.image" &&
+							sections[4] == "General"
+						) {
+							readOther = true;
+							containment = sections[1];
+						}
+					}
+				}
+				configFile.close();
+			} else {
+				Debug() << "FATAL: Cannot find desktop configuration!";
+			}
 		}
 	}
 #endif
@@ -94,7 +163,7 @@ RB_METHOD(wallpaperSet)
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
-	std::cout << "Setting wallpaper to " << path << std::endl;
+	Debug() << "Setting wallpaper to" << path;
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -169,7 +238,7 @@ end:
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
 
-	std::cout << "Setting wallpaper to " << path << std::endl;
+	Debug() << "Setting wallpaper to" << path;
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -220,7 +289,7 @@ end:
 				colorArrType = g_type_from_name("GPtrArray_GValue_");
 				if (!colorArrType) {
 					// Let's do some debug output here and skip changing the color
-					std::cout << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
+					Debug() << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
 					return Qnil;
 				}
 			}
@@ -243,6 +312,29 @@ end:
 			g_ptr_array_add(colorArr, va);
 			g_value_set_boxed(&colorValue, colorArr);
 			xfconf_channel_set_property(bgchannel, optionColor.c_str(), &colorValue);
+		} else if (desktop == "kde") {
+			std::stringstream command;
+			std::string concatPath(gameDirStr + path);
+			boost::replace_all(concatPath, "\\", "\\\\");
+			boost::replace_all(concatPath, "\"", "\\\"");
+			boost::replace_all(concatPath, "'", "\\x27");
+			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '" <<
+				"var allDesktops = desktops();" <<
+				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
+					"var d = allDesktops[i];" <<
+					"d.wallpaperPlugin = \"org.kde.image\";" <<
+					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
+					"d.writeConfig(\"Image\", \"file://" << concatPath << "\");" <<
+					"d.writeConfig(\"Color\", \"" <<
+						std::to_string((color >> 16) & 0xFF) << "," <<
+						std::to_string((color >> 8) & 0xFF) << "," <<
+						std::to_string(color & 0xFF) <<
+					"\");" <<
+				"}" <<
+			"'";
+			Debug() << "Wallpaper command:" << command.str();
+			int result = system(command.str().c_str());
+			Debug() << "Result:" << result;
 		}
 	#endif
 #endif
