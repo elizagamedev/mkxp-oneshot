@@ -78,9 +78,11 @@ void ALStream::close()
 	case Playing:
 	case Paused:
 		stopStream();
+		/* falls through */
 	case Stopped:
 		closeSource();
 		state = Closed;
+		/* falls through */
 	case Closed:
 		return;
 	}
@@ -95,8 +97,10 @@ void ALStream::open(const std::string &filename)
 	case Playing:
 	case Paused:
 		stopStream();
+		/* falls through */
 	case Stopped:
 		closeSource();
+		/* falls through */
 	case Closed:
 		openSource(filename);
 	}

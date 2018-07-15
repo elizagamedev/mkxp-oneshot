@@ -455,6 +455,7 @@ void EventThread::process(RGSSThreadData &rtData)
 		case SDL_FINGERDOWN :
 			i = event.tfinger.fingerId;
 			touchState.fingers[i].down = true;
+			/* falls through */
 
 		case SDL_FINGERMOTION :
 			i = event.tfinger.fingerId;
