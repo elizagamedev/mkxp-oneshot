@@ -48,7 +48,8 @@
 		static bool defColorExists;
 		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
 		// KDE settings
-		static std::map<std::string, std::string> defPlugins, defPictures, defColors;
+		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
+		static std::map<std::string, bool> defBlurs;
 	#endif
 #endif
 
@@ -116,6 +117,10 @@
 							defPictures[containment] = val;
 						} else if (key == "Color") {
 							defColors[containment] = val;
+						} else if (key == "FillMode") {
+							defModes[containment] = val;
+						} else if (key == "Blur") {
+							defBlurs[containment] = (val == "true");
 						}
 					} else if (line.at(0) == '[') {
 						sections.clear();
@@ -318,13 +323,15 @@ end:
 			boost::replace_all(concatPath, "\\", "\\\\");
 			boost::replace_all(concatPath, "\"", "\\\"");
 			boost::replace_all(concatPath, "'", "\\x27");
-			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '" <<
+			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
 				"var allDesktops = desktops();" <<
 				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
 					"var d = allDesktops[i];" <<
 					"d.wallpaperPlugin = \"org.kde.image\";" <<
 					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
 					"d.writeConfig(\"Image\", \"file://" << concatPath << "\");" <<
+					"d.writeConfig(\"FillMode\", \"6\");" <<
+					"d.writeConfig(\"Blur\", false);" <<
 					"d.writeConfig(\"Color\", \"" <<
 						std::to_string((color >> 16) & 0xFF) << "," <<
 						std::to_string((color >> 8) & 0xFF) << "," <<
