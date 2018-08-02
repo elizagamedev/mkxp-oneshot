@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -50,6 +51,8 @@
 		// KDE settings
 		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
 		static std::map<std::string, bool> defBlurs;
+		// Fallback settings
+		static std::string fallbackPath;
 	#endif
 #endif
 
@@ -154,7 +157,10 @@
 				configFile.close();
 			} else {
 				Debug() << "FATAL: Cannot find desktop configuration!";
+				desktop = "kde_error";
 			}
+		} else {
+			fallbackPath = std::string(getenv("HOME")) + "/Desktop/hint.png";
 		}
 	}
 #endif
@@ -243,7 +249,7 @@ end:
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
 
-	Debug() << "Setting wallpaper to" << path;
+	Debug() << "Setting wallpaper to " << path;
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -342,6 +348,10 @@ end:
 			Debug() << "Wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
 			Debug() << "Result:" << result;
+		} else {
+			std::ifstream srcHint(gameDirStr + path);
+			std::ofstream dstHint(fallbackPath);
+			dstHint << srcHint.rdbuf();
 		}
 	#endif
 #endif
@@ -410,6 +420,60 @@ RB_METHOD(wallpaperReset)
 				xfconf_channel_reset_property(bgchannel, optionColorStyle.c_str(), false);
 			} else {
 				xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), defColorStyle);
+			}
+		} else if (desktop == "kde") {
+			std::stringstream command;
+			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+					"var allDesktops = desktops();" <<
+					"var data = {";
+			// Plugin, picture, color, mode, blur
+			for (auto const& x : defPlugins) {
+				command << "\"" + x.first + "\": {"
+						<< "plugin: \"" << x.second << "\"";
+				if (defPictures.find(x.first) != defPictures.end()) {
+					std::string picture = defPictures[x.first];
+					boost::replace_all(picture, "\\", "\\\\");
+					boost::replace_all(picture, "\"", "\\\"");
+					boost::replace_all(picture, "'", "\\x27");
+					command << ", picture: \"" << picture << "\"";
+				}
+				if (defColors.find(x.first) != defColors.end()) {
+					command << ", color: \"" << defColors[x.first] << "\"";
+				}
+				if (defModes.find(x.first) != defModes.end()) {
+					command << ", mode: \"" << defModes[x.first] << "\"";
+				}
+				if (defBlurs.find(x.first) != defBlurs.end() && defBlurs[x.first]) {
+					command << ", blur: true";
+				}
+				command << "},";
+			}
+			command << "\"no\": {}};" <<
+				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
+					"var d = allDesktops[i];" <<
+					"var dat = data[d.id];" <<
+					"d.wallpaperPlugin = dat.plugin;" <<
+					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
+					"if (dat.picture) {" <<
+						"d.writeConfig(\"Image\", dat.picture);" <<
+					"}" <<
+					"if (dat.color) {" <<
+						"d.writeConfig(\"Color\", dat.color);" <<
+					"}" <<
+					"if (dat.mode) {" <<
+						"d.writeConfig(\"FillMode\", dat.mode);" <<
+					"}" <<
+					"if (dat.blur) {" <<
+						"d.writeConfig(\"Blur\", dat.blur);" <<
+					"}" <<
+				"}" <<
+			"'";
+			Debug() << "Reset wallpaper command:" << command.str();
+			int result = system(command.str().c_str());
+			Debug() << "Reset result:" << result;
+		} else {
+			if (remove(fallbackPath.c_str()) != 0) {
+				Debug() << "Failed to delete hint.png!";
 			}
 		}
 	#endif

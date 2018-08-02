@@ -269,7 +269,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	}
 
 	// Get documents path
-	std::string path = std::string(getenv("HOME")) + std::string("/Documents");
+	std::string path = std::string(getenv("HOME")) + "/Documents";
 	p->docsPath = path.c_str();
 	p->gamePath = path.c_str();
 	#ifdef OS_OSX
