@@ -2,6 +2,8 @@ PROTO_TEXT = "put me in the big portal"
 CEDRIC_TEXT = "put me in the big portal"
 RUE_TEXT = "put me in the big portal"
 
+SUPPORTED_DE = ["cinnamon", "gnome", "mate", "kde", "xfce"]
+
 module Script
   def self.px
     logpos($game_player.x, $game_player.real_x, $game_player.direction == 6)
@@ -385,7 +387,21 @@ module Script
         end
       end
     else
-      File.symlink Dir.pwd + "/" + Oneshot::JOURNAL, Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL
+      if Oneshot::OS == "linux" and SUPPORTED_DE.include? Oneshot::DE
+        path = Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL + ".desktop"
+        File.open(path, "wb") do |output|
+          output.write("[Desktop Entry]\n")
+          output.write("Comment=...\n")
+          output.write("Terminal=false\n")
+          output.write("Name=_______\n")
+          output.write("Exec=#{Dir.pwd}/#{Oneshot::JOURNAL}\n")
+          output.write("Type=Application\n")
+          output.write("Icon=#{Dir.pwd}/images/icon.png\n")
+        end
+        FileUtils.chmod 0777 path
+      else
+        File.symlink Dir.pwd + "/" + Oneshot::JOURNAL, Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL
+      end
     end
 	rescue Errno::EACCES => e
 	  #this probably means the clover.exe already exists and is running, so no need to create it again

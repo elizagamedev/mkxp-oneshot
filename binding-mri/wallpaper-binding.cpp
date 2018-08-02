@@ -338,11 +338,11 @@ end:
 					"d.writeConfig(\"Image\", \"file://" << concatPath << "\");" <<
 					"d.writeConfig(\"FillMode\", \"6\");" <<
 					"d.writeConfig(\"Blur\", false);" <<
-					"d.writeConfig(\"Color\", \"" <<
-						std::to_string((color >> 16) & 0xFF) << "," <<
-						std::to_string((color >> 8) & 0xFF) << "," <<
+					"d.writeConfig(\"Color\", [\"" <<
+						std::to_string((color >> 16) & 0xFF) << "\", \"" <<
+						std::to_string((color >> 8) & 0xFF) << "\", \"" <<
 						std::to_string(color & 0xFF) <<
-					"\");" <<
+					"\"]);" <<
 				"}" <<
 			"'";
 			Debug() << "Wallpaper command:" << command.str();
@@ -458,7 +458,7 @@ RB_METHOD(wallpaperReset)
 						"d.writeConfig(\"Image\", dat.picture);" <<
 					"}" <<
 					"if (dat.color) {" <<
-						"d.writeConfig(\"Color\", dat.color);" <<
+						"d.writeConfig(\"Color\", dat.color.split(\",\"));" <<
 					"}" <<
 					"if (dat.mode) {" <<
 						"d.writeConfig(\"FillMode\", dat.mode);" <<
