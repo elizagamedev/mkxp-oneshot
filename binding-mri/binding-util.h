@@ -90,7 +90,12 @@ raiseRbExc(const Exception &exc);
 template<rb_data_type_t *rbType>
 static VALUE classAllocate(VALUE klass)
 {
+/* 2.3 has changed the name of this function */
+#if RUBY_API_VERSION_MAJOR >= 2 && RUBY_API_VERSION_MINOR >= 3
 	return rb_data_typed_object_wrap(klass, 0, rbType);
+#else
+	return rb_data_typed_object_alloc(klass, 0, rbType);
+#endif
 }
 
 template<class C>
