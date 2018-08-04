@@ -13,7 +13,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-//OS-Specific code
+// OS-Specific code
 #if defined _WIN32
 	#define OS_W32
 	#define WIN32_LEAN_AND_MEAN
@@ -296,6 +296,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		gtk_init(0, 0);
 	} else if (desktop.find("xfce") != std::string::npos) {
 		desktopEnv = "xfce";
+		gtk_init(0, 0);
 	} else if (desktop.find("kde") != std::string::npos) {
 		desktopEnv = "kde";
 	} else if (desktop.find("lxde") != std::string::npos) {
@@ -477,7 +478,12 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	if (!title)
 		title = "";
 	#if defined OS_LINUX
-	if (desktopEnv == "gnome" || desktopEnv == "mate" || desktopEnv == "cinnamon") {
+	if (
+		desktopEnv == "gnome" ||
+		desktopEnv == "mate" ||
+		desktopEnv == "cinnamon" ||
+		desktopEnv == "xfce"
+	) {
 		linux_DialogData data = {type, body, title, 0};
 		gdk_threads_add_idle(linux_dialog, &data);
 		gtk_main();
@@ -485,16 +491,15 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	}
 	#endif
 
-	//SDL message box
-
-	//Button data
+	// SDL message box
+	// Button data
 	static const SDL_MessageBoxButtonData buttonOk = {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "OK"};
 	static const SDL_MessageBoxButtonData buttonsOk[] = {buttonOk};
 	SDL_MessageBoxButtonData buttonYes = {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, p->txtYes.c_str()};
 	SDL_MessageBoxButtonData buttonNo = {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, p->txtNo.c_str()};
 	SDL_MessageBoxButtonData buttonsYesNo[] = {buttonNo, buttonYes};
 
-	//Messagebox data
+	// Messagebox data
 	SDL_MessageBoxData data;
 	data.window = NULL;//p->window;
 	data.colorScheme = 0;
@@ -529,7 +534,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		break;
 	}
 
-	//Set buttons
+	// Set buttons
 	switch (type)
 	{
 	case MSG_INFO:
@@ -545,7 +550,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		break;
 	}
 
-	//Show messagebox
+	// Show messagebox
 #ifdef OS_W32
 	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
@@ -585,20 +590,6 @@ std::string Oneshot::textinput(const char* prompt, int char_limit, const char* f
 
 	// Disable text input
 	SDL_StopTextInput();
-
-	// //Free loaded images
-	// gPromptTextTexture.free();
-	// gInputTextTexture.free();
-
-	// //Free global font
-	// TTF_CloseFont(gFont);
-	// gFont = NULL;
-
-	// //Destroy renderer
-	// SDL_DestroyRenderer(gRenderer);
-	// gRenderer = NULL;
-	// delete promptBmp;
-	// delete inputBmp;
 
 	return threadData.inputText;
 }
