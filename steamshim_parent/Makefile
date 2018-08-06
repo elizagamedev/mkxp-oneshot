@@ -20,7 +20,7 @@ FLAGS			+= -lsteam_api
 
 ifeq ($(DEBUG),1)
 	FLAGS		+= -DSTEAMSHIM_DEBUG
-else
+else ifeq ($(HOST),w32)
 	FLAGS		+= -mwindows
 endif
 
