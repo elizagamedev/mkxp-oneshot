@@ -63,9 +63,10 @@
 			return;
 		}
 		desktop = shState->oneshot().desktopEnv;
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
-			if (desktop == "cinnamon" || desktop == "gnome") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
 				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
+				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
 				else bgsetting = g_settings_new("org.gnome.desktop.background");
 				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
 			} else {
@@ -264,17 +265,17 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
-			if (desktop == "cinnamon" || desktop == "gnome") {
+			g_settings_set_string(bgsetting, "picture-options", "scaled");
+			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
+			g_settings_set_string(bgsetting, "color-shading-type", "solid");
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
 				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
 			}
-			g_settings_set_string(bgsetting, "picture-options", "scaled");
-			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
-			g_settings_set_string(bgsetting, "color-shading-type", "solid");
 		} else if (desktop == "xfce") {
 			int r = (color >> 16) & 0xFF;
 			int g = (color >> 8) & 0xFF;
@@ -391,8 +392,8 @@ RB_METHOD(wallpaperReset)
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate") {
-			if (desktop == "cinnamon" || desktop == "gnome") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
 				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
 				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
