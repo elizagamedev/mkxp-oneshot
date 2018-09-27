@@ -26,7 +26,12 @@
 #include <SDL_ttf.h>
 #include <SDL_sound.h>
 
+#ifdef _MSC_VER
+#include <direct.h>
+#define _chdir chdir
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <assert.h>
 #include <string>
