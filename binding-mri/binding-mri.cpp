@@ -33,6 +33,7 @@
 
 #include <ruby.h>
 #include <ruby/encoding.h>
+#undef inline
 
 #include <assert.h>
 #include <string>

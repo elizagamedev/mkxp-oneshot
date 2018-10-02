@@ -23,6 +23,7 @@
 #define BINDING_UTIL_H
 
 #include <ruby.h>
+#undef inline
 
 #include "exception.h"
 
