@@ -40,9 +40,9 @@ unix {
 	PKGCONFIG += physfs
 	LIBS += -ldl
 	macx: {
-		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers
+		INCLUDEPATH += $$QMAKE_MAC_SDK_PATH/System/Library/Frameworks/OpenAL.framework/Versions/A/Headers /usr/local/include
 		LIBS += -framework OpenAL -framework AppKit
-		QMAKE_LFLAGS += -L/usr/local/opt/ruby/lib -L/usr/local/opt/openal-soft/lib
+		QMAKE_LFLAGS += -L/usr/local/lib -L/usr/local/opt/ruby/lib -L/usr/local/opt/openal-soft/lib
 		HEADERS += src/mac-desktop.h
 		SOURCES += src/mac-desktop.mm
 	}
