@@ -36,3 +36,9 @@ CMakeCache.txt
 CMakeFiles/
 
 oclint/
+
+conanbuildinfo\.cmake
+
+conaninfo\.txt
+
+conanbuildinfo\.txt
