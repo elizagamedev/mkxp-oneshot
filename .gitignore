@@ -34,11 +34,9 @@ OneShot
 .qmake.stash
 CMakeCache.txt
 CMakeFiles/
+conanbuildinfo\.cmake
+conaninfo\.txt
+conanbuildinfo\.txt
+cmake_install\.cmake
 
 oclint/
-
-conanbuildinfo\.cmake
-
-conaninfo\.txt
-
-conanbuildinfo\.txt
