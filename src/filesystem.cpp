@@ -465,7 +465,7 @@ struct FontSetsCBData
 };
 
 static PHYSFS_EnumerateCallbackResult
-fontSetEnumCB (void *data, const char *dir, const char *fname)
+findFontsFolderCB (void *data, const char *dir, const char *fname)
 {
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
