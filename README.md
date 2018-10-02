@@ -13,7 +13,8 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 ## Dependencies / Building
 
 * Qt5
-* CMake (macOS only)
+* CMake
+* Conan
 * Boost.Unordered (headers only)
 * Boost.Program_options
 * Boost.CRC
@@ -32,7 +33,22 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 * Python 3 (journal reimplementation only)
 * PyQt5 for Python 3 (journal reimplementation only)
 
-*SyngleChance* employs Qt's qmake build system, so you'll need to install that beforehand. (The cmake build hasn't been maintained since the fork.)
+### Building with Conan
+
+*SyngleChance* used to employ the `qmake` build system, but is now migrating to `conan`, so you'll need to install that beforehand.  You'll also want to add the following remotes to `conan`:
+
+```sh
+conan remote add eliza "https://api.bintray.com/conan/eliza/conan"
+conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
+```
+
+Next, you can install all the required packages:
+
+```sh
+conan install . --build=missing
+```
+
+### Building with QMake (Old)
 
 qmake will use pkg-config to locate the respective include/library paths. If you installed any dependencies into non-standard prefixes, make sure to adjust your `PKG_CONFIG_PATH` variable accordingly.
 
