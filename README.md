@@ -48,7 +48,15 @@ Next, you can install all the required packages:
 conan install . --build=missing
 ```
 
+Finally, you can build the project by running the following:
+
+```sh
+conan build .
+```
+
 ### Building with QMake (Old)
+
+The `make-oneshot-mac.command` and `make-oneshot-linux.sh` files automate the entire process for you.  Just run the applicable file to compile and install the engine into OneShot's default Steam directory.
 
 qmake will use pkg-config to locate the respective include/library paths. If you installed any dependencies into non-standard prefixes, make sure to adjust your `PKG_CONFIG_PATH` variable accordingly.
 
