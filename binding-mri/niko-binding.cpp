@@ -80,7 +80,12 @@ int niko_server_thread(void *data)
 		SDL_LockMutex(mutex);
 		active = true;
 		if (message_len > 0)
-			write(out_pipe, (char*)message_buffer, message_len);
+		{
+			if (write(out_pipe, (char*)message_buffer, message_len) == -1)
+			{
+				Debug() << "Failed to write to pipe!";
+			}
+		}
 		SDL_UnlockMutex(mutex);
 	}
 	return 0;
@@ -89,6 +94,8 @@ int niko_server_thread(void *data)
 
 RB_METHOD(nikoPrepare)
 {
+	RB_UNUSED_PARAM;
+
 	// Prime native window info
 	syswm::SDL_SysWMinfo syswindow;
 	SDL_VERSION(&syswindow.version);
@@ -99,12 +106,14 @@ RB_METHOD(nikoPrepare)
 	std::string journal;
 
 	// Get current path
-	getcwd(path, sizeof(path));
+	if (getcwd(path, sizeof(path)) == NULL) {
+		return Qnil;
+	}
 
 	#ifdef OS_OSX
-		journal = std::string(path) + std::string("/_______.app/Contents/MacOS/_______");
+		journal = std::string(path) + "/_______.app/Contents/MacOS/_______";
 	#else
-		journal = std::string(path) + std::string("_______");
+		journal = std::string(path) + "_______";
 	#endif
 
 	// Run the binary

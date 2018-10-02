@@ -166,7 +166,6 @@ void EventThread::process(RGSSThreadData &rtData)
 	char buffer[128];
 
 	char pendingTitle[128];
-	bool havePendingTitle = false;
 
 	bool resetting = false;
 
@@ -330,8 +329,6 @@ void EventThread::process(RGSSThreadData &rtData)
 						/* Prevent fullscreen flicker */
 						strncpy(pendingTitle, rtData.config.windowTitle.c_str(),
 						        sizeof(pendingTitle));
-						havePendingTitle = true;
-
 						break;
 					}
 
@@ -458,6 +455,7 @@ void EventThread::process(RGSSThreadData &rtData)
 		case SDL_FINGERDOWN :
 			i = event.tfinger.fingerId;
 			touchState.fingers[i].down = true;
+			/* falls through */
 
 		case SDL_FINGERMOTION :
 			i = event.tfinger.fingerId;
@@ -510,8 +508,6 @@ void EventThread::process(RGSSThreadData &rtData)
 				if (fullscreen)
 				{
 					strncpy(pendingTitle, buffer, sizeof(pendingTitle));
-					havePendingTitle = true;
-
 					break;
 				}
 
@@ -598,14 +594,6 @@ int EventThread::eventFilter(void *data, SDL_Event *event)
 			return 0;
 		}
 		return 1;
-
-//	case SDL_RENDER_TARGETS_RESET :
-//		Debug() << "****** SDL_RENDER_TARGETS_RESET";
-//		return 0;
-
-//	case SDL_RENDER_DEVICE_RESET :
-//		Debug() << "****** SDL_RENDER_DEVICE_RESET";
-//		return 0;
 	}
 
 	return 1;

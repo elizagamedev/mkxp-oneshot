@@ -2,6 +2,8 @@ PROTO_TEXT = "put me in the big portal"
 CEDRIC_TEXT = "put me in the big portal"
 RUE_TEXT = "put me in the big portal"
 
+SUPPORTED_DE = ["cinnamon", "gnome", "mate", "kde", "xfce"]
+
 module Script
   def self.px
     logpos($game_player.x, $game_player.real_x, $game_player.direction == 6)
@@ -373,26 +375,43 @@ module Script
   end
 
   def self.copy_journal
+    # If the required directories don't exist, create them
     Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
     Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
-  begin
-    if File.file?(Oneshot::JOURNAL)
-      File.open(Oneshot::JOURNAL, "rb") do |input|
-        File.open(Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL, "wb") do |output|
-          while buff = input.read(4096)
-            output.write(buff)
+    begin
+      # If we're on a supported Linux DE, make a .desktop file
+      # so the clover icon can be properly shown
+      if Oneshot::OS == "linux" and SUPPORTED_DE.include? Oneshot::DE
+        path = "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}.desktop"
+        File.open(path, "wb") do |output|
+          output.write("[Desktop Entry]\n")
+          output.write("Comment=...\n")
+          output.write("Terminal=false\n")
+          output.write("Name=_______\n")
+          output.write("Exec=#{Dir.pwd}/#{Oneshot::JOURNAL}\n")
+          output.write("Type=Application\n")
+          output.write("Icon=#{Dir.pwd}/images/icon.png\n")
+        end
+        File.chmod(0777, path)
+      # If the journal is a file, copy it to Documents
+      elsif File.file?(Oneshot::JOURNAL)
+        File.open(Oneshot::JOURNAL, "rb") do |input|
+          File.open("#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}", "wb") do |output|
+            while buff = input.read(4096)
+              output.write(buff)
+            end
           end
         end
+      # If the journal isn't a file, symlink it
+      else
+        File.symlink "#{Dir.pwd}/#{Oneshot::JOURNAL}", "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}"
       end
-    else
-      File.symlink Dir.pwd + "/" + Oneshot::JOURNAL, Oneshot::GAME_PATH + "/Oneshot/" + Oneshot::JOURNAL
+    rescue Errno::EACCES => e
+      # this probably means the clover.exe already exists and is running, so no need to create it again
+    rescue Errno::EEXIST => e
+      # this means that the journal file already exists, so no need to create it again
     end
-	rescue Errno::EACCES => e
-	  #this probably means the clover.exe already exists and is running, so no need to create it again
-  rescue Errno::EEXIST => e
-    #this means that the journal file already exists, so no need to create it again
-	end
-	if File.exists?("README.txt")
+    if File.exists?("README.txt")
       File.open("README.txt", "rb") do |input|
         File.open(Oneshot::GAME_PATH + "/Oneshot/README.txt","wb") do |output|
           while buff = input.read(4096)
@@ -400,7 +419,7 @@ module Script
           end
         end
       end
-	end
+    end
   end
 
   def self.create_boxes

@@ -28,7 +28,9 @@ typedef int PipeType;
 #ifdef STEAMSHIM_DEBUG
 #define dbgpipe printf
 #else
-static inline void dbgpipe(const char *fmt, ...) {}
+static inline void dbgpipe(const char *fmt, ...) {
+    (void)fmt;
+}
 #endif
 
 static int writePipe(PipeType fd, const void *buf, const unsigned int _len);

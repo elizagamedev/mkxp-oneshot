@@ -35,7 +35,6 @@
 #include "util.h"
 #include "sharedstate.h"
 #include "i18n.h"
-#include "debugwriter.h"
 
 
 #include <algorithm>
@@ -539,7 +538,6 @@ struct SettingsMenuPrivate
 	              int x, int y, int alignW,
 	              Justification just, SDL_Color c, bool bold = false)
 	{
-		Debug() << "draw text:" << str;
 		SDL_Surface *txt = createTextSurface(str, c, bold);
 		if (txt) {
 			blitTextSurf(surf, x, y, alignW, txt, just);

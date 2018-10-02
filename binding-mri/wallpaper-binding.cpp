@@ -1,4 +1,10 @@
+#include <cstdio>
 #include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
+
+#include <boost/algorithm/string/replace.hpp>
 
 #include "etc.h"
 #include "sharedstate.h"
@@ -6,6 +12,7 @@
 #include "binding-types.h"
 #include "config.h"
 #include "oneshot.h"
+#include "debugwriter.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -23,7 +30,7 @@
 		#include "mac-desktop.h"
 		static bool isCached = false;
 	#else
-		#include <giomm/settings.h>
+		#include <gio/gio.h>
 		#include <xfconf/xfconf.h>
 		#include <unistd.h>
 		#include <algorithm>
@@ -32,7 +39,7 @@
 		#include <sstream>
 		static std::string desktop = "uninitialized";
 		// GNOME settings
-		static Glib::RefPtr<Gio::Settings> bgsetting;
+		static GSettings *bgsetting;
 		static std::string defPictureURI, defPictureOptions, defPrimaryColor, defColorShading;
 		// XFCE settings
 		static XfconfChannel* bgchannel;
@@ -41,47 +48,122 @@
 		static GValue defColor = G_VALUE_INIT;
 		static bool defColorExists;
 		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
+		// KDE settings
+		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
+		static std::map<std::string, bool> defBlurs;
+		// Fallback settings
+		static std::string fallbackPath;
 	#endif
 #endif
 
 #ifdef __linux__
-void desktopEnvironmentInit()
-{
-	if (desktop != "uninitialized") {
-		return;
-	}
-	desktop = shState->oneshot().desktopEnv;
-	if (desktop == "gnome" || desktop == "mate") {
-		if (desktop == "gnome") {
-			bgsetting = Gio::Settings::create("org.gnome.desktop.background");
-			defPictureURI = bgsetting->get_string("picture-uri");
-		} else {
-			bgsetting = Gio::Settings::create("org.mate.background");
-			defPictureURI = bgsetting->get_string("picture-filename");
+	void desktopEnvironmentInit()
+	{
+		if (desktop != "uninitialized") {
+			return;
 		}
-		defPictureOptions = bgsetting->get_string("picture-options");
-		defPrimaryColor = bgsetting->get_string("primary-color");
-		defColorShading = bgsetting->get_string("color-shading-type");
-	} else if (desktop == "xfce") {
-		GError *xferror = NULL;
-		if (xfconf_init(&xferror)) {
-			bgchannel = xfconf_channel_get("xfce4-desktop");
-			std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
-			optionImage = optionPrefix + "last-image";
-			optionColor = optionPrefix + "color1";
-			optionImageStyle = optionPrefix + "image-style";
-			optionColorStyle = optionPrefix + "color-style";
-			defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
-			defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
-			defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
-			defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
+		desktop = shState->oneshot().desktopEnv;
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
+				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
+				else bgsetting = g_settings_new("org.gnome.desktop.background");
+				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
+			} else {
+				bgsetting = g_settings_new("org.mate.background");
+				defPictureURI = g_settings_get_string(bgsetting, "picture-filename");
+			}
+			defPictureOptions = g_settings_get_string(bgsetting, "picture-options");
+			defPrimaryColor = g_settings_get_string(bgsetting, "primary-color");
+			defColorShading = g_settings_get_string(bgsetting, "color-shading-type");
+		} else if (desktop == "xfce") {
+			GError *xferror = NULL;
+			if (xfconf_init(&xferror)) {
+				bgchannel = xfconf_channel_get("xfce4-desktop");
+				std::string optionPrefix = "/backdrop/screen0/monitor0/workspace0/";
+				optionImage = optionPrefix + "last-image";
+				optionColor = optionPrefix + "color1";
+				optionImageStyle = optionPrefix + "image-style";
+				optionColorStyle = optionPrefix + "color-style";
+				defPictureURI = xfconf_channel_get_string(bgchannel, optionImage.c_str(), "");
+				defPictureStyle = xfconf_channel_get_int(bgchannel, optionImageStyle.c_str(), -1);
+				defColorExists = xfconf_channel_get_property(bgchannel, optionColor.c_str(), &defColor);
+				defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
+			} else {
+				// Configuration failed to initialize, we won't set the wallpaper
+				desktop = "xfce_error";
+				g_error_free(xferror);
+			}
+		} else if (desktop == "kde") {
+			std::ifstream configFile;
+			configFile.open(std::string(getenv("HOME")) + "/.config/plasma-org.kde.plasma.desktop-appletsrc", std::ios::in);
+			if (configFile.is_open()) {
+				std::string line;
+				std::vector<std::string> sections;
+				std::size_t undefined = 999999999;
+				bool readPlugin = false, readOther = false;
+				std::string containment;
+				while (getline(configFile, line)) {
+					std::size_t index = undefined, lastIndex = undefined;
+					if (line.size() == 0) {
+						readPlugin = false;
+						readOther = false;
+					} else if (readPlugin) {
+						index = line.find('=');
+						if (line.substr(0, index) == "wallpaperplugin") {
+							defPlugins[containment] = line.substr(index + 1);
+						}
+					} else if (readOther) {
+						index = line.find('=');
+						std::string key = line.substr(0, index);
+						std::string val = line.substr(index + 1);
+						if (key == "Image") {
+							defPictures[containment] = val;
+						} else if (key == "Color") {
+							defColors[containment] = val;
+						} else if (key == "FillMode") {
+							defModes[containment] = val;
+						} else if (key == "Blur") {
+							defBlurs[containment] = (val == "true");
+						}
+					} else if (line.at(0) == '[') {
+						sections.clear();
+						while (true) {
+							index = line.find(lastIndex == undefined ? '[' : ']', index == undefined ? 0 : index);
+							if (index == std::string::npos) {
+								break;
+							}
+							if (lastIndex == undefined) {
+								lastIndex = index;
+							} else {
+								sections.push_back(line.substr(lastIndex + 1, index - lastIndex - 1));
+								lastIndex = undefined;
+							}
+						}
+						if (sections.size() == 2 && sections[0] == "Containments") {
+							readPlugin = true;
+							containment = sections[1];
+						} else if (
+							sections.size() == 5 &&
+							sections[0] == "Containments" &&
+							sections[2] == "Wallpaper" &&
+							sections[3] == "org.kde.image" &&
+							sections[4] == "General"
+						) {
+							readOther = true;
+							containment = sections[1];
+						}
+					}
+				}
+				configFile.close();
+			} else {
+				Debug() << "FATAL: Cannot find desktop configuration!";
+				desktop = "kde_error";
+			}
 		} else {
-			// Configuration failed to initialize, we won't set the wallpaper
-			desktop = "xfce_error";
-			g_error_free(xferror);
+			fallbackPath = std::string(getenv("HOME")) + "/Desktop/hint.png";
 		}
 	}
-}
 #endif
 
 RB_METHOD(wallpaperSet)
@@ -93,7 +175,7 @@ RB_METHOD(wallpaperSet)
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
-	std::cout << "Setting wallpaper to " << path << std::endl;
+	Debug() << "Setting wallpaper to" << path;
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -168,7 +250,7 @@ end:
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
 
-	std::cout << "Setting wallpaper to " << path << std::endl;
+	Debug() << "Setting wallpaper to " << path;
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -183,17 +265,17 @@ end:
 		}
 		std::string gameDirStr(gameDir);
 		desktopEnvironmentInit();
-		if (desktop == "gnome" || desktop == "mate") {
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
 			std::stringstream hexColor;
 			hexColor << "#" << std::hex << color;
-			if (desktop == "gnome") {
-				bgsetting->set_string("picture-uri", "file://" + gameDirStr + path);
+			g_settings_set_string(bgsetting, "picture-options", "scaled");
+			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
+			g_settings_set_string(bgsetting, "color-shading-type", "solid");
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
 			} else {
-				bgsetting->set_string("picture-filename", gameDirStr + path);
+				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
 			}
-			bgsetting->set_string("picture-options", "scaled");
-			bgsetting->set_string("primary-color", hexColor.str());
-			bgsetting->set_string("color-shading-type", "solid");
 		} else if (desktop == "xfce") {
 			int r = (color >> 16) & 0xFF;
 			int g = (color >> 8) & 0xFF;
@@ -219,7 +301,7 @@ end:
 				colorArrType = g_type_from_name("GPtrArray_GValue_");
 				if (!colorArrType) {
 					// Let's do some debug output here and skip changing the color
-					std::cout << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
+					Debug() << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
 					return Qnil;
 				}
 			}
@@ -242,6 +324,35 @@ end:
 			g_ptr_array_add(colorArr, va);
 			g_value_set_boxed(&colorValue, colorArr);
 			xfconf_channel_set_property(bgchannel, optionColor.c_str(), &colorValue);
+		} else if (desktop == "kde") {
+			std::stringstream command;
+			std::string concatPath(gameDirStr + path);
+			boost::replace_all(concatPath, "\\", "\\\\");
+			boost::replace_all(concatPath, "\"", "\\\"");
+			boost::replace_all(concatPath, "'", "\\x27");
+			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+				"var allDesktops = desktops();" <<
+				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
+					"var d = allDesktops[i];" <<
+					"d.wallpaperPlugin = \"org.kde.image\";" <<
+					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
+					"d.writeConfig(\"Image\", \"file://" << concatPath << "\");" <<
+					"d.writeConfig(\"FillMode\", \"6\");" <<
+					"d.writeConfig(\"Blur\", false);" <<
+					"d.writeConfig(\"Color\", [\"" <<
+						std::to_string((color >> 16) & 0xFF) << "\", \"" <<
+						std::to_string((color >> 8) & 0xFF) << "\", \"" <<
+						std::to_string(color & 0xFF) <<
+					"\"]);" <<
+				"}" <<
+			"'";
+			Debug() << "Wallpaper command:" << command.str();
+			int result = system(command.str().c_str());
+			Debug() << "Result:" << result;
+		} else {
+			std::ifstream srcHint(gameDirStr + path);
+			std::ofstream dstHint(fallbackPath);
+			dstHint << srcHint.rdbuf();
 		}
 	#endif
 #endif
@@ -281,15 +392,15 @@ RB_METHOD(wallpaperReset)
 		MacDesktop::ResetBackground();
 	#else
 		desktopEnvironmentInit();
-		if (desktop == "gnome" || desktop == "mate") {
-			if (desktop == "gnome") {
-				bgsetting->set_string("picture-uri", defPictureURI);
+		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
+			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
+				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
 			} else {
-				bgsetting->set_string("picture-filename", defPictureURI);
+				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
 			}
-			bgsetting->set_string("picture-options", defPictureOptions);
-			bgsetting->set_string("primary-color", defPrimaryColor);
-			bgsetting->set_string("color-shading-type", defColorShading);
+			g_settings_set_string(bgsetting, "picture-options", defPictureOptions.c_str());
+			g_settings_set_string(bgsetting, "primary-color", defPrimaryColor.c_str());
+			g_settings_set_string(bgsetting, "color-shading-type", defColorShading.c_str());
 		} else if (desktop == "xfce") {
 			if (defColorExists) {
 				xfconf_channel_set_property(bgchannel, optionColor.c_str(), &defColor);
@@ -310,6 +421,60 @@ RB_METHOD(wallpaperReset)
 				xfconf_channel_reset_property(bgchannel, optionColorStyle.c_str(), false);
 			} else {
 				xfconf_channel_set_int(bgchannel, optionColorStyle.c_str(), defColorStyle);
+			}
+		} else if (desktop == "kde") {
+			std::stringstream command;
+			command << "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string:" <<
+					"var allDesktops = desktops();" <<
+					"var data = {";
+			// Plugin, picture, color, mode, blur
+			for (auto const& x : defPlugins) {
+				command << "\"" + x.first + "\": {"
+						<< "plugin: \"" << x.second << "\"";
+				if (defPictures.find(x.first) != defPictures.end()) {
+					std::string picture = defPictures[x.first];
+					boost::replace_all(picture, "\\", "\\\\");
+					boost::replace_all(picture, "\"", "\\\"");
+					boost::replace_all(picture, "'", "\\x27");
+					command << ", picture: \"" << picture << "\"";
+				}
+				if (defColors.find(x.first) != defColors.end()) {
+					command << ", color: \"" << defColors[x.first] << "\"";
+				}
+				if (defModes.find(x.first) != defModes.end()) {
+					command << ", mode: \"" << defModes[x.first] << "\"";
+				}
+				if (defBlurs.find(x.first) != defBlurs.end() && defBlurs[x.first]) {
+					command << ", blur: true";
+				}
+				command << "},";
+			}
+			command << "\"no\": {}};" <<
+				"for (var i = 0, l = allDesktops.length; i < l; ++i) {" <<
+					"var d = allDesktops[i];" <<
+					"var dat = data[d.id];" <<
+					"d.wallpaperPlugin = dat.plugin;" <<
+					"d.currentConfigGroup = [\"Wallpaper\", \"org.kde.image\", \"General\"];" <<
+					"if (dat.picture) {" <<
+						"d.writeConfig(\"Image\", dat.picture);" <<
+					"}" <<
+					"if (dat.color) {" <<
+						"d.writeConfig(\"Color\", dat.color.split(\",\"));" <<
+					"}" <<
+					"if (dat.mode) {" <<
+						"d.writeConfig(\"FillMode\", dat.mode);" <<
+					"}" <<
+					"if (dat.blur) {" <<
+						"d.writeConfig(\"Blur\", dat.blur);" <<
+					"}" <<
+				"}" <<
+			"'";
+			Debug() << "Reset wallpaper command:" << command.str();
+			int result = system(command.str().c_str());
+			Debug() << "Reset result:" << result;
+		} else {
+			if (remove(fallbackPath.c_str()) != 0) {
+				Debug() << "Failed to delete hint.png!";
 			}
 		}
 	#endif

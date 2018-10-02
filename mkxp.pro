@@ -48,7 +48,7 @@ unix {
 	}
 	!macx: {
 		QMAKE_CXXFLAGS += -g
-		PKGCONFIG += giomm-2.4 gtk+-3.0 gdk-3.0 libxfconf-0
+		PKGCONFIG += gtk+-3.0 gdk-3.0 libxfconf-0
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		LIBS += -lX11
 	}
