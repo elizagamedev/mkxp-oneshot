@@ -39,6 +39,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 
 ```sh
 conan remote add eliza "https://api.bintray.com/conan/eliza/conan"
+conan remote add gooborg "https://api.bintray.com/conan/gooborgstudios/conan"
 conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 ```
 
