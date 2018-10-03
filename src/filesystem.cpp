@@ -507,7 +507,7 @@ void FileSystem::initFontSets(SharedFontState &sfs)
 {
 	FontSetsCBData d = { p, &sfs };
 
-	PHYSFS_enumerate(".", findFontsFolderCB, &d);
+	PHYSFS_enumerate("Fonts", findFontsFolderCB, &d);
 }
 
 struct OpenReadEnumData
