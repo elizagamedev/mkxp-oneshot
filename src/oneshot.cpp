@@ -31,6 +31,7 @@
 
 	#ifdef __APPLE__
 		#define OS_OSX
+		#include <dispatch/dispatch.h>
 	#else
 		#define OS_LINUX
 		#include <gtk/gtk.h>
@@ -503,7 +504,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 
 	// Messagebox data
 	SDL_MessageBoxData data;
-	data.window = NULL;//p->window;
+	data.window = NULL; //p->window;
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
@@ -556,9 +557,22 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 #ifdef OS_W32
 	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
-	int button;
-	SDL_ShowMessageBox(&data, &button);
-	return button ? true : false;
+	int *button;
+
+	#ifdef OS_OSX
+		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
+		// This block ensures the message box will show from the main thread.
+		dispatch_sync(dispatch_get_main_queue(),
+			^{ SDL_ShowMessageBox(&data, button); }
+		);
+
+		// dispatch_block_wait(dispatch_get_main_queue(), DISPATCH_TIME_FOREVER);
+		*button = 1; // XXX Setting the button's value doesn't seem to work.
+	#else
+		SDL_ShowMessageBox(&data, button);
+	#endif
+
+	return (*button) ? true : false;
 }
 
 std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
