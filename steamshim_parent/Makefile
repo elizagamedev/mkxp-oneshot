@@ -5,6 +5,7 @@ CXX			?= clang++
 WINDRES			?= windres
 HOST			?= linux64
 FLAGS			:= -I$(STEAMWORKS)/public -DGAME_LAUNCH_NAME=\"$(GAME_LAUNCH_NAME)\" -Wall
+DEBUG           ?= 1
 
 ifeq ($(HOST),w32)
 	FLAGS		+= -L$(STEAMWORKS)/redistributable_bin
