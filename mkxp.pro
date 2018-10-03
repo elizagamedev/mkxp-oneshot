@@ -9,7 +9,7 @@ INCLUDEPATH += . src
 CONFIG -= qt
 CONFIG += link_pkgconfig
 
-CONFIG(release, debug|release): DEFINES += NDEBUG
+CONFIG(release, debug|release): DEFINES += NDEBUG STEAM
 
 isEmpty(BINDING) {
 	BINDING = MRI
@@ -88,10 +88,6 @@ isEmpty(BOOST_LIB_SUFFIX) {
 }
 
 LIBS += -lboost_program_options$$BOOST_LIB_SUFFIX
-
-STEAM {
-	DEFINES += STEAM
-}
 
 # Input
 HEADERS += \
@@ -197,7 +193,7 @@ SOURCES += \
 	src/screen.cpp \
 	src/i18n.cpp
 
-STEAM {
+CONFIG(release, debug|release): {
 	HEADERS += src/steam.h steamshim/steamshim_child.h
 	SOURCES += src/steam.cpp steamshim/steamshim_child.c
 }
