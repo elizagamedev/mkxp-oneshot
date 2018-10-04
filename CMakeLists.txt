@@ -6,7 +6,7 @@ conan_basic_setup()
 
 ## Setup options ##
 
-option(STEAM "Build for Steam" OFF)
+option(STEAM "Build for Steam" ON)
 
 ## Misc setup ##
 
