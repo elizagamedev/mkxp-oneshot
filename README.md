@@ -43,6 +43,12 @@ conan remote add gooborg "https://api.bintray.com/conan/gooborgstudios/conan"
 conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 ```
 
+On Windows, you may need to edit `C:\Users\[username]\.conan\profiles\default` and add the following line in `[settings]` ("v141" is the current toolset version at the time of this writing):
+
+```sh
+compiler.toolset=v141
+```
+
 Next, you can install all the required packages:
 
 ```sh
