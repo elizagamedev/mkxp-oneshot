@@ -11,6 +11,7 @@
 *.vcxproj
 *.filters
 *.sln
+*.user
 
 bin/
 lib/
@@ -49,5 +50,6 @@ conanbuildinfo\.cmake
 conaninfo\.txt
 conanbuildinfo\.txt
 conan_imports_manifest\.txt
+package/
 
 oclint/
