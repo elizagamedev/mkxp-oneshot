@@ -7,6 +7,17 @@
 *.bmp
 *.lproj
 
+*.tmp
+*.vcxproj
+*.filters
+*.sln
+*.user
+
+bin/
+lib/
+oneshot\.dir/
+x64/
+
 Makefile*
 
 /oneshot
@@ -34,11 +45,11 @@ OneShot
 .qmake.stash
 CMakeCache.txt
 CMakeFiles/
+cmake_install\.cmake
 conanbuildinfo\.cmake
 conaninfo\.txt
 conanbuildinfo\.txt
-cmake_install\.cmake
+conan_imports_manifest\.txt
+package/
 
 oclint/
-
-*.tmp

@@ -5,6 +5,7 @@
 #include "debugwriter.h"
 
 #if defined _WIN32
+#define OS_W32
 #include <shlwapi.h>
 #elif defined __APPLE__ || __linux__
 	#define LINUX
