@@ -151,6 +151,9 @@ if(WIN32)
 	list(APPEND MAIN_SOURCE assets/resources.rc)
 	list(APPEND DEFINES UNICODE)
 	list(APPEND PLATFORM_LIBRARIES Secur32)
+	include_directories(
+		${CMAKE_CURRENT_BINARY_DIR}/windows
+	)
 endif()
 
 if (STEAM)
