@@ -15,17 +15,24 @@ cyan="\033[1;36m"       # Cyan - Bold
 green="\033[1;32m"      # Green - Bold
 color_reset="\033[0m"   # Reset Colors
 
+use_qmake=True
+
 echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for macOS...${color_reset}\n"
 
 # Generate makefile and build main + journal
-echo "-> ${cyan}Generate makefile...${color_reset}"
-qmake MRIVERSION=2.5
-echo "-> ${cyan}Compile engine...${color_reset}"
-make -j${make_threads}
-echo "-> ${cyan}Compile steamshim...${color_reset}"
-cd steamshim_parent
-HOST=osx make -j${make_threads}
-cd ..
+if [[ $use_qmake == True ]]
+	then
+	echo "-> ${cyan}Generate makefile...${color_reset}"
+	qmake MRIVERSION=2.5
+	echo "-> ${cyan}Compile engine...${color_reset}"
+	make -j${make_threads}
+	echo "-> ${cyan}Compile steamshim...${color_reset}"
+	cd steamshim_parent
+	HOST=osx make -j${make_threads}
+	cd ..
+else
+	echo "${bold}WARNING: Conan/CMake method not ready yet.${color_reset}"
+fi
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/unix/journal.spec --onefile --windowed
 
