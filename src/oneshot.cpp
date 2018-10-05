@@ -557,22 +557,21 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 #ifdef OS_W32
 	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
-	int *button;
+	int button;
 
 	#ifdef OS_OSX
+		int *btn = &button;
+
 		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
 		// This block ensures the message box will show from the main thread.
 		dispatch_sync(dispatch_get_main_queue(),
-			^{ SDL_ShowMessageBox(&data, button); }
+			^{ SDL_ShowMessageBox(&data, btn); }
 		);
-
-		// dispatch_block_wait(dispatch_get_main_queue(), DISPATCH_TIME_FOREVER);
-		*button = 1; // XXX Setting the button's value doesn't seem to work.
 	#else
-		SDL_ShowMessageBox(&data, button);
+		SDL_ShowMessageBox(&data, &button);
 	#endif
 
-	return (*button) ? true : false;
+	return button ? true : false;
 }
 
 std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
