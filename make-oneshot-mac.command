@@ -20,7 +20,7 @@ use_qmake=True
 echo "${white}Compiling ${bold}SyngleChance v${mac_version} ${white}engine for macOS...${color_reset}\n"
 
 # Generate makefile and build main + journal
-if [[$use_qmake == True]]
+if [[ $use_qmake == True ]]
 	then
 	echo "-> ${cyan}Generate makefile...${color_reset}"
 	qmake MRIVERSION=2.5
