@@ -13,6 +13,7 @@ rm -rf cmake_install.cmake
 rm -rf CMakeCache.txt
 rm -rf conanbuildinfo.txt
 rm -rf conaninfo.txt
+rm -rf *.xxd
 if [ -f .qmake.stash ]
 then
 	make distclean
