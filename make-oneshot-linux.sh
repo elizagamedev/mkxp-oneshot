@@ -7,6 +7,7 @@ cd `dirname $0`
 linux_version="0.1.0"
 make_threads=8
 ONESHOT_PATH=$HOME/.steam/steam/steamapps/common/OneShot
+STEAMWORKS_PATH=/usr/steamworks
 
 # Colors
 white="\033[0;37m"      # White - Regular
@@ -24,8 +25,10 @@ echo "-> ${cyan}Compile engine...${color_reset}"
 make -j${make_threads}
 echo "-> ${cyan}Compile steamshim...${color_reset}"
 cd steamshim_parent
-HOST=linux64 make -j${make_threads}
-cd ..
+mkdir build && cd build
+cmake -DSTEAMWORKS_PATH=${STEAMWORKS_PATH} ..
+make -j${make_threads}
+cd ../..
 echo "-> ${cyan}Compile journal...${color_reset}"
 pyinstaller journal/unix/journal.spec --onefile --windowed
 

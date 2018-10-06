@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rm -rf journal/mac/__pycache__
-rm -rf steamshim_parent/steamshim
+rm -rf steamshim_parent/build
 rm -rf build
 rm -rf dist
 rm -rf _______.app
