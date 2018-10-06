@@ -303,3 +303,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} ${PLATFORM_LIBRARIES})
+
+IF(APPLE)
+	add_custom_command(TARGET ${target} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
+ENDIF()
