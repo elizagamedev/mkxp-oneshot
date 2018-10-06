@@ -154,6 +154,9 @@ if(WIN32)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR}/windows
 	)
+elseif(APPLE)
+	list(APPEND MAIN_HEADERS src/mac-desktop.h)
+	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
 endif()
 
 if (STEAM)
