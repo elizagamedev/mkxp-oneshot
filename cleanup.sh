@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rm -rf journal/mac/__pycache__
-rm -rf steamshim_parent/steamshim
+rm -rf steamshim_parent/build
 rm -rf build
 rm -rf dist
 rm -rf _______.app
@@ -13,6 +13,7 @@ rm -rf cmake_install.cmake
 rm -rf CMakeCache.txt
 rm -rf conanbuildinfo.txt
 rm -rf conaninfo.txt
+rm -rf *.xxd
 if [ -f .qmake.stash ]
 then
 	make distclean

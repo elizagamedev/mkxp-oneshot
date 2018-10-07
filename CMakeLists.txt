@@ -7,6 +7,8 @@ conan_basic_setup()
 ## Setup options ##
 
 option(STEAM "Build for Steam" ON)
+set(STEAMWORKS_PATH "${CMAKE_BINARY_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
+option(DEBUG "Debug mode" OFF)
 
 ## Misc setup ##
 
@@ -16,7 +18,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # 	SET(LINUX ON)
 # ENDIF()
 
-# set(CMAKE_OSX_DEPLOYMENT_TARGET 10.6)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
 
 # IF(LINUX)
 # 	if(CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT(FORCE32) )
@@ -154,6 +156,9 @@ if(WIN32)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR}/windows
 	)
+elseif(APPLE)
+	list(APPEND MAIN_HEADERS src/mac-desktop.h)
+	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
 endif()
 
 if (STEAM)
@@ -303,3 +308,38 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} ${PLATFORM_LIBRARIES})
+
+IF(APPLE)
+	add_custom_command(TARGET ${target} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
+ENDIF()
+
+# Steamshim
+
+set(STEAMSHIM_SOURCES
+	steamshim_parent/steamshim_parent.cpp
+)
+
+include_directories(${STEAMWORKS_PATH}/public)
+
+add_definitions(-DGAME_LAUNCH_NAME="${GAME_LAUNCH_NAME}")
+
+IF(DEBUG)
+	add_definitions(-DSTEAMSHIM_DEBUG)
+ENDIF()
+
+IF(APPLE)
+	link_directories(${STEAMWORKS_PATH}/redistributable_bin/osx32)
+ELSEIF(WIN32)
+	list(APPEND STEAMSHIM_SOURCES resources.rc)
+	link_directories(${STEAMWORKS_PATH}/redistributable_bin)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
+ELSEIF(LINUX)
+	link_directories(${STEAMWORKS_PATH}/redistributable_bin/linux64)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
+ENDIF()
+
+add_executable(steamshim
+	${STEAMSHIM_SOURCES}
+)
+
+target_link_libraries(steamshim steam_api)
