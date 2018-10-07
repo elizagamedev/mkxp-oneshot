@@ -46,6 +46,10 @@
 
 #include "binding.h"
 
+#ifdef __WINDOWS__
+#include "resource.h"
+#endif
+
 #include "icon.png.xxd"
 
 #ifdef STEAM
@@ -111,6 +115,9 @@ int rgssThreadFun(void *userdata)
 		return 0;
 	}
 
+	if (!conf.enableBlitting)
+		gl.BlitFramebuffer = 0;
+
 	gl.ClearColor(0, 0, 0, 1);
 	gl.Clear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(win);
@@ -170,11 +177,30 @@ static void showInitError(const std::string &msg)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot", msg.c_str(), 0);
 }
 
+static void setupWindowIcon(const Config &conf, SDL_Window *win)
+{
+	SDL_RWops *iconSrc;
+
+	if (conf.iconPath.empty())
+		iconSrc = SDL_RWFromConstMem(assets_icon_png, assets_icon_png_len);
+	else
+		iconSrc = SDL_RWFromFile(conf.iconPath.c_str(), "rb");
+
+	SDL_Surface *iconImg = IMG_Load_RW(iconSrc, SDL_TRUE);
+
+	if (iconImg)
+	{
+		SDL_SetWindowIcon(win, iconImg);
+		SDL_FreeSurface(iconImg);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 	SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
+	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 
 	/* initialize SDL first */
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
@@ -223,6 +249,9 @@ int main(int argc, char *argv[])
 	if (conf.screenMode)
 		return screenMain(conf);
 
+	if (conf.windowTitle.empty())
+		conf.windowTitle = conf.game.title;
+
 	int imgFlags = IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
@@ -251,23 +280,17 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	/* Setup application icon */
-	SDL_RWops *iconSrc;
-
-	if (conf.iconPath.empty())
-		iconSrc = SDL_RWFromConstMem(assets_icon_png, assets_icon_png_len);
-	else
-		iconSrc = SDL_RWFromFile(conf.iconPath.c_str(), "rb");
-
-	SDL_Surface *iconImg = IMG_Load_RW(iconSrc, SDL_TRUE);
-
 	SDL_Window *win;
-	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS;
+	Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS; //| SDL_WINDOW_ALLOW_HIGHDPI;
+
+	// #ifdef __APPLE__
+	// 	winFlags |= SDL_WINDOW_RESIZABLE;
+	// #endif
 
 	if (conf.fullscreen)
 		winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-	win = SDL_CreateWindow(conf.game.title.c_str(),
+	win = SDL_CreateWindow(conf.windowTitle.c_str(),
 	                       SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 	                       conf.defScreenW, conf.defScreenH, winFlags);
 
@@ -277,11 +300,13 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if (iconImg)
-	{
-		SDL_SetWindowIcon(win, iconImg);
-		SDL_FreeSurface(iconImg);
-	}
+	/* OSX and Windows have their own native ways of
+	 * dealing with icons; don't interfere with them */
+#ifdef __LINUX__
+	setupWindowIcon(conf, win);
+#else
+	(void) setupWindowIcon;
+#endif
 
 	ALCdevice *alcDev = alcOpenDevice(0);
 
@@ -315,7 +340,7 @@ int main(int argc, char *argv[])
 #endif
 
 	int winW, winH;
-	SDL_GetWindowSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 	rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
 	/* Load and post key bindings */
@@ -350,13 +375,13 @@ int main(int argc, char *argv[])
 	if (rtData.rqTermAck)
 		SDL_WaitThread(rgssThread, 0);
 	else
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.game.title.c_str(),
-		                         "The RGSS script seems to be stuck and mkxp will now force quit", win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
+		                         "The RGSS script seems to be stuck and OneShot will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty())
 	{
 		Debug() << rtData.rgssErrorMsg;
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.game.title.c_str(),
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
 		                         rtData.rgssErrorMsg.c_str(), win);
 	}
 

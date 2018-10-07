@@ -119,9 +119,11 @@ void AudioStream::play(const std::string &filename,
 	case ALStream::Paused :
 	case ALStream::Playing :
 		stream.stop();
+		/* falls through */
 	case ALStream::Stopped :
 		if (diffFile)
 			stream.close();
+		/* falls through */
 	case ALStream::Closed :
 		if (diffFile)
 		{

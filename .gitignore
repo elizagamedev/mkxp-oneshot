@@ -3,24 +3,56 @@
 *.bak
 *.xxd
 *.exe
+*.app
 *.bmp
+*.lproj
+
+*.tmp
+*.vcxproj
+*.filters
+*.sln
+*.user
+
+bin/
+lib/
+*.dir/
+x64/
 
 Makefile*
 
 /oneshot
 /steamshim_parent/steamshim
 
+__pycache__
 /build*
+/dist
 /debug
 /release
+steamshim_parent/build/
 
 object_script.*
 rpgscript.bat
-oneshot_JA_2_merge.pot
 rpgscript - mklang.bat
+oneshot_JA_2_merge.pot
 oneshot_JA_2_merge-jpn.pot
 oneshot_JA_2_ver4.pot
 oneshot_JA_2_fixed_ver3.pot
 oneshot_JA_2_ver3_checked.pot
 oneshot_JA_Mariko1_WIP.pot
 *.pot
+xScripts.rxdata
+OneShot
+
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/
+cmake_install\.cmake
+conanbuildinfo\.cmake
+conaninfo\.txt
+conanbuildinfo\.txt
+conan_imports_manifest\.txt
+package/
+
+oclint/
+
+steamworks/

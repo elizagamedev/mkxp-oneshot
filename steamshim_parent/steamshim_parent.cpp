@@ -30,7 +30,9 @@ typedef int PipeType;
 #ifdef STEAMSHIM_DEBUG
 #define dbgpipe printf
 #else
-static inline void dbgpipe(const char *fmt, ...) {}
+static inline void dbgpipe(const char *fmt, ...) {
+    (void)fmt;
+}
 #endif
 
 /* platform-specific mainline calls this. */
@@ -245,6 +247,7 @@ static bool launchChild(ProcessType *pid)
 
     // we're the child.
     GArgv[0] = strdup("./" GAME_LAUNCH_NAME);
+    dbgpipe("Starting %s\n", GArgv[0]);
     execvp(GArgv[0], GArgv);
     // still here? It failed! Terminate, closing child's ends of the pipes.
     _exit(1);

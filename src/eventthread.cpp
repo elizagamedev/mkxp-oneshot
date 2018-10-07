@@ -28,6 +28,7 @@
 #include <SDL_timer.h>
 #include <SDL_thread.h>
 #include <SDL_touch.h>
+#include <SDL_rect.h>
 
 #include <al.h>
 #include <alc.h>
@@ -43,6 +44,8 @@
 #include <string.h>
 
 #include <map>
+
+#include <iostream>
 
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
@@ -88,6 +91,7 @@ enum
 	REQUEST_SETCURSORVISIBLE,
 
 	UPDATE_FPS,
+	UPDATE_SCREEN_RECT,
 
 	EVENT_COUNT
 };
@@ -118,9 +122,9 @@ void EventThread::process(RGSSThreadData &rtData)
 	initALCFunctions(rtData.alcDev);
 
 	// XXX this function breaks input focus on OSX
-#ifndef __MACOSX__
-	SDL_SetEventFilter(eventFilter, &rtData);
-#endif
+	#ifndef __APPLE__
+		SDL_SetEventFilter(eventFilter, &rtData);
+	#endif
 
 	fullscreen = rtData.config.fullscreen;
 
@@ -135,6 +139,8 @@ void EventThread::process(RGSSThreadData &rtData)
 	bool displayingFPS = false;
 
 	bool cursorInWindow = false;
+	/* Will be updated eventually */
+	SDL_Rect gameScreen = { 0, 0, 0, 0 };
 
 	/* SDL doesn't send an initial FOCUS_GAINED event */
 	bool windowFocused = true;
@@ -160,7 +166,6 @@ void EventThread::process(RGSSThreadData &rtData)
 	char buffer[128];
 
 	char pendingTitle[128];
-	bool havePendingTitle = false;
 
 	bool resetting = false;
 
@@ -173,7 +178,7 @@ void EventThread::process(RGSSThreadData &rtData)
 	std::map<int, SDL_Joystick*>::iterator jsit;
 	std::map<int, SDL_GameController*>::iterator gcit;
 
-	SDL_GetWindowSize(win, &winW, &winH);
+	SDL_GetWindowSize(win, &winW, &winH); // SDL_GL_GetDrawableSize(win, &winW, &winH);
 
 	SettingsMenu *sMenu = 0;
 
@@ -192,7 +197,7 @@ void EventThread::process(RGSSThreadData &rtData)
 				delete sMenu;
 				sMenu = 0;
 
-				updateCursorState(cursorInWindow && windowFocused);
+				updateCursorState(cursorInWindow && windowFocused, gameScreen);
 			}
 
 			continue;
@@ -226,6 +231,8 @@ void EventThread::process(RGSSThreadData &rtData)
 				winW = event.window.data1;
 				winH = event.window.data2;
 
+				//SDL_GL_GetDrawableSize(win, &winW, &winH);
+
 				windowSizeMsg.post(Vec2i(winW, winH));
 				resetInputStates();
 				break;
@@ -233,14 +240,14 @@ void EventThread::process(RGSSThreadData &rtData)
 			case SDL_WINDOWEVENT_ENTER :
 				cursorInWindow = true;
 				mouseState.inWindow = true;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu);
+				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
 
 				break;
 
 			case SDL_WINDOWEVENT_LEAVE :
 				cursorInWindow = false;
 				mouseState.inWindow = false;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu);
+				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
 
 				break;
 
@@ -255,17 +262,25 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			case SDL_WINDOWEVENT_FOCUS_GAINED :
 				windowFocused = true;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu);
+				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
 
 				break;
 
 			case SDL_WINDOWEVENT_FOCUS_LOST :
 				windowFocused = false;
-				updateCursorState(cursorInWindow && windowFocused && !sMenu);
+				updateCursorState(cursorInWindow && windowFocused && !sMenu, gameScreen);
 				resetInputStates();
 
 				break;
 			}
+
+			#ifdef __APPLE__
+				case SDL_WINDOWEVENT_MOVED:
+					if (shState != NULL && event.window.data1 && event.window.data2)
+						shState->oneshot().setWindowPos(event.window.data1, event.window.data2);
+					break;
+			#endif
+
 			break;
 
 		case SDL_QUIT :
@@ -278,13 +293,17 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			break;
 
+		case SDL_TEXTINPUT:
+			if (rtData.inputText.length() < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
+			break;
+
 		case SDL_KEYDOWN :
 			if (event.key.keysym.scancode == SDL_SCANCODE_F1)
 			{
 				if (!sMenu)
 				{
 					sMenu = new SettingsMenu(rtData);
-					updateCursorState(false);
+					updateCursorState(false, gameScreen);
 				}
 
 				sMenu->raise();
@@ -308,14 +327,12 @@ void EventThread::process(RGSSThreadData &rtData)
 					if (fullscreen)
 					{
 						/* Prevent fullscreen flicker */
-						strncpy(pendingTitle, rtData.config.game.title.c_str(),
+						strncpy(pendingTitle, rtData.config.windowTitle.c_str(),
 						        sizeof(pendingTitle));
-						havePendingTitle = true;
-
 						break;
 					}
 
-					SDL_SetWindowTitle(win, rtData.config.game.title.c_str());
+					SDL_SetWindowTitle(win, rtData.config.windowTitle.c_str());
 				}
 
 				break;
@@ -332,6 +349,15 @@ void EventThread::process(RGSSThreadData &rtData)
 				resetting = true;
 				rtData.rqResetFinish.clear();
 				rtData.rqReset.set();
+				break;
+			}
+
+			if (rtData.acceptingTextInput) {
+				if (event.key.keysym.sym == SDLK_BACKSPACE && rtData.inputText.length() > 0)
+					rtData.inputText.pop_back();
+				else if (event.key.keysym.sym == SDLK_RETURN)
+					rtData.acceptingTextInput.clear();
+
 				break;
 			}
 
@@ -423,11 +449,13 @@ void EventThread::process(RGSSThreadData &rtData)
 		case SDL_MOUSEMOTION :
 			mouseState.x = event.motion.x;
 			mouseState.y = event.motion.y;
+			updateCursorState(cursorInWindow, gameScreen);
 			break;
 
 		case SDL_FINGERDOWN :
 			i = event.tfinger.fingerId;
 			touchState.fingers[i].down = true;
+			/* falls through */
 
 		case SDL_FINGERMOTION :
 			i = event.tfinger.fingerId;
@@ -454,7 +482,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			case REQUEST_MESSAGEBOX :
 				SDL_ShowSimpleMessageBox(event.user.code,
-				                         rtData.config.game.title.c_str(),
+				                         rtData.config.windowTitle.c_str(),
 				                         (const char*) event.user.data1, win);
 				free(event.user.data1);
 				msgBoxDone.set();
@@ -462,7 +490,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			case REQUEST_SETCURSORVISIBLE :
 				showCursor = event.user.code;
-				updateCursorState(cursorInWindow);
+				updateCursorState(cursorInWindow, gameScreen);
 				break;
 
 			case UPDATE_FPS :
@@ -473,19 +501,26 @@ void EventThread::process(RGSSThreadData &rtData)
 					break;
 
 				snprintf(buffer, sizeof(buffer), "%s - %d FPS",
-				         rtData.config.game.title.c_str(), event.user.code);
+				         rtData.config.windowTitle.c_str(), event.user.code);
 
 				/* Updating the window title in fullscreen
 				 * mode seems to cause flickering */
 				if (fullscreen)
 				{
 					strncpy(pendingTitle, buffer, sizeof(pendingTitle));
-					havePendingTitle = true;
-
 					break;
 				}
 
 				SDL_SetWindowTitle(win, buffer);
+				break;
+
+			case UPDATE_SCREEN_RECT :
+				gameScreen.x = event.user.windowID;
+				gameScreen.y = event.user.code;
+				gameScreen.w = reinterpret_cast<intptr_t>(event.user.data1);
+				gameScreen.h = reinterpret_cast<intptr_t>(event.user.data2);
+				updateCursorState(cursorInWindow, gameScreen);
+
 				break;
 			}
 		}
@@ -547,11 +582,11 @@ int EventThread::eventFilter(void *data, SDL_Event *event)
 		Debug() << "SDL_APP_LOWMEMORY";
 		return 0;
 
-		/* Workaround for Windows pausing on drag */
+	/* Workaround for Windows pausing on drag */
 	case SDL_WINDOWEVENT:
 		if (event->window.event == SDL_WINDOWEVENT_MOVED)
 		{
-			if (shState->rgssVersion > 0)
+			if (shState != NULL && shState->rgssVersion > 0)
 			{
 				shState->oneshot().setWindowPos(event->window.data1, event->window.data2);
 				shState->graphics().update(false);
@@ -559,14 +594,6 @@ int EventThread::eventFilter(void *data, SDL_Event *event)
 			return 0;
 		}
 		return 1;
-
-//	case SDL_RENDER_TARGETS_RESET :
-//		Debug() << "****** SDL_RENDER_TARGETS_RESET";
-//		return 0;
-
-//	case SDL_RENDER_DEVICE_RESET :
-//		Debug() << "****** SDL_RENDER_DEVICE_RESET";
-//		return 0;
 	}
 
 	return 1;
@@ -597,9 +624,13 @@ void EventThread::setFullscreen(SDL_Window *win, bool mode)
 	fullscreen = mode;
 }
 
-void EventThread::updateCursorState(bool inWindow)
+void EventThread::updateCursorState(bool inWindow,
+                                    const SDL_Rect &screen)
 {
-	if (inWindow)
+	SDL_Point pos = { mouseState.x, mouseState.y };
+	bool inScreen = inWindow && SDL_PointInRect(&pos, &screen);
+
+	if (inScreen)
 		SDL_ShowCursor(showCursor ? SDL_TRUE : SDL_FALSE);
 	else
 		SDL_ShowCursor(SDL_TRUE);
@@ -702,6 +733,19 @@ void EventThread::notifyFrame()
 	SDL_Event event;
 	event.user.code = avgFPS;
 	event.user.type = usrIdStart + UPDATE_FPS;
+	SDL_PushEvent(&event);
+}
+
+void EventThread::notifyGameScreenChange(const SDL_Rect &screen)
+{
+	/* We have to get a bit hacky here to fit the rectangle
+	 * data into the user event struct */
+	SDL_Event event;
+	event.type = usrIdStart + UPDATE_SCREEN_RECT;
+	event.user.windowID = screen.x;
+	event.user.code = screen.y;
+	event.user.data1 = reinterpret_cast<void*>(screen.w);
+	event.user.data2 = reinterpret_cast<void*>(screen.h);
 	SDL_PushEvent(&event);
 }
 

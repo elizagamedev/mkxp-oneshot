@@ -1,3 +1,4 @@
+#include "journal-binding.h"
 #include "binding-util.h"
 #include "binding-types.h"
 #include "pipe.h"
@@ -6,36 +7,27 @@
 
 #include <SDL.h>
 
-#if defined __linux
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/inotify.h>
-#include <unistd.h>
-#endif
+#ifdef LINUX
+	#include <fcntl.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+	#ifdef OS_LINUX
+		#include <sys/inotify.h>
+	#endif
+	#include <unistd.h>
+	#include <stdio.h>
 
-#define BUFFER_SIZE 256
-
-static SDL_Thread *thread = NULL;
-static SDL_mutex *mutex = NULL;
-static volatile char lang_buffer[BUFFER_SIZE];
-static volatile char message_buffer[BUFFER_SIZE];
-static volatile bool active = false;
-static volatile int message_len = 0;
-
-#if defined __linux
-#define PIPE_PATH "/tmp/oneshot-pipe"
-static volatile int out_pipe = -1;
-void cleanup_pipe()
-{
-	unlink(PIPE_PATH);
-}
+	void cleanup_pipe()
+	{
+		unlink(PIPE_PATH);
+		remove(PIPE_PATH);
+	}
 #endif
 
 int server_thread(void *data)
 {
 	(void)data;
-#if defined _WIN32
+#if defined OS_W32
 	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
 	                               PIPE_ACCESS_OUTBOUND,
 	                               PIPE_TYPE_BYTE | PIPE_WAIT,
@@ -55,13 +47,22 @@ int server_thread(void *data)
 		DisconnectNamedPipe(pipe);
 	}
 	CloseHandle(pipe);
-#elif defined __linux
-	out_pipe = open(PIPE_PATH, O_WRONLY);
-	active = true;
-	SDL_LockMutex(mutex);
-	if (message_len > 0)
-		write(out_pipe, (char*)message_buffer, message_len);
-	SDL_UnlockMutex(mutex);
+#else
+	if (FILE *file = fopen(PIPE_PATH, "r"))
+	{
+		fclose(file);
+		out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		SDL_LockMutex(mutex);
+		active = true;
+		if (message_len > 0)
+		{
+			if (write(out_pipe, (char*)message_buffer, message_len) == -1)
+			{
+				Debug() << "Failure writing to journal's pipe!";
+			}
+		}
+		SDL_UnlockMutex(mutex);
+	}
 	return 0;
 #endif
 }
@@ -102,7 +103,7 @@ RB_METHOD(journalSet)
 	if (thread == NULL) {
 		thread = SDL_CreateThread(server_thread, "journal", NULL);
 	}
-#elif defined __linux
+#else
 	// Clean up connection thread
 	if (thread != NULL && out_pipe != -1) {
 		SDL_WaitThread(thread, NULL);
@@ -121,8 +122,6 @@ RB_METHOD(journalSet)
 		// We don't have a pipe open, so spawn the connection thread
 		thread = SDL_CreateThread(server_thread, "journal", NULL);
 	}
-#else
-#error "not yet implemented"
 #endif
 	return Qnil;
 }

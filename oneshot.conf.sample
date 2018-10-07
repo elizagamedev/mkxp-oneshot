@@ -51,6 +51,12 @@
 # vsync=true
 
 
+# Override the game window title
+# (default: none)
+#
+# windowTitle=Custom Title
+
+
 # Enforce a static frame rate
 # (0 = disabled)
 #
@@ -87,6 +93,26 @@
 # (default: disabled)
 #
 # subImageFix=false
+
+
+# Enable framebuffer blitting if the driver is
+# capable of it. Some drivers carry buggy
+# implementations of this functionality, so
+# disabling it can be used as a workaround
+# (default: enabled)
+#
+# enableBlitting=true
+
+
+# Limit the maximum size (width, height) of
+# most textures mkxp will create (exceptions are
+# rendering backbuffers and similar).
+# If set to 0, the hardware maximum is used.
+# This is useful for recording traces that can
+# be played back on machines with lower specs.
+# (default: 0)
+#
+# maxTextureSize=0
 
 
 # Set the base path of the game to '/path/to/game'

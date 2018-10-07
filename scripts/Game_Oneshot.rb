@@ -32,21 +32,31 @@ end
 
 module Wallpaper
   def self.set_persistent(name, color)
+    if Graphics.fullscreen
+      Graphics.fullscreen = false
+      $console = false
+      if Oneshot::OS == "macos"
+        sleep 0.65
+      else
+        sleep 0.2
+      end
+      Graphics.update
+    end
   
     if (name == 'save_w32')
 	  case $persistent.langcode
 	    when 'fr'
-          name = $persistent.langcode + "\\" + name
+          name = $persistent.langcode + "/" + name
 	    when 'pt_BR'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'es'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'ja'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'ko'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
 	    when 'zh_CN'
-	      name = $persistent.langcode + "\\" + name
+	      name = $persistent.langcode + "/" + name
       end
 	end
     $game_oneshot.wallpaper = name
@@ -55,6 +65,17 @@ module Wallpaper
   end
 
   def self.reset_persistent
+    if Graphics.fullscreen
+      Graphics.fullscreen = false
+      $console = false
+      if Oneshot::OS == "macos"
+        sleep 0.65
+      else
+        sleep 0.2
+      end
+      Graphics.update
+    end
+    
     $game_oneshot.wallpaper = nil
     $game_oneshot.wallpaper_color = nil
     Wallpaper.reset

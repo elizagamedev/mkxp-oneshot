@@ -40,6 +40,10 @@
 #include <stack>
 
 #ifdef __APPLE__
+#define OS_OSX
+#endif
+
+#ifdef OS_OSX
 #include <iconv.h>
 #endif
 
@@ -354,7 +358,7 @@ struct CacheEnumData
 	FileSystemPrivate *p;
 	std::stack<std::vector<std::string>*> fileLists;
 
-#ifdef __APPLE__
+#ifdef OS_OSX
 	iconv_t nfd2nfc;
 	char buf[512];
 #endif
@@ -362,14 +366,14 @@ struct CacheEnumData
 	CacheEnumData(FileSystemPrivate *p)
 	    : p(p)
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		nfd2nfc = iconv_open("utf-8", "utf-8-mac");
 #endif
 	}
 
 	~CacheEnumData()
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		iconv_close(nfd2nfc);
 #endif
 	}
@@ -377,7 +381,7 @@ struct CacheEnumData
 	/* Converts in-place */
 	void toNFC(char *inout)
 	{
-#ifdef __APPLE__
+#ifdef OS_OSX
 		size_t srcSize = strlen(inout);
 		size_t bufSize = sizeof(buf);
 		char *bufPtr = buf;
@@ -461,7 +465,7 @@ struct FontSetsCBData
 };
 
 static PHYSFS_EnumerateCallbackResult
-fontSetEnumCB (void *data, const char *dir, const char *fname)
+findFontsFolderCB (void *data, const char *dir, const char *fname)
 {
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
@@ -482,7 +486,7 @@ fontSetEnumCB (void *data, const char *dir, const char *fname)
 		return PHYSFS_ENUM_STOP;
 
 	char filename[512];
-	snprintf(filename, sizeof(filename), "Fonts/%s", fname);
+	snprintf(filename, sizeof(filename), "%s/%s", dir, fname);
 
 	PHYSFS_File *handle = PHYSFS_openRead(filename);
 
@@ -499,31 +503,11 @@ fontSetEnumCB (void *data, const char *dir, const char *fname)
 	return PHYSFS_ENUM_OK;
 }
 
-/* Basically just a case-insensitive search
- * for the folder "Fonts"... */
-static PHYSFS_EnumerateCallbackResult
-findFontsFolderCB(void *data, const char *, const char *fname)
-{
-	size_t i = 0;
-	char buffer[512];
-	const char *s = fname;
-
-	while (s && i < sizeof(buffer))
-		buffer[i++] = tolower(*s++);
-
-	buffer[i] = '\0';
-
-	if (strcmp(buffer, "fonts") == 0)
-		PHYSFS_enumerate(fname, fontSetEnumCB, data);
-
-	return PHYSFS_ENUM_OK;
-}
-
 void FileSystem::initFontSets(SharedFontState &sfs)
 {
 	FontSetsCBData d = { p, &sfs };
 
-	PHYSFS_enumerate(".", findFontsFolderCB, &d);
+	PHYSFS_enumerate("Fonts", findFontsFolderCB, &d);
 }
 
 struct OpenReadEnumData

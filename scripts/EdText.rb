@@ -22,7 +22,12 @@ module EdText
     if Graphics.fullscreen
       Graphics.fullscreen = false
       $console = false
-      sleep 0.2
+      if Oneshot::OS == "macos"
+        sleep 0.65
+      else
+        sleep 0.2
+      end
+      Graphics.update
     end
     result = nil
     # so here, we strip unescaped newlines from the untranslated text

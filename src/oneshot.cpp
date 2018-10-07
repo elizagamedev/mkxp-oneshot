@@ -6,10 +6,14 @@
 
 #include "eventthread.h"
 #include "debugwriter.h"
+#include "bitmap.h"
+#include "font.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
-//OS-Specific code
+// OS-Specific code
 #if defined _WIN32
 	#define OS_W32
 	#define WIN32_LEAN_AND_MEAN
@@ -19,249 +23,64 @@
 	#include <security.h>
 	#include <shlobj.h>
 	#include <SDL2/SDL_syswm.h>
-#elif defined __APPLE__
-	#define OS_OSX
-	#include <pwd.h>
-#elif defined __linux__
-	#define OS_LINUX
+#elif defined __APPLE__ || __linux__
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
 	#include <dlfcn.h>
 
-	class GtkWidget;
-
-	typedef enum
-	{
-		GTK_MESSAGE_INFO,
-		GTK_MESSAGE_WARNING,
-		GTK_MESSAGE_QUESTION,
-		GTK_MESSAGE_ERROR
-	} GtkMessageType;
-
-	typedef enum
-	{
-		GTK_BUTTONS_NONE,
-		GTK_BUTTONS_OK,
-		GTK_BUTTONS_CLOSE,
-		GTK_BUTTONS_CANCEL,
-		GTK_BUTTONS_YES_NO,
-		GTK_BUTTONS_OK_CANCEL
-	} GtkButtonsType;
-
-	typedef enum
-	{
-		GTK_RESPONSE_NONE = -1,
-		GTK_RESPONSE_REJECT = -2,
-		GTK_RESPONSE_ACCEPT = -3,
-		GTK_RESPONSE_DELETE_EVENT = -4,
-		GTK_RESPONSE_OK = -5,
-		GTK_RESPONSE_CANCEL = -6,
-		GTK_RESPONSE_CLOSE = -7,
-		GTK_RESPONSE_YES = -8,
-		GTK_RESPONSE_NO = -9,
-		GTK_RESPONSE_APPLY = -10,
-		GTK_RESPONSE_HELP = -11
-	} GtkResponseType;
-
-	/**
-	 * xdg_user_dir_lookup_with_fallback:
-	 * @type: a string specifying the type of directory
-	 * @fallback: value to use if the directory isn't specified by the user
-	 * @returns: a newly allocated absolute pathname
-	 *
-	 * Looks up a XDG user directory of the specified type.
-	 * Example of types are "DESKTOP" and "DOWNLOAD".
-	 *
-	 * In case the user hasn't specified any directory for the specified
-	 * type the value returned is @fallback.
-	 *
-	 * The return value is newly allocated and must be freed with
-	 * free(). The return value is never NULL if @fallback != NULL, unless
-	 * out of memory.
-	 **/
-	static char *
-	xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback)
-	{
-	  FILE *file;
-	  char *home_dir, *config_home, *config_file;
-	  char buffer[512];
-	  char *user_dir;
-	  char *p, *d;
-	  int len;
-	  int relative;
-
-	  home_dir = getenv ("HOME");
-
-	  if (home_dir == NULL)
-	    goto error;
-
-	  config_home = getenv ("XDG_CONFIG_HOME");
-	  if (config_home == NULL || config_home[0] == 0)
-	    {
-	      config_file = (char*) malloc (strlen (home_dir) + strlen ("/.config/user-dirs.dirs") + 1);
-	      if (config_file == NULL)
-	        goto error;
-
-	      strcpy (config_file, home_dir);
-	      strcat (config_file, "/.config/user-dirs.dirs");
-	    }
-	  else
-	    {
-	      config_file = (char*) malloc (strlen (config_home) + strlen ("/user-dirs.dirs") + 1);
-	      if (config_file == NULL)
-	        goto error;
-
-	      strcpy (config_file, config_home);
-	      strcat (config_file, "/user-dirs.dirs");
-	    }
-
-	  file = fopen (config_file, "r");
-	  free (config_file);
-	  if (file == NULL)
-	    goto error;
-
-	  user_dir = NULL;
-	  while (fgets (buffer, sizeof (buffer), file))
-	    {
-	      /* Remove newline at end */
-	      len = strlen (buffer);
-	      if (len > 0 && buffer[len-1] == '\n')
-		buffer[len-1] = 0;
-
-	      p = buffer;
-	      while (*p == ' ' || *p == '\t')
-		p++;
-
-	      if (strncmp (p, "XDG_", 4) != 0)
-		continue;
-	      p += 4;
-	      if (strncmp (p, type, strlen (type)) != 0)
-		continue;
-	      p += strlen (type);
-	      if (strncmp (p, "_DIR", 4) != 0)
-		continue;
-	      p += 4;
-
-	      while (*p == ' ' || *p == '\t')
-		p++;
-
-	      if (*p != '=')
-		continue;
-	      p++;
-
-	      while (*p == ' ' || *p == '\t')
-		p++;
-
-	      if (*p != '"')
-		continue;
-	      p++;
-
-	      relative = 0;
-	      if (strncmp (p, "$HOME/", 6) == 0)
-		{
-		  p += 6;
-		  relative = 1;
-		}
-	      else if (*p != '/')
-		continue;
-
-	      if (relative)
-		{
-		  user_dir = (char*) malloc (strlen (home_dir) + 1 + strlen (p) + 1);
-	          if (user_dir == NULL)
-	            goto error2;
-
-		  strcpy (user_dir, home_dir);
-		  strcat (user_dir, "/");
-		}
-	      else
-		{
-		  user_dir = (char*) malloc (strlen (p) + 1);
-	          if (user_dir == NULL)
-	            goto error2;
-
-		  *user_dir = 0;
-		}
-
-	      d = user_dir + strlen (user_dir);
-	      while (*p && *p != '"')
-		{
-		  if ((*p == '\\') && (*(p+1) != 0))
-		    p++;
-		  *d++ = *p++;
-		}
-	      *d = 0;
-	    }
-	error2:
-	  fclose (file);
-
-	  if (user_dir)
-	    return user_dir;
-
-	 error:
-	  if (fallback)
-	    return strdup (fallback);
-	  return NULL;
-	}
+	#ifdef __APPLE__
+		#define OS_OSX
+		#include <dispatch/dispatch.h>
+	#else
+		#define OS_LINUX
+		#include <gtk/gtk.h>
+		#include <gdk/gdk.h>
+	#endif
 #else
-    #error "Operating system not detected."
+	#error "Operating system not detected."
 #endif
+
+#define DEF_SCREEN_W 640
+#define DEF_SCREEN_H 480
 
 struct OneshotPrivate
 {
-	//Main SDL window
+	// Main SDL window
 	SDL_Window *window;
 
-	//String data
+	// String data
+	std::string os;
 	std::string lang;
 	std::string userName;
 	std::string savePath;
 	std::string docsPath;
+	std::string gamePath;
+	std::string journal;
 
-	//Dialog text
+	// Dialog text
 	std::string txtYes;
 	std::string txtNo;
 
-	//Allow exiting game
+	bool exiting;
 	bool allowExit;
 
-	//Alpha texture data for portions of window obscured by screen edges
+	// Alpha texture data for portions of window obscured by screen edges
 	int winX, winY;
 	SDL_mutex *winMutex;
 	bool winPosChanged;
 	std::vector<uint8_t> obscuredMap;
 	bool obscuredCleared;
 
-#if defined OS_LINUX
-	//GTK+
-	void *libgtk;
-	void (*gtk_init)(int *argc, char ***argv);
-	GtkWidget *(*gtk_message_dialog_new)(void *parent, int flags, GtkMessageType type, GtkButtonsType buttons, const char *message_format, ...);
-	void (*gtk_window_set_title)(GtkWidget *window, const char *title);
-	GtkResponseType (*gtk_dialog_run)(GtkWidget *dialog);
-	void (*gtk_widget_destroy)(GtkWidget *widget);
-	void (*gtk_main_quit)();
-	void (*gtk_main)();
-	unsigned int (*gdk_threads_add_idle)(int (*function)(void *data), void *data);
-#endif
-
 	OneshotPrivate()
 		: window(0),
 	      winMutex(SDL_CreateMutex())
-#if defined OS_LINUX
-		  ,libgtk(0)
-#endif
 	{
 	}
 
 	~OneshotPrivate()
 	{
 		SDL_DestroyMutex(winMutex);
-#ifdef OS_LINUX
-		if (libgtk)
-			dlclose(libgtk);
-#endif
 	}
 };
 
@@ -269,53 +88,51 @@ struct OneshotPrivate
 #if defined OS_LINUX
 struct linux_DialogData
 {
-	//Input
-	OneshotPrivate *p;
+	// Input
 	int type;
 	const char *body;
 	const char *title;
 
-	//Output
+	// Output
 	bool result;
 };
 
 static int linux_dialog(void *rawData)
 {
 	linux_DialogData *data = reinterpret_cast<linux_DialogData*>(rawData);
-	OneshotPrivate *p = data->p;
 
-	//Determine correct flags
+	// Determine correct flags
 	GtkMessageType gtktype;
 	GtkButtonsType gtkbuttons = GTK_BUTTONS_OK;
 	switch (data->type)
 	{
-	case Oneshot::MSG_INFO:
-		gtktype = GTK_MESSAGE_INFO;
-		break;
-	case Oneshot::MSG_YESNO:
-		gtktype = GTK_MESSAGE_QUESTION;
-		gtkbuttons = GTK_BUTTONS_YES_NO;
-		break;
-	case Oneshot::MSG_WARN:
-		gtktype = GTK_MESSAGE_WARNING;
-		break;
-	case Oneshot::MSG_ERR:
-		gtktype = GTK_MESSAGE_ERROR;
-		break;
-	default:
-		p->gtk_main_quit();
-		return 0;
+		case Oneshot::MSG_INFO:
+			gtktype = GTK_MESSAGE_INFO;
+			break;
+		case Oneshot::MSG_YESNO:
+			gtktype = GTK_MESSAGE_QUESTION;
+			gtkbuttons = GTK_BUTTONS_YES_NO;
+			break;
+		case Oneshot::MSG_WARN:
+			gtktype = GTK_MESSAGE_WARNING;
+			break;
+		case Oneshot::MSG_ERR:
+			gtktype = GTK_MESSAGE_ERROR;
+			break;
+		default:
+			gtk_main_quit();
+			return 0;
 	}
 
-	//Display dialog and get result
-	GtkWidget *dialog = p->gtk_message_dialog_new(0, 0, gtktype, gtkbuttons, data->body);
-	p->gtk_window_set_title(dialog, data->title);
-	int result = p->gtk_dialog_run(dialog);
-	p->gtk_widget_destroy(dialog);
+	// Display dialog and get result
+	GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, gtktype, gtkbuttons, "%s", data->body);
+	gtk_window_set_title(GTK_WINDOW(dialog), data->title);
+	int result = gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
 
-	//Interpret result and return
+	// Interpret result and return
 	data->result = (result == GTK_RESPONSE_OK || result == GTK_RESPONSE_YES);
-	p->gtk_main_quit();
+	gtk_main_quit();
 	return 0;
 }
 #elif defined OS_W32
@@ -367,6 +184,14 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winY = 0;
 	p->winPosChanged = false;
 	p->allowExit = true;
+	p->exiting = false;
+	#ifdef OS_W32
+		p->os = "windows";
+	#elif defined OS_OSX
+		p->os = "macos";
+	#else
+		p->os = "linux";
+	#endif
 
 	/********************
 	 * USERNAME/DOCS PATH
@@ -404,18 +229,20 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		}
 	}
 
-	//Get documents path
+	// Get documents path
 	WCHAR path[MAX_PATH];
 	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path);
 	p->docsPath = w32_fromWide(path);
+	p->gamePath = p->docsPath+"\\My Games";
+	p->journal = "_______.exe";
 #else
-	//Get language code
+	// Get language code
 	const char *lc_all = getenv("LC_ALL");
 	const char *lang = getenv("LANG");
 	const char *code = (lc_all ? lc_all : lang);
 	if (code)
 	{
-		//find first dot, copy language code
+		// find first dot, copy language code
 		int end = 0;
 		for (; code[end] && code[end] != '.'; ++end) {}
 		p->lang = std::string(code, end);
@@ -423,12 +250,16 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	else
 		p->lang = "en";
 
-	//Get user's name
-	struct passwd *pwd = getpwuid(getuid());
+	// Get user's name
+	#ifdef OS_OSX
+		struct passwd *pwd = getpwuid(geteuid());
+	#elif defined OS_LINUX
+		struct passwd *pwd = getpwuid(getuid());
+	#endif
 	if (pwd)
 	{
-        if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-        {
+		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
+		{
 			//Get the user's full name
 			int comma = 0;
 			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
@@ -438,65 +269,44 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 			p->userName = pwd->pw_name;
 	}
 
-#ifdef OS_LINUX
-	//Get documents path
-	char *path = xdg_user_dir_lookup_with_fallback("DOCUMENTS", getenv("HOME"));
-	p->docsPath = path;
-	free(path);
-#elif OS_OSX
+	// Get documents path
+	std::string path = std::string(getenv("HOME")) + "/Documents";
+	p->docsPath = path.c_str();
+	p->gamePath = path.c_str();
+	#ifdef OS_OSX
+		p->journal = "_______.app";
+	#elif defined OS_LINUX
+		p->journal = "_______";
+	#endif
 #endif
-#endif
 
-	/**********
-	 * MSGBOX
-	 **********/
 #ifdef OS_LINUX
-#define LOAD_FUNC(name) *reinterpret_cast<void**>(&p->name) = dlsym(p->libgtk, #name)
-	//Attempt to link to gtk (prefer gtk2 over gtk3 until I can figure that message box icon out)
-	static const char *gtklibs[] =
-	{
-		"libgtk-x11-2.0.so",
-		"libgtk-3.0.so",
-	};
-
-	for (size_t i = 0; i < ARRAY_SIZE(gtklibs); ++i)
-	{
-		if (!(p->libgtk = dlopen("libgtk-x11-2.0.so", RTLD_NOW)))
-			p->libgtk = dlopen("libgtk-3.0.so", RTLD_NOW);
-		if (p->libgtk)
-		{
-			//Load functions
-			LOAD_FUNC(gtk_init);
-			LOAD_FUNC(gtk_message_dialog_new);
-			LOAD_FUNC(gtk_window_set_title);
-			LOAD_FUNC(gtk_dialog_run);
-			LOAD_FUNC(gtk_widget_destroy);
-			LOAD_FUNC(gtk_main_quit);
-			LOAD_FUNC(gtk_main);
-			LOAD_FUNC(gdk_threads_add_idle);
-
-			if (p->gtk_init
-					&& p->gtk_message_dialog_new
-					&& p->gtk_window_set_title
-					&& p->gtk_dialog_run
-					&& p->gtk_widget_destroy
-					&& p->gtk_main_quit
-					&& p->gtk_main
-					&& p->gdk_threads_add_idle)
-			{
-				p->gtk_init(0, 0);
-			}
-			else
-			{
-				dlclose(p->libgtk);
-				p->libgtk = 0;
-			}
-		}
-		if (p->libgtk)
-			break;
+	std::string desktop(getenv("XDG_CURRENT_DESKTOP"));
+	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
+	if (desktop.find("cinnamon") != std::string::npos) {
+		desktopEnv = "cinnamon";
+		gtk_init(0, 0);
+	} else if (
+		desktop.find("gnome") != std::string::npos ||
+		desktop.find("unity") != std::string::npos
+	) {
+		desktopEnv = "gnome";
+		gtk_init(0, 0);
+	} else if (desktop.find("mate") != std::string::npos) {
+		desktopEnv = "mate";
+		gtk_init(0, 0);
+	} else if (desktop.find("xfce") != std::string::npos) {
+		desktopEnv = "xfce";
+		gtk_init(0, 0);
+	} else if (desktop.find("kde") != std::string::npos) {
+		desktopEnv = "kde";
+	} else if (desktop.find("lxde") != std::string::npos) {
+		desktopEnv = "lxde";
+	} else if (desktop.find("deepin") != std::string::npos) {
+		desktopEnv = "deepin";
 	}
-#undef LOAD_FUNC
 #endif
+
 	/********
 	 * MISC
 	 ********/
@@ -581,6 +391,11 @@ void Oneshot::update()
 	}
 }
 
+const std::string &Oneshot::os() const
+{
+	return p->os;
+}
+
 const std::string &Oneshot::lang() const
 {
 	return p->lang;
@@ -601,6 +416,16 @@ const std::string &Oneshot::docsPath() const
 	return p->docsPath;
 }
 
+const std::string &Oneshot::gamePath() const
+{
+	return p->gamePath;
+}
+
+const std::string &Oneshot::journal() const
+{
+	return p->journal;
+}
+
 const std::vector<uint8_t> &Oneshot::obscuredMap() const
 {
 	return p->obscuredMap;
@@ -609,6 +434,11 @@ const std::vector<uint8_t> &Oneshot::obscuredMap() const
 bool Oneshot::obscuredCleared() const
 {
 	return p->obscuredCleared;
+}
+
+bool Oneshot::exiting() const
+{
+	return p->exiting;
 }
 
 bool Oneshot::allowExit() const
@@ -620,6 +450,18 @@ void Oneshot::setYesNo(const char *yes, const char *no)
 {
 	p->txtYes = yes;
 	p->txtNo = no;
+}
+
+void Oneshot::setExiting(bool exiting)
+{
+	if (p->exiting != exiting) {
+		p->exiting = exiting;
+		if (exiting) {
+			threadData.exiting.set();
+		} else {
+			threadData.exiting.clear();
+		}
+	}
 }
 
 void Oneshot::setAllowExit(bool allowExit)
@@ -638,64 +480,31 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
 	if (!title)
 		title = "";
-#if 0
-	//Get native window handle
-	SDL_SysWMinfo wminfo;
-	SDL_version version;
-	SDL_VERSION(&version);
-	wminfo.version = version;
-	SDL_GetWindowWMInfo(p->window, &wminfo);
-	HWND hwnd = wminfo.info.win.window;
-
-	//Construct flags
-	UINT flags = 0;
-	switch (type)
-	{
-	case MSG_INFO:
-		flags = MB_ICONINFORMATION;
-		break;
-	case MSG_YESNO:
-		flags = MB_ICONQUESTION | MB_YESNO;
-		break;
-	case MSG_WARN:
-		flags = MB_ICONWARNING;
-		break;
-	case MSG_ERR:
-		flags = MB_ICONERROR;
-		break;
-	}
-
-	//Create message box
-	WCHAR *wbody = w32_toWide(body);
-	WCHAR *wtitle = w32_toWide(title);
-	int result = MessageBoxW(N, wbody, wtitle, flags);
-	delete [] title;
-	delete [] body;
-
-	//Interpret result
-	return (result == IDOK || result == IDYES);
-#else
-#if defined OS_LINUX
-	if (p->libgtk)
-	{
-		linux_DialogData data = {p, type, body, title, 0};
-		p->gdk_threads_add_idle(linux_dialog, &data);
-		p->gtk_main();
+	#if defined OS_LINUX
+	if (
+		desktopEnv == "gnome" ||
+		desktopEnv == "mate" ||
+		desktopEnv == "cinnamon" ||
+		desktopEnv == "xfce"
+	) {
+		linux_DialogData data = {type, body, title, 0};
+		gdk_threads_add_idle(linux_dialog, &data);
+		gtk_main();
 		return data.result;
 	}
-#endif
-	//SDL message box
+	#endif
 
-	//Button data
+	// SDL message box
+	// Button data
 	static const SDL_MessageBoxButtonData buttonOk = {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "OK"};
 	static const SDL_MessageBoxButtonData buttonsOk[] = {buttonOk};
 	SDL_MessageBoxButtonData buttonYes = {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, p->txtYes.c_str()};
 	SDL_MessageBoxButtonData buttonNo = {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, p->txtNo.c_str()};
 	SDL_MessageBoxButtonData buttonsYesNo[] = {buttonNo, buttonYes};
 
-	//Messagebox data
+	// Messagebox data
 	SDL_MessageBoxData data;
-	data.window = p->window;
+	data.window = NULL; //p->window;
 	data.colorScheme = 0;
 	data.title = title;
 	data.message = body;
@@ -718,7 +527,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		data.flags = SDL_MESSAGEBOX_WARNING;
 #ifdef OS_W32
 		sound = SND_ALIAS_SYSTEMEXCLAMATION;
- #endif
+#endif
 		break;
 	case MSG_ERR:
 		data.flags = SDL_MESSAGEBOX_WARNING;
@@ -728,7 +537,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		break;
 	}
 
-	//Set buttons
+	// Set buttons
 	switch (type)
 	{
 	case MSG_INFO:
@@ -744,14 +553,60 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		break;
 	}
 
-	//Show messagebox
+	// Show messagebox
 #ifdef OS_W32
 	PlaySoundW((LPCWSTR)sound, NULL, SND_ALIAS_ID | SND_ASYNC);
 #endif
 	int button;
-	SDL_ShowMessageBox(&data, &button);
+
+	#ifdef OS_OSX
+		int *btn = &button;
+
+		// Message boxes and UI changes must be performed from the main thread on macOS Mojave and above.
+		// This block ensures the message box will show from the main thread.
+		dispatch_sync(dispatch_get_main_queue(),
+			^{ SDL_ShowMessageBox(&data, btn); }
+		);
+	#else
+		SDL_ShowMessageBox(&data, &button);
+	#endif
+
 	return button ? true : false;
-#endif
+}
+
+std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
+	std::vector<std::string> *fontNames = new std::vector<std::string>();
+	fontNames->push_back(fontName);
+	fontNames->push_back("VL Gothic");
+	Font *font = new Font(fontNames, 18);
+
+	Bitmap *promptBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	promptBmp->setInitFont(font);
+	promptBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, prompt, 1);
+
+	Bitmap *inputBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	inputBmp->setInitFont(font);
+	inputBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, "", 1);
+
+	std::string inputTextPrev = std::string("");
+	threadData.acceptingTextInput.set();
+	threadData.inputTextLimit = char_limit;
+	threadData.inputText.clear();
+	SDL_StartTextInput();
+
+	// Main loop
+	while (threadData.acceptingTextInput) {
+		if (inputTextPrev != threadData.inputText) {
+			inputBmp->clear();
+			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
+			inputTextPrev = threadData.inputText;
+		}
+	}
+
+	// Disable text input
+	SDL_StopTextInput();
+
+	return threadData.inputText;
 }
 
 void Oneshot::setWindowPos(int x, int y)

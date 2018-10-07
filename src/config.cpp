@@ -48,6 +48,12 @@ static std::string prefPath(const char *org, const char *app)
 	return str;
 }
 
+template<typename T>
+std::set<T> setFromVec(const std::vector<T> &vec)
+{
+	return std::set<T>(vec.begin(), vec.end());
+}
+
 typedef std::vector<std::string> StringVec;
 namespace po = boost::program_options;
 
@@ -64,13 +70,18 @@ void Config::read(int argc, char *argv[])
 	PO_DESC(printFPS, bool, false) \
 	PO_DESC(fullscreen, bool, false) \
 	PO_DESC(fixedAspectRatio, bool, true) \
-	PO_DESC(smoothScaling, bool, false) \
+	PO_DESC(smoothScaling, bool, true) \
 	PO_DESC(vsync, bool, true) \
+	PO_DESC(defScreenW, int, 0) \
+	PO_DESC(defScreenH, int, 0) \
+	PO_DESC(windowTitle, std::string, "") \
 	PO_DESC(fixedFramerate, int, 0) \
 	PO_DESC(frameSkip, bool, true) \
 	PO_DESC(syncToRefreshrate, bool, false) \
 	PO_DESC(solidFonts, bool, false) \
 	PO_DESC(subImageFix, bool, false) \
+	PO_DESC(enableBlitting, bool, true) \
+	PO_DESC(maxTextureSize, int, 0) \
 	PO_DESC(gameFolder, std::string, ".") \
 	PO_DESC(allowSymlinks, bool, false) \
 	PO_DESC(iconPath, std::string, "") \
@@ -79,6 +90,27 @@ void Config::read(int argc, char *argv[])
 
 // Not gonna take your shit boost
 #define GUARD_ALL( exp ) try { exp } catch(...) {}
+
+	editor.debug = false;
+	editor.battleTest = false;
+
+	/* Read arguments sent from the editor */
+	if (argc > 1)
+	{
+		std::string argv1 = argv[1];
+		/* RGSS1 uses "debug", 2 and 3 use "test" */
+		if (argv1 == "debug" || argv1 == "test")
+			editor.debug = true;
+		else if (argv1 == "btest")
+			editor.battleTest = true;
+
+		/* Fix offset */
+		if (editor.debug || editor.battleTest)
+		{
+			argc--;
+			argv++;
+		}
+	}
 
 #define PO_DESC(key, type, def) (#key, po::value< type >()->default_value(def))
 
@@ -125,7 +157,7 @@ void Config::read(int argc, char *argv[])
 
 	PO_DESC_ALL;
 
-	GUARD_ALL( preloadScripts = vm["preloadScript"].as<StringVec>(); );
+	GUARD_ALL( preloadScripts = setFromVec(vm["preloadScript"].as<StringVec>()); );
 
 	GUARD_ALL( fontSubs = vm["fontSub"].as<StringVec>(); );
 
