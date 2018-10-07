@@ -32,6 +32,7 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 * Ruby
 * Python 3 (journal reimplementation only)
 * PyQt5 for Python 3 (journal reimplementation only)
+* Steamworks SDK (optional, place contents of sdk folder in ZIP into "steamworks" folder in root)
 
 ### Building with Conan
 
