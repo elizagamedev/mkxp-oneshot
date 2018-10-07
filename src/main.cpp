@@ -46,10 +46,6 @@
 
 #include "binding.h"
 
-#ifdef __WINDOWS__
-#include "resource.h"
-#endif
-
 #include "icon.png.xxd"
 
 #ifdef STEAM

@@ -152,7 +152,7 @@ set(MAIN_SOURCE
 if(WIN32)
 	list(APPEND MAIN_SOURCE assets/resources.rc)
 	list(APPEND DEFINES UNICODE)
-	list(APPEND PLATFORM_LIBRARIES Secur32)
+	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR}/windows
 	)
@@ -267,6 +267,7 @@ set(BINDING_HEADERS
 	binding-mri/sceneelement-binding.h
 	binding-mri/viewportelement-binding.h
 	binding-mri/flashable-binding.h
+	binding-mri/journal-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp
