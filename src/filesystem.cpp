@@ -40,11 +40,8 @@
 #include <stack>
 
 #ifdef __APPLE__
-#define OS_OSX
-#endif
-
-#ifdef OS_OSX
-#include <iconv.h>
+	#define OS_OSX
+	#include <iconv.h>
 #endif
 
 struct SDLRWIoContext
