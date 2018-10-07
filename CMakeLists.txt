@@ -6,8 +6,8 @@ conan_basic_setup()
 
 ## Setup options ##
 
-option(STEAM "Build for Steam" ON)
-set(STEAMWORKS_PATH "${CMAKE_BINARY_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
+option(STEAM "Build for Steam" OFF)
+set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" OFF)
 
 ## Misc setup ##

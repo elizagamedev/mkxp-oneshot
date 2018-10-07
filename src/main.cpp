@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 
-	int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+	int imgFlags = IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
 		showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
