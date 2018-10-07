@@ -7,8 +7,6 @@ cd `dirname $0`
 mac_version="1.1.0"
 make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
-STEAMWORKS_PATH=$HOME/Developer/downloaded/steamworks
-
 # Colors
 white="\033[0;37m"      # White - Regular
 bold="\033[1;37m"       # White - Bold
@@ -30,7 +28,7 @@ if [[ $use_qmake == True ]]
 	echo "-> ${cyan}Compile steamshim...${color_reset}"
 	cd steamshim_parent
 	mkdir build && cd build
-	cmake -DSTEAMWORKS_PATH=${STEAMWORKS_PATH} ..
+	cmake ..
 	make -j${make_threads}
 	cd ../..
 else
