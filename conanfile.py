@@ -16,14 +16,18 @@ class MkxpConan(ConanFile):
         "openal/1.18.2@bincrafters/stable",
         "physfs/3.0.1@eliza/stable",
         "pixman/0.34.0@bincrafters/stable",
-        "ruby/2.5.1@eliza/stable",
+        "ruby/2.3.7@eliza/stable",
         "sdl2/2.0.8@bincrafters/stable",
         "sdl2_image/2.0.3@bincrafters/stable",
         "sdl2_ttf/2.0.14@eliza/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
         "sigc++/2.10.0@eliza/stable",
     )
+    options = {
+        "platform": ["standalone", "steam"],
+    }
     default_options = (
+        "platform=standalone",
         "boost:without_test=True",
         "cygwin_installer:packages=xxd",
     )
@@ -34,6 +38,8 @@ class MkxpConan(ConanFile):
 
     def build_configure(self):
         cmake = CMake(self)
+        if self.options.platform == "steam":
+            cmake.definitions["STEAM"] = "ON"
         cmake.configure()
         cmake.build()
 

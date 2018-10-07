@@ -35,6 +35,18 @@
 #include "util.h"
 #include "sdl-util.h"
 
+namespace std
+{
+	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec)
+	{
+		for (auto item : vec)
+		{
+			os << item << " ";
+		}
+		return os;
+	}
+}
+
 static std::string prefPath(const char *org, const char *app)
 {
 	char *path = SDL_GetPrefPath(org, app);
@@ -117,9 +129,9 @@ void Config::read(int argc, char *argv[])
 	po::options_description podesc;
 	podesc.add_options()
 	        PO_DESC_ALL
-	        ("preloadScript", po::value<StringVec>()->composing())
-	        ("fontSub", po::value<StringVec>()->composing())
-	        ("rubyLoadpath", po::value<StringVec>()->composing())
+	        ("preloadScript", po::value<StringVec>()->composing()->default_value(StringVec()))
+	        ("fontSub", po::value<StringVec>()->composing()->default_value(StringVec()))
+	        ("rubyLoadpath", po::value<StringVec>()->composing()->default_value(StringVec()))
 	        ;
 
 	po::variables_map vm;
