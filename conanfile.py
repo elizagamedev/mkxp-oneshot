@@ -21,7 +21,7 @@ class MkxpConan(ConanFile):
         "sdl2_image/2.0.3@bincrafters/stable",
         "sdl2_ttf/2.0.14@eliza/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
-        "sigc++/2.10.0@eliza/stable",
+        "sigc++/2.10.0@bincrafters/stable",
     )
     options = {
         "platform": ["standalone", "steam"],
