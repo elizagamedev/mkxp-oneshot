@@ -3,7 +3,7 @@ import os.path
 
 
 class MkxpConan(ConanFile):
-    name = "mkxp"
+    name = "oneshot"
     version = "0.0.0"
     license = "GPLv2"
     url = "https://github.com/elizagamedev/mkxp-oneshot"
@@ -14,7 +14,7 @@ class MkxpConan(ConanFile):
     requires = (
         "boost/1.68.0@conan/stable",
         "openal/1.18.2@bincrafters/stable",
-        "physfs/3.0.1@eliza/stable",
+        "physfs/stable-3.0@eliza/stable",
         "pixman/0.34.0@bincrafters/stable",
         "ruby/2.3.7@eliza/stable",
         "sdl2/2.0.8@bincrafters/stable",
@@ -35,6 +35,10 @@ class MkxpConan(ConanFile):
     def build_requirements(self):
         if tools.os_info.is_windows:
             self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
+
+    def requirements(self):
+        if self.options.platform == "steam":
+            self.requires("steamworks/1.42@eliza/stable")
 
     def build_configure(self):
         cmake = CMake(self)
