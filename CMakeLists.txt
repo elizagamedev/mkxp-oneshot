@@ -294,7 +294,7 @@ target_link_libraries(${PROJECT_NAME}
 	${PLATFORM_LIBRARIES})
 
 IF(APPLE)
-	add_custom_command(TARGET ${target} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
 ENDIF()
 
 if(STEAM)
