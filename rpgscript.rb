@@ -33,8 +33,8 @@ Dir.entries(game_data_dir).each do |e|
 end
 
 unless target_path
-  STDERR.puts "error: could not determine game engine version"
-  exit 1
+  STDERR.puts "warning: could not determine game engine version, assuming XP"
+  target_path = File.join(game_data_dir, 'xScripts.rxdata')
 end
 
 # Generate path of script list

@@ -306,3 +306,5 @@ if(STEAM)
 		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
 		COPYONLY)
 endif()
+
+add_subdirectory(scripts)

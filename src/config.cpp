@@ -25,7 +25,7 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include <SDL_filesystem.h>
+#include <physfs.h>
 
 #include <fstream>
 #include <stdint.h>
@@ -49,15 +49,12 @@ namespace std
 
 static std::string prefPath(const char *org, const char *app)
 {
-	char *path = SDL_GetPrefPath(org, app);
+	const char *path = PHYSFS_getPrefDir(org, app);
 
 	if (!path)
 		return std::string();
 
-	std::string str(path);
-	SDL_free(path);
-
-	return str;
+	return path;
 }
 
 template<typename T>

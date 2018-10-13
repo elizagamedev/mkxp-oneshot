@@ -25,6 +25,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_sound.h>
+#include <physfs.h>
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -229,6 +230,9 @@ int main(int argc, char *argv[])
 		SDL_free(dataDir);
 	}
 #endif
+
+        /* Initialize physfs here so that config can call PHYSFS_getPrefDir */
+	PHYSFS_init(argv[0]);
 
 	/* now we load the config */
 	Config conf;

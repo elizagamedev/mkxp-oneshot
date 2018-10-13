@@ -318,8 +318,6 @@ FileSystem::FileSystem(const char *argv0,
 	p = new FileSystemPrivate;
 	p->havePathCache = false;
 
-	PHYSFS_init(argv0);
-
 	PHYSFS_registerArchiver(&RGSS1_Archiver);
 	PHYSFS_registerArchiver(&RGSS2_Archiver);
 	PHYSFS_registerArchiver(&RGSS3_Archiver);
