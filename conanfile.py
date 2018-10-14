@@ -16,12 +16,15 @@ class MkxpConan(ConanFile):
         "openal/1.18.2@bincrafters/stable",
         "physfs/stable-3.0@eliza/stable",
         "pixman/0.34.0@bincrafters/stable",
-        "ruby/2.3.7@eliza/stable",
+        "ruby/trunk@eliza/stable",
         "sdl2/2.0.8@bincrafters/stable",
         "sdl2_image/2.0.3@bincrafters/stable",
         "sdl2_ttf/2.0.14@eliza/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
         "sigc++/2.10.0@bincrafters/stable",
+    )
+    build_requires = (
+        "ruby_installer/2.3.3@bincrafters/stable",
     )
     options = {
         "platform": ["standalone", "steam"],
@@ -30,6 +33,7 @@ class MkxpConan(ConanFile):
         "platform=standalone",
         "boost:without_test=True",
         "cygwin_installer:packages=xxd",
+        "openal:shared=True",
     )
 
     def build_requirements(self):
@@ -67,7 +71,11 @@ class MkxpConan(ConanFile):
         self.do_copy_deps(self.copy_deps)
 
     def do_copy_deps(self, copy):
-        deps = set(self.deps_cpp_info.deps)
-        deps.discard("cygwin_installer")
+        deps = set(self.deps_cpp_info.deps) - set((
+            "cygwin_installer",
+            "msys2_installer",
+            "ruby_installer"))
         for dep in deps:
             copy("*.dll", dst="bin", src="bin", root_package=dep, keep_path=False)
+            if self.settings.build_type == "Debug":
+                copy("*.pdb", dst="bin", root_package=dep, keep_path=False)
