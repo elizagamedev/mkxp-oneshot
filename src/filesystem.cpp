@@ -40,11 +40,8 @@
 #include <stack>
 
 #ifdef __APPLE__
-#define OS_OSX
-#endif
-
-#ifdef OS_OSX
-#include <iconv.h>
+	#define OS_OSX
+	#include <iconv.h>
 #endif
 
 struct SDLRWIoContext
@@ -321,8 +318,6 @@ FileSystem::FileSystem(const char *argv0,
 	p = new FileSystemPrivate;
 	p->havePathCache = false;
 
-	PHYSFS_init(argv0);
-
 	PHYSFS_registerArchiver(&RGSS1_Archiver);
 	PHYSFS_registerArchiver(&RGSS2_Archiver);
 	PHYSFS_registerArchiver(&RGSS3_Archiver);
@@ -465,7 +460,7 @@ struct FontSetsCBData
 };
 
 static PHYSFS_EnumerateCallbackResult
-findFontsFolderCB (void *data, const char *dir, const char *fname)
+fontSetEnumCB (void *data, const char *dir, const char *fname)
 {
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
@@ -473,7 +468,7 @@ findFontsFolderCB (void *data, const char *dir, const char *fname)
 	const char *ext = findExt(fname);
 
 	if (!ext)
-		return PHYSFS_ENUM_STOP;
+		return PHYSFS_ENUM_OK;
 
 	char lowExt[8];
 	size_t i;
@@ -483,7 +478,7 @@ findFontsFolderCB (void *data, const char *dir, const char *fname)
 	lowExt[i] = '\0';
 
 	if (strcmp(lowExt, "ttf") && strcmp(lowExt, "otf") && strcmp(lowExt, "ttc"))
-		return PHYSFS_ENUM_STOP;
+		return PHYSFS_ENUM_OK;
 
 	char filename[512];
 	snprintf(filename, sizeof(filename), "%s/%s", dir, fname);
@@ -507,7 +502,7 @@ void FileSystem::initFontSets(SharedFontState &sfs)
 {
 	FontSetsCBData d = { p, &sfs };
 
-	PHYSFS_enumerate("Fonts", findFontsFolderCB, &d);
+	PHYSFS_enumerate("Fonts", fontSetEnumCB, &d);
 }
 
 struct OpenReadEnumData

@@ -15,7 +15,7 @@
 
 bin/
 lib/
-oneshot\.dir/
+*.dir/
 x64/
 
 Makefile*
@@ -28,6 +28,7 @@ __pycache__
 /dist
 /debug
 /release
+steamshim_parent/build/
 
 object_script.*
 rpgscript.bat
@@ -53,3 +54,5 @@ conan_imports_manifest\.txt
 package/
 
 oclint/
+
+steamworks/

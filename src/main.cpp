@@ -25,6 +25,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_sound.h>
+#include <physfs.h>
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -45,10 +46,6 @@
 #include "i18n.h"
 
 #include "binding.h"
-
-#ifdef __WINDOWS__
-#include "resource.h"
-#endif
 
 #include "icon.png.xxd"
 
@@ -234,6 +231,9 @@ int main(int argc, char *argv[])
 	}
 #endif
 
+        /* Initialize physfs here so that config can call PHYSFS_getPrefDir */
+	PHYSFS_init(argv[0]);
+
 	/* now we load the config */
 	Config conf;
 	conf.read(argc, argv);
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 
-	int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+	int imgFlags = IMG_INIT_PNG;
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
 		showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());

@@ -401,10 +401,7 @@ class Window_Message < Window_Selectable
           $game_system.se_play($data_system.cancel_se)
           $game_temp.choice_proc.call($game_temp.choice_cancel_type - 1)
           terminate_message
-        end
-
-        # Confirm
-        if Input.trigger?(Input::ACTION)
+        elsif Input.trigger?(Input::ACTION)
           $game_system.se_play($data_system.decision_se)
           $game_temp.choice_proc.call(self.index)
           terminate_message

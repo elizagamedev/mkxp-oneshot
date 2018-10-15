@@ -2,43 +2,17 @@ cmake_minimum_required(VERSION 2.8.11)
 Project(oneshot)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(TARGETS)
 
 ## Setup options ##
 
-option(STEAM "Build for Steam" ON)
+option(STEAM "Build for Steam" OFF)
+set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
+option(DEBUG "Debug mode" OFF)
 
 ## Misc setup ##
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# IF("${CMAKE_SYSTEM}" MATCHES "Linux")
-# 	SET(LINUX ON)
-# ENDIF()
-
-# set(CMAKE_OSX_DEPLOYMENT_TARGET 10.6)
-
-# IF(LINUX)
-# 	if(CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT(FORCE32) )
-# 		set(CMAKE_EXECUTABLE_SUFFIX ".bin.x86_64")
-# 		set(BIN_RPATH "\$ORIGIN/lib64")
-# 		set(LIB_PATH "lib64")
-# 	else()
-# 		set(CMAKE_EXECUTABLE_SUFFIX ".bin.x86")
-# 		set(BIN_RPATH "\$ORIGIN/lib")
-# 		set(LIB_PATH "lib")
-# 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FILE_OFFSET_BITS=64")
-# 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64")
-# 	endif()
-# elseif(APPLE)
-# 	SET(BIN_RPATH "@executable_path/../Frameworks")
-# 	set(LIB_PATH "lib")
-# endif()
-
-# set(CMAKE_SKIP_BUILD_RPATH TRUE)
-# set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-# set(CMAKE_INSTALL_RPATH ${BIN_RPATH})
-# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 
 ## Setup main source ##
 
@@ -150,10 +124,13 @@ set(MAIN_SOURCE
 if(WIN32)
 	list(APPEND MAIN_SOURCE assets/resources.rc)
 	list(APPEND DEFINES UNICODE)
-	list(APPEND PLATFORM_LIBRARIES Secur32)
+	list(APPEND PLATFORM_LIBRARIES Secur32 Shlwapi)
 	include_directories(
 		${CMAKE_CURRENT_BINARY_DIR}/windows
 	)
+elseif(APPLE)
+	list(APPEND MAIN_HEADERS src/mac-desktop.h)
+	list(APPEND MAIN_SOURCE src/mac-desktop.mm)
 endif()
 
 if (STEAM)
@@ -262,6 +239,7 @@ set(BINDING_HEADERS
 	binding-mri/sceneelement-binding.h
 	binding-mri/viewportelement-binding.h
 	binding-mri/flashable-binding.h
+	binding-mri/journal-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp
@@ -302,4 +280,31 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} ${PLATFORM_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+	CONAN_PKG::boost
+	CONAN_PKG::openal
+	CONAN_PKG::physfs
+	CONAN_PKG::pixman
+	CONAN_PKG::ruby
+	CONAN_PKG::sdl2
+	CONAN_PKG::sdl2_image
+	CONAN_PKG::sdl2_ttf
+	CONAN_PKG::sdl_sound-mkxp
+	CONAN_PKG::sigc++
+	${PLATFORM_LIBRARIES})
+
+IF(APPLE)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
+ENDIF()
+
+if(STEAM)
+	add_subdirectory(steamshim_parent)
+
+	# steam_appid.txt
+	configure_file(
+		"${CMAKE_SOURCE_DIR}/steam_appid.txt"
+		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
+		COPYONLY)
+endif()
+
+add_subdirectory(scripts)

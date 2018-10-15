@@ -7,7 +7,6 @@ cd `dirname $0`
 mac_version="1.1.0"
 make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
-
 # Colors
 white="\033[0;37m"      # White - Regular
 bold="\033[1;37m"       # White - Bold
@@ -28,8 +27,9 @@ if [[ $use_qmake == True ]]
 	make -j${make_threads}
 	echo "-> ${cyan}Compile steamshim...${color_reset}"
 	cd steamshim_parent
-	HOST=osx make -j${make_threads}
-	cd ..
+	# mkdir build && cd build
+	STEAMWORKS=./steamworks make -j${make_threads}
+	cd .. # cd ../..
 else
 	echo "${bold}WARNING: Conan/CMake method not ready yet.${color_reset}"
 fi
