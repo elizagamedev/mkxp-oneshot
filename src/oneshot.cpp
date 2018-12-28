@@ -281,29 +281,34 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 #endif
 
 #ifdef OS_LINUX
-	std::string desktop(getenv("XDG_CURRENT_DESKTOP"));
-	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
-	if (desktop.find("cinnamon") != std::string::npos) {
-		desktopEnv = "cinnamon";
-		gtk_init(0, 0);
-	} else if (
-		desktop.find("gnome") != std::string::npos ||
-		desktop.find("unity") != std::string::npos
-	) {
-		desktopEnv = "gnome";
-		gtk_init(0, 0);
-	} else if (desktop.find("mate") != std::string::npos) {
-		desktopEnv = "mate";
-		gtk_init(0, 0);
-	} else if (desktop.find("xfce") != std::string::npos) {
-		desktopEnv = "xfce";
-		gtk_init(0, 0);
-	} else if (desktop.find("kde") != std::string::npos) {
-		desktopEnv = "kde";
-	} else if (desktop.find("lxde") != std::string::npos) {
-		desktopEnv = "lxde";
-	} else if (desktop.find("deepin") != std::string::npos) {
-		desktopEnv = "deepin";
+	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
+	if (xdg_current_desktop == NULL) {
+		desktopEnv = "nope";
+	} else {
+		std::string desktop(xdg_current_desktop);
+		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
+		if (desktop.find("cinnamon") != std::string::npos) {
+			desktopEnv = "cinnamon";
+			gtk_init(0, 0);
+		} else if (
+			desktop.find("gnome") != std::string::npos ||
+			desktop.find("unity") != std::string::npos
+		) {
+			desktopEnv = "gnome";
+			gtk_init(0, 0);
+		} else if (desktop.find("mate") != std::string::npos) {
+			desktopEnv = "mate";
+			gtk_init(0, 0);
+		} else if (desktop.find("xfce") != std::string::npos) {
+			desktopEnv = "xfce";
+			gtk_init(0, 0);
+		} else if (desktop.find("kde") != std::string::npos) {
+			desktopEnv = "kde";
+		} else if (desktop.find("lxde") != std::string::npos) {
+			desktopEnv = "lxde";
+		} else if (desktop.find("deepin") != std::string::npos) {
+			desktopEnv = "deepin";
+		}
 	}
 #endif
 
