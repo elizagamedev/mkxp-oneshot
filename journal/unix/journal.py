@@ -13,7 +13,7 @@ if sys.platform == "win32":
 	ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
 	documents_path = os.path.join(buf.value, 'My Games')
 else:
-	pipe_path = '/tmp/oneshot-pipe'
+	pipe_path = os.path.expanduser('~/.oneshot-pipe')
 	documents_path = os.path.expanduser('~/Documents')
 
 left_close = False

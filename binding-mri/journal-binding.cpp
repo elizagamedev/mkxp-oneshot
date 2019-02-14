@@ -16,11 +16,15 @@
 	#endif
 	#include <unistd.h>
 	#include <stdio.h>
+	#include <pwd.h>
+	#include <string>
+
+	std::string PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-pipe";
 
 	void cleanup_pipe()
 	{
-		unlink(PIPE_PATH);
-		remove(PIPE_PATH);
+		unlink(PIPE_PATH.c_str());
+		remove(PIPE_PATH.c_str());
 	}
 #endif
 
@@ -48,10 +52,10 @@ int server_thread(void *data)
 	}
 	CloseHandle(pipe);
 #else
-	if (FILE *file = fopen(PIPE_PATH, "r"))
+	if (FILE *file = fopen(PIPE_PATH.c_str(), "r"))
 	{
 		fclose(file);
-		out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		out_pipe = open(PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		SDL_LockMutex(mutex);
 		active = true;
 		if (message_len > 0)
@@ -148,7 +152,7 @@ void journalBindingInit()
 	memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';
 #if defined __linux
-	mkfifo(PIPE_PATH, 0666);
+	mkfifo(PIPE_PATH.c_str(), 0666);
 	atexit(cleanup_pipe);
 #endif
 
