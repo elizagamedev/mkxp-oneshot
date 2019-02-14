@@ -57,6 +57,7 @@ fi
 
 cp steamshim_parent/steamshim ./OneShot.app/Contents/Resources/steamshim
 # cp patches/mac/libsteam_api.dylib ./OneShot.app/Contents/Libraries/libsteam_api.dylib
+cp -f journal/unic/macOS/Python dist/_______.app/Contents/MacOS/Python
 install_name_tool -change @loader_path/libsteam_api.dylib "$( cd "$(dirname "$0")" ; pwd -P )"/steamworks/redistributable_bin/osx32/libsteam_api.dylib ./OneShot.app/Contents/Resources/steamshim
 cmake -P patches/mac/CompleteBundle.cmake
 cp assets/icon.icns ./OneShot.app/Contents/Resources/icon.icns
