@@ -383,7 +383,15 @@ class Window_Message < Window_Selectable
         @text_pause -= 1
       else
         if @blip >= BLIP_TIME
-          Audio.se_play("Audio/SE/#{@blipsound}.wav", 50) unless @text.empty?
+		  #april fools
+		  t = Time.now
+	      if $game_temp.message_face != nil && t.month == 4 && t.day == 1 && $game_temp.message_face.start_with?("niko")
+		    niko_sounds = [ "cat_2"]
+			@blipsound = niko_sounds[rand(niko_sounds.length)]
+            Audio.se_play("Audio/SE/#{@blipsound}.wav", 50, rand(100..125)) unless @text.empty?
+	      else
+            Audio.se_play("Audio/SE/#{@blipsound}.wav", 50) unless @text.empty?
+		  end
           @blip = 0
         else
           @blip += 1
