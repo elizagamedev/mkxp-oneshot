@@ -34,6 +34,7 @@
 #include "debugwriter.h"
 #include "util.h"
 #include "sdl-util.h"
+#include "iniconfig.h"
 
 namespace std
 {
