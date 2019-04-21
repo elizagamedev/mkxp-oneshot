@@ -252,6 +252,12 @@ BINDING_MRI {
 	MRIVERSION = $$(MRIVERSION)
 	isEmpty(MRIVERSION) {
 		MRIVERSION = 2.5
+		unix {
+			!macx {
+				# Issues with compiling on Ubuntu with Ruby 2.4+.
+				MRIVERSION = 2.3
+			}
+		}
 	}
 
 	PKGCONFIG += ruby-$$MRIVERSION

@@ -23,7 +23,7 @@ echo -e "${white}Compiling ${bold}SyngleChance v${linux_version} ${white}engine 
 echo -e "-> ${cyan}Generate makefile...${color_reset}"
 export MRIVERSION=$(echo "puts RUBY_VERSION.split('.').slice(0, 2).join('.')" | ruby)
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-qmake mkxp.pro MRIVERSION=2.3 > oneshot.qmake.out
+qmake mkxp.pro > oneshot.qmake.out
 
 # Compile OneShot.
 echo -e "-> ${cyan}Compile engine...${color_reset}"
