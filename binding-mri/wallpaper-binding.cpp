@@ -161,7 +161,7 @@
 				desktop = "kde_error";
 			}
 		} else {
-			fallbackPath = std::string(getenv("HOME")) + "/Desktop/hint.png";
+			fallbackPath = std::string(getenv("HOME")) + "/Desktop/ONESHOT_hint.png";
 		}
 	}
 #endif
@@ -353,6 +353,8 @@ end:
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
 			dstHint << srcHint.rdbuf();
+			srcHint.close();
+			dstHint.close();
 		}
 	#endif
 #endif
@@ -429,7 +431,7 @@ RB_METHOD(wallpaperReset)
 					"var data = {";
 			// Plugin, picture, color, mode, blur
 			for (auto const& x : defPlugins) {
-				command << "\"" + x.first + "\": {"
+				command << "\"" << x.first << "\": {"
 						<< "plugin: \"" << x.second << "\"";
 				if (defPictures.find(x.first) != defPictures.end()) {
 					std::string picture = defPictures[x.first];
@@ -474,7 +476,7 @@ RB_METHOD(wallpaperReset)
 			Debug() << "Reset result:" << result;
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
-				Debug() << "Failed to delete hint.png!";
+				Debug() << "Failed to delete:" << fallbackPath;
 			}
 		}
 	#endif
@@ -494,8 +496,7 @@ void wallpaperBindingInit()
 #ifdef __linux__
 void wallpaperBindingTerminate()
 {
-	// Clean up
-	// We assume Gio::Settings destructor will be automatically called
+	// Clean up.
 	if (desktop == "xfce") {
 		xfconf_shutdown();
 	}

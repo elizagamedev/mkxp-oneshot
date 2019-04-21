@@ -223,6 +223,7 @@ inline ALenum chooseALFormat(int sampleSize, int channelCount)
 		case 1 : return AL_FORMAT_MONO8;
 		case 2 : return AL_FORMAT_STEREO8;
 		}
+		/* falls through */
 	case 2 :
 		switch (channelCount)
 		{

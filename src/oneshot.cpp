@@ -310,6 +310,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 			desktopEnv = "deepin";
 		}
 	}
+
+	Debug() << "Desktop env  :" << desktopEnv;
 #endif
 
 	/********

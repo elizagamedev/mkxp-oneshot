@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-        /* Initialize physfs here so that config can call PHYSFS_getPrefDir */
+	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
 
 	/* now we load the config */
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
 		conf.syncToRefreshrate = false;
 
 	EventThread eventThread;
-	RGSSThreadData rtData(&eventThread, argv[0], win,
+	RGSSThreadData rtData(&eventThread, win,
 	                      alcDev, mode.refresh_rate, conf);
 
 #ifndef STEAM

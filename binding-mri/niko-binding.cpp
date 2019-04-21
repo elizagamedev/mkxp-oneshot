@@ -1,8 +1,8 @@
 #include "binding-util.h"
 #include "binding-types.h"
 #include "sharedstate.h"
-#include "eventthread.h"
 #include "debugwriter.h"
+#include "eventthread.h"
 
 #if defined _WIN32
 #define OS_W32
@@ -22,7 +22,10 @@
 		#include <sys/inotify.h>
 	#endif
 	#include <unistd.h>
-	#include <stdio.h>
+	#include <cstdio>
+	#include <pwd.h>
+	#include <string>
+	#include <errno.h>
 #endif
 
 #include <SDL.h>
@@ -42,12 +45,12 @@ static volatile bool active = false;
 static volatile int message_len = 0;
 
 #ifdef LINUX
-	#define PIPE_PATH "/tmp/oneshot-pipe"
+	static std::string NIKO_PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-niko-pipe";
 	static volatile int out_pipe = -1;
 	void niko_cleanup_pipe()
 	{
-		unlink(PIPE_PATH);
-		remove(PIPE_PATH);
+		unlink(NIKO_PIPE_PATH.c_str());
+		remove(NIKO_PIPE_PATH.c_str());
 	}
 #endif
 
@@ -75,9 +78,8 @@ int niko_server_thread(void *data)
 	}
 	CloseHandle(pipe);
 #else
-	if (FILE *file = fopen(PIPE_PATH, "r")) {
-		fclose(file);
-		out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+	if (access(NIKO_PIPE_PATH.c_str(), F_OK) != -1) {
+		out_pipe = open(NIKO_PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		SDL_LockMutex(mutex);
 		active = true;
 		if (message_len > 0)
@@ -114,10 +116,10 @@ RB_METHOD(nikoPrepare)
 	#ifdef OS_OSX
 		journal = std::string(path) + "/_______.app/Contents/MacOS/_______";
 	#else
-		journal = std::string(path) + "_______";
+		journal = std::string(path) + "/_______";
 	#endif
 
-	// Run the binary
+	// Run the binary.
 	pid_t pid = fork();
 	if (pid == 0) {
 		execl(journal.c_str(), journal.c_str(), (char*)"niko", (char*)0);
@@ -194,7 +196,7 @@ void nikoBindingInit()
 {
 	mutex = SDL_CreateMutex();
 #if defined __linux
-	mkfifo(PIPE_PATH, 0666);
+	mkfifo(NIKO_PIPE_PATH.c_str(), 0666);
 	atexit(niko_cleanup_pipe);
 #endif
 

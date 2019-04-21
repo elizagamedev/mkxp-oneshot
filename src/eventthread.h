@@ -253,8 +253,6 @@ struct RGSSThreadData
 	UnidirMessage<BDescVec> bindingUpdateMsg;
 	SyncPoint syncPoint;
 
-	const char *argv0;
-
 	SDL_Window *window;
 	ALCdevice *alcDev;
 
@@ -269,14 +267,12 @@ struct RGSSThreadData
 	int inputTextLimit;
 
 	RGSSThreadData(EventThread *ethread,
-	               const char *argv0,
 	               SDL_Window *window,
 	               ALCdevice *alcDev,
 	               int refreshRate,
 	               const Config& newconf)
 	    : allowExit(true),
 	      ethread(ethread),
-	      argv0(argv0),
 	      window(window),
 	      alcDev(alcDev),
 	      sizeResoRatio(1, 1),

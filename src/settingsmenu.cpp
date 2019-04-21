@@ -1255,6 +1255,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 		default:
 			break;
 		}
+		break;
 
 	case SDL_CONTROLLERBUTTONDOWN:
 	case SDL_CONTROLLERAXISMOTION:
