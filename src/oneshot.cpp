@@ -282,6 +282,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 
 #ifdef OS_LINUX
 	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
+	gtk_init(0, 0);
+
 	if (xdg_current_desktop == NULL) {
 		desktopEnv = "nope";
 	} else {
@@ -289,19 +291,15 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
 		if (desktop.find("cinnamon") != std::string::npos) {
 			desktopEnv = "cinnamon";
-			gtk_init(0, 0);
 		} else if (
 			desktop.find("gnome") != std::string::npos ||
 			desktop.find("unity") != std::string::npos
 		) {
 			desktopEnv = "gnome";
-			gtk_init(0, 0);
 		} else if (desktop.find("mate") != std::string::npos) {
 			desktopEnv = "mate";
-			gtk_init(0, 0);
 		} else if (desktop.find("xfce") != std::string::npos) {
 			desktopEnv = "xfce";
-			gtk_init(0, 0);
 		} else if (desktop.find("kde") != std::string::npos) {
 			desktopEnv = "kde";
 		} else if (desktop.find("lxde") != std::string::npos) {
@@ -488,17 +486,10 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	if (!title)
 		title = "";
 	#if defined OS_LINUX
-	if (
-		desktopEnv == "gnome" ||
-		desktopEnv == "mate" ||
-		desktopEnv == "cinnamon" ||
-		desktopEnv == "xfce"
-	) {
-		linux_DialogData data = {type, body, title, 0};
-		gdk_threads_add_idle(linux_dialog, &data);
-		gtk_main();
-		return data.result;
-	}
+	linux_DialogData data = {type, body, title, 0};
+	gdk_threads_add_idle(linux_dialog, &data);
+	gtk_main();
+	return data.result;
 	#endif
 
 	// SDL message box
