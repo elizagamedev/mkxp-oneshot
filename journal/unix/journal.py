@@ -202,10 +202,11 @@ class Niko(QWidget):
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 
-	default_pipe_path = get_pipe_path()
+	pipe_path = get_pipe_path()
 	if len(sys.argv) == 2 and sys.argv[1] == 'niko':
 		# "Niko-leaves-the-screen" mode.
-		thread = AnimationTimer(pipe = get_pipe_path('niko'))
+		pipe_path = get_pipe_path('niko')
+		thread = AnimationTimer(pipe = pipe_path)
 
 		niko = Niko(screen_height = app.primaryScreen().size().height(), app = app, thread = thread)
 
@@ -225,18 +226,18 @@ if __name__ == '__main__':
 				if lang == 'en_US': lang = 'en'
 				journal.change_image('save_' + lang)
 		else:
-			thread = WatchPipe(pipe = default_pipe_path)
+			thread = WatchPipe(pipe = pipe_path)
 			thread.change_image.connect(journal.change_image)
 			thread.start()
 
-	if not os.path.exists(default_pipe_path):
-		pipe_file = open(default_pipe_path, 'w+')
+	if not os.path.exists(pipe_path):
+		pipe_file = open(pipe_path, 'w+')
 		pipe_file.close()
 
 	app.exec_()
 
 	try:
-		os.remove(default_pipe_path)
+		os.remove(pipe_path)
 	except:
 		# Most likely due to the file being in use, ignore.
 		pass
