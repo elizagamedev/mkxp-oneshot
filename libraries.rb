@@ -17,7 +17,7 @@ line = gets
 files = []
 while line
   if line =~ / => (\/.*) \(/
-    if not BLACKLIST.include? $1
+    if not BLACKLIST.any? {|library| $1.end_with? library }
       files << $1
     end
   end

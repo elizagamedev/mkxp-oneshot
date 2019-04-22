@@ -485,12 +485,12 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
 	if (!title)
 		title = "";
-	#if defined OS_LINUX
+#ifdef OS_LINUX
 	linux_DialogData data = {type, body, title, 0};
 	gdk_threads_add_idle(linux_dialog, &data);
 	gtk_main();
 	return data.result;
-	#endif
+#else
 
 	// SDL message box
 	// Button data
@@ -570,6 +570,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	#endif
 
 	return button ? true : false;
+#endif // #ifdef OS_LINUX
 }
 
 std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
