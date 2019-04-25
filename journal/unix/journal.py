@@ -225,10 +225,9 @@ if __name__ == '__main__':
 				lang = lang[lang.find('[') + 1:lang.find(']')]
 				if lang == 'en_US': lang = 'en'
 				journal.change_image('save_' + lang)
-		else:
-			thread = WatchPipe(pipe = pipe_path)
-			thread.change_image.connect(journal.change_image)
-			thread.start()
+		thread = WatchPipe(pipe = pipe_path)
+		thread.change_image.connect(journal.change_image)
+		thread.start()
 
 	if not os.path.exists(pipe_path):
 		pipe_file = open(pipe_path, 'w+')
