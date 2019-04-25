@@ -202,6 +202,13 @@ CONFIG(release, debug|release): {
 	SOURCES += src/steam.cpp steamshim/steamshim_child.c
 }
 
+unix {
+	!macx {
+		HEADERS += src/xdg-user-dir-lookup.h
+		SOURCES += src/xdg-user-dir-lookup.c
+	}
+}
+
 EMBED = \
 	shader/common.h \
 	shader/transSimple.frag \

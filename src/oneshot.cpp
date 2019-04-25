@@ -36,6 +36,7 @@
 		#define OS_LINUX
 		#include <gtk/gtk.h>
 		#include <gdk/gdk.h>
+		#include "xdg-user-dir-lookup.h"
 	#endif
 #else
 	#error "Operating system not detected."
@@ -270,15 +271,21 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	}
 
 	// Get documents path
-	std::string path = std::string(getenv("HOME")) + "/Documents";
-	p->docsPath = path.c_str();
-	p->gamePath = path.c_str();
 	#ifdef OS_OSX
+		std::string path = std::string(getenv("HOME")) + "/Documents";
+		p->docsPath = path.c_str();
+		p->gamePath = path.c_str();
 		p->journal = "_______.app";
 	#elif defined OS_LINUX
+		char * path = xdg_user_dir_lookup("DOCUMENTS");
+		p->docsPath = path;
+		p->gamePath = path;
 		p->journal = "_______";
 	#endif
 #endif
+
+	Debug() << "Game path    :" << p->gamePath;
+	Debug() << "Docs path    :" << p->docsPath;
 
 #ifdef OS_LINUX
 	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
