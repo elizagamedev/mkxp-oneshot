@@ -505,6 +505,7 @@ module Script
 	  locale = 'en'
 	end
     source_dir = "Graphics/Fogs/_/scenario1/" + locale.downcase
+    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
     copy_file(source_dir + "/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
     copy_file(source_dir + "/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
     copy_file(source_dir + "/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
@@ -516,11 +517,12 @@ module Script
 	if !Language::LANGUAGES.include? locale
 	  locale = 'en'
 	end
-    source_dir = "Graphics/Fogs/_/scenario2/" + locale.downcase
-    copy_file(source_dir + "/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
-    copy_file(source_dir + "/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
-    copy_file(source_dir + "/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
-    copy_file(source_dir + "/pw4.png", Oneshot::DOCS_PATH + "/ONESHOT_password4.png")
+    source_dir = "Graphics/Fogs/_/scenario2/#{locale.downcase}"
+    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+    copy_file("#{source_dir}/pw1.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password1.png")
+    copy_file("#{source_dir}/pw2.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password2.png")
+    copy_file("#{source_dir}/pw3.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password3.png")
+    copy_file("#{source_dir}/pw4.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password4.png")
   end
 
 =begin
