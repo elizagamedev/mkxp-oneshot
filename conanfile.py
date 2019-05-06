@@ -14,7 +14,7 @@ class MkxpConan(ConanFile):
     requires = (
         "boost/1.68.0@conan/stable",
         "openal/1.18.2@bincrafters/stable",
-        "physfs/stable-3.0@eliza/stable",
+        "physfs/3.0.1@bincrafters/stable",
         "pixman/0.34.0@bincrafters/stable",
         "ruby/trunk@eliza/stable",
         "sdl2/2.0.8@bincrafters/stable",

@@ -4,7 +4,7 @@ set -e
 cd `dirname $0`
 
 # User-configurable variables
-mac_version="1.1.0"
+mac_version="1.1.1"
 make_threads=8
 ONESHOT_PATH=$HOME/Library/Application\ Support/Steam/steamapps/common/OneShot
 # Colors
@@ -26,11 +26,11 @@ if [[ $use_qmake == True ]]
 	echo "-> ${cyan}Compile engine...${color_reset}"
 	make -j${make_threads}
 	echo "-> ${cyan}Compile steamshim...${color_reset}"
-	cd steamshim_parent
-	mkdir build && cd build
-	cmake ..
-	make -j${make_threads}
-	cd ../..
+	# cd steamshim_parent
+	# mkdir build && cd build
+	# cmake ..
+	# STEAMWORKS=./steamworks make -j${make_threads}
+	# cd ../..
 else
 	echo "${bold}WARNING: Conan/CMake method not ready yet.${color_reset}"
 fi
@@ -55,8 +55,10 @@ if [ ! -e $ResourcesDir ]
 	mkdir -p "$ResourcesDir"
 fi
 
-cp steamshim_parent/build/steamshim ./OneShot.app/Contents/Resources/steamshim
-cp patches/mac/libsteam_api.dylib ./OneShot.app/Contents/Libraries/libsteam_api.dylib
+cp steamshim_parent/steamshim ./OneShot.app/Contents/Resources/steamshim
+# cp patches/mac/libsteam_api.dylib ./OneShot.app/Contents/Libraries/libsteam_api.dylib
+cp -f journal/unix/macOS/Python dist/_______.app/Contents/MacOS/Python
+install_name_tool -change @loader_path/libsteam_api.dylib "$( cd "$(dirname "$0")" ; pwd -P )"/steamworks/redistributable_bin/osx32/libsteam_api.dylib ./OneShot.app/Contents/Resources/steamshim
 cmake -P patches/mac/CompleteBundle.cmake
 cp assets/icon.icns ./OneShot.app/Contents/Resources/icon.icns
 cp steam_appid.txt ./OneShot.app/Contents/Resources/steam_appid.txt

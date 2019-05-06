@@ -239,7 +239,6 @@ set(BINDING_HEADERS
 	binding-mri/sceneelement-binding.h
 	binding-mri/viewportelement-binding.h
 	binding-mri/flashable-binding.h
-	binding-mri/journal-binding.h
 )
 set(BINDING_SOURCE
 	binding-mri/binding-mri.cpp

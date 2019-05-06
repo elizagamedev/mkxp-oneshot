@@ -36,6 +36,7 @@
 		#define OS_LINUX
 		#include <gtk/gtk.h>
 		#include <gdk/gdk.h>
+		#include "xdg-user-dir-lookup.h"
 	#endif
 #else
 	#error "Operating system not detected."
@@ -270,41 +271,52 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	}
 
 	// Get documents path
-	std::string path = std::string(getenv("HOME")) + "/Documents";
-	p->docsPath = path.c_str();
-	p->gamePath = path.c_str();
 	#ifdef OS_OSX
+		std::string path = std::string(getenv("HOME")) + "/Documents";
+		p->docsPath = path.c_str();
+		p->gamePath = path.c_str();
 		p->journal = "_______.app";
 	#elif defined OS_LINUX
+		char * path = xdg_user_dir_lookup("DOCUMENTS");
+		p->docsPath = path;
+		p->gamePath = path;
 		p->journal = "_______";
 	#endif
 #endif
 
+	Debug() << "Game path    :" << p->gamePath;
+	Debug() << "Docs path    :" << p->docsPath;
+
 #ifdef OS_LINUX
-	std::string desktop(getenv("XDG_CURRENT_DESKTOP"));
-	std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
-	if (desktop.find("cinnamon") != std::string::npos) {
-		desktopEnv = "cinnamon";
-		gtk_init(0, 0);
-	} else if (
-		desktop.find("gnome") != std::string::npos ||
-		desktop.find("unity") != std::string::npos
-	) {
-		desktopEnv = "gnome";
-		gtk_init(0, 0);
-	} else if (desktop.find("mate") != std::string::npos) {
-		desktopEnv = "mate";
-		gtk_init(0, 0);
-	} else if (desktop.find("xfce") != std::string::npos) {
-		desktopEnv = "xfce";
-		gtk_init(0, 0);
-	} else if (desktop.find("kde") != std::string::npos) {
-		desktopEnv = "kde";
-	} else if (desktop.find("lxde") != std::string::npos) {
-		desktopEnv = "lxde";
-	} else if (desktop.find("deepin") != std::string::npos) {
-		desktopEnv = "deepin";
+	char const* xdg_current_desktop = getenv("XDG_CURRENT_DESKTOP");
+	gtk_init(0, 0);
+
+	if (xdg_current_desktop == NULL) {
+		desktopEnv = "nope";
+	} else {
+		std::string desktop(xdg_current_desktop);
+		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
+		if (desktop.find("cinnamon") != std::string::npos) {
+			desktopEnv = "cinnamon";
+		} else if (
+			desktop.find("gnome") != std::string::npos ||
+			desktop.find("unity") != std::string::npos
+		) {
+			desktopEnv = "gnome";
+		} else if (desktop.find("mate") != std::string::npos) {
+			desktopEnv = "mate";
+		} else if (desktop.find("xfce") != std::string::npos) {
+			desktopEnv = "xfce";
+		} else if (desktop.find("kde") != std::string::npos) {
+			desktopEnv = "kde";
+		} else if (desktop.find("lxde") != std::string::npos) {
+			desktopEnv = "lxde";
+		} else if (desktop.find("deepin") != std::string::npos) {
+			desktopEnv = "deepin";
+		}
 	}
+
+	Debug() << "Desktop env  :" << desktopEnv;
 #endif
 
 	/********
@@ -480,19 +492,12 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
 	if (!title)
 		title = "";
-	#if defined OS_LINUX
-	if (
-		desktopEnv == "gnome" ||
-		desktopEnv == "mate" ||
-		desktopEnv == "cinnamon" ||
-		desktopEnv == "xfce"
-	) {
-		linux_DialogData data = {type, body, title, 0};
-		gdk_threads_add_idle(linux_dialog, &data);
-		gtk_main();
-		return data.result;
-	}
-	#endif
+#ifdef OS_LINUX
+	linux_DialogData data = {type, body, title, 0};
+	gdk_threads_add_idle(linux_dialog, &data);
+	gtk_main();
+	return data.result;
+#else
 
 	// SDL message box
 	// Button data
@@ -572,6 +577,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	#endif
 
 	return button ? true : false;
+#endif // #ifdef OS_LINUX
 }
 
 std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {

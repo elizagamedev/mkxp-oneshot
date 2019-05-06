@@ -123,7 +123,8 @@ def safe_puzzle_write
 	when 'zh_CN'
 	  doc_text = DOCUMENT_TEXT_ZH_CN
   end
-  File.open(Oneshot::DOCS_PATH + "/DOCUMENT.oneshot.txt", 'w') do |file|
+  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+  File.open("#{Oneshot::DOCS_PATH}/DOCUMENT.oneshot.txt", 'w') do |file|
     file.puts(doc_text + $game_variables[20].to_s)
   end
 end
@@ -144,7 +145,8 @@ def safe_puzzle_postgame_write
 	when 'zh_CN'
 	  doc_text = DOCUMENT_POSTGAME_TEXT_ZH_CN
   end
-  File.open(Oneshot::DOCS_PATH + "/DOCUMENT.oneshot.txt", 'w') do |file|
+  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+  File.open("#{Oneshot::DOCS_PATH}/DOCUMENT.oneshot.txt", 'w') do |file|
     file.puts(doc_text + $game_variables[20].to_s)
   end
 end

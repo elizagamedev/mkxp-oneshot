@@ -34,7 +34,19 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 * PyQt5 for Python 3 (journal reimplementation only)
 * Steamworks SDK (optional, place contents of sdk folder in ZIP into "steamworks" folder in root)
 
-### Building with Conan
+### Building with QMake
+
+The `make-oneshot-mac.command` and `make-oneshot-linux.sh` files automate the entire process for you.  Just run the applicable file to compile and install the engine into OneShot's default Steam directory.
+
+qmake will use pkg-config to locate the respective include/library paths. If you installed any dependencies into non-standard prefixes, make sure to adjust your `PKG_CONFIG_PATH` variable accordingly.
+
+The exception is boost, which is weird in that it still hasn't managed to pull off pkg-config support (seriously?). *If you installed boost in a non-standard prefix*, you will need to pass its include path via `BOOST_I` and library path via `BOOST_L`, either as direct arguments to qmake (`qmake BOOST_I="/usr/include" ...`) or via environment variables. You can specify a library suffix (eg. "-mt") via `BOOST_LIB_SUFFIX` if needed.
+
+By default, *SyngleChance* switches into the directory where its binary is contained and then starts reading the configuration and resolving relative paths. In case this is undesired (eg. when the binary is to be installed to a system global, read-only location), it can be turned off by adding `DEFINES+=WORKDIR_CURRENT` to qmake's arguments.
+
+pkg-config will look for `ruby-2.3.pc`, but you can override the version with `MRIVERSION=2.5` ('2.5' being an example). This is the default binding, so no arguments to qmake needed (`BINDING=MRI` to be explicit).
+
+### Building with Conan (Supported on Windows, in progress on macOS/Linux)
 
 *SyngleChance* used to employ the `qmake` build system, but is now migrating to `conan`, so you'll need to install that beforehand.  You'll also want to add the following remotes to `conan`:
 
@@ -61,18 +73,6 @@ Finally, you can build the project by running the following:
 ```sh
 conan build .
 ```
-
-### Building with QMake (Old)
-
-The `make-oneshot-mac.command` and `make-oneshot-linux.sh` files automate the entire process for you.  Just run the applicable file to compile and install the engine into OneShot's default Steam directory.
-
-qmake will use pkg-config to locate the respective include/library paths. If you installed any dependencies into non-standard prefixes, make sure to adjust your `PKG_CONFIG_PATH` variable accordingly.
-
-The exception is boost, which is weird in that it still hasn't managed to pull off pkg-config support (seriously?). *If you installed boost in a non-standard prefix*, you will need to pass its include path via `BOOST_I` and library path via `BOOST_L`, either as direct arguments to qmake (`qmake BOOST_I="/usr/include" ...`) or via environment variables. You can specify a library suffix (eg. "-mt") via `BOOST_LIB_SUFFIX` if needed.
-
-By default, *SyngleChance* switches into the directory where its binary is contained and then starts reading the configuration and resolving relative paths. In case this is undesired (eg. when the binary is to be installed to a system global, read-only location), it can be turned off by adding `DEFINES+=WORKDIR_CURRENT` to qmake's arguments.
-
-pkg-config will look for `ruby-2.3.pc`, but you can override the version with `MRIVERSION=2.5` ('2.5' being an example). This is the default binding, so no arguments to qmake needed (`BINDING=MRI` to be explicit).
 
 ### Supported image/audio formats
 These depend on the SDL auxiliary libraries. *SyngleChance* only makes use of bmp/png for images and oggvorbis/wav for audio.

@@ -15,7 +15,7 @@ rm -rf *.vcxproj.filters
 rm -rf *.user
 rm -rf _______.app
 rm -rf OneShot.app
-rm -rf OneShot
+rm -rf oneshot
 rm -rf conanbuildinfo.cmake
 rm -rf CMakeFiles
 rm -rf cmake_install.cmake

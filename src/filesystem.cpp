@@ -312,8 +312,7 @@ struct FileSystemPrivate
 	bool havePathCache;
 };
 
-FileSystem::FileSystem(const char *argv0,
-                       bool allowSymlinks)
+FileSystem::FileSystem(bool allowSymlinks)
 {
 	p = new FileSystemPrivate;
 	p->havePathCache = false;

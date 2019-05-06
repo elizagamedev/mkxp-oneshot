@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 QT =
-TARGET = OneShot
+TARGET = oneshot
 DEPENDPATH += src shader assets
 INCLUDEPATH += . src
 
@@ -47,10 +47,14 @@ unix {
 		SOURCES += src/mac-desktop.mm
 	}
 	!macx: {
-		QMAKE_CXXFLAGS += -g
+		CONFIG(debug, debug|release) {
+			QMAKE_CXXFLAGS += -g
+		}
 		PKGCONFIG += gtk+-3.0 gdk-3.0 libxfconf-0
 		INCLUDEPATH += /usr/include/AL /usr/local/include/AL
 		LIBS += -lX11
+		QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
+		QMAKE_LFLAGS += -no-pie
 	}
 }
 
@@ -198,6 +202,13 @@ CONFIG(release, debug|release): {
 	SOURCES += src/steam.cpp steamshim/steamshim_child.c
 }
 
+unix {
+	!macx {
+		HEADERS += src/xdg-user-dir-lookup.h
+		SOURCES += src/xdg-user-dir-lookup.c
+	}
+}
+
 EMBED = \
 	shader/common.h \
 	shader/transSimple.frag \
@@ -245,8 +256,15 @@ BINDING_NULL {
 }
 
 BINDING_MRI {
+	MRIVERSION = $$(MRIVERSION)
 	isEmpty(MRIVERSION) {
-		MRIVERSION = 2.3
+		MRIVERSION = 2.5
+		unix {
+			!macx {
+				# Issues with compiling on Ubuntu with Ruby 2.4+.
+				MRIVERSION = 2.3
+			}
+		}
 	}
 
 	PKGCONFIG += ruby-$$MRIVERSION
@@ -267,8 +285,7 @@ BINDING_MRI {
 	binding-mri/disposable-binding.h \
 	binding-mri/sceneelement-binding.h \
 	binding-mri/viewportelement-binding.h \
-	binding-mri/flashable-binding.h \
-	binding-mri/journal-binding.h
+	binding-mri/flashable-binding.h
 
 	SOURCES += \
 	binding-mri/binding-mri.cpp \

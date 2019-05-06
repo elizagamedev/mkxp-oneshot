@@ -1,13 +1,20 @@
-#include "journal-binding.h"
 #include "binding-util.h"
 #include "binding-types.h"
 #include "pipe.h"
 #include "debugwriter.h"
 #include "i18n.h"
 
-#include <SDL.h>
+//OS-Specific code
+#if defined _WIN32
+	#define OS_W32
+#elif defined __APPLE__ || __linux__
+	#define LINUX
+	#ifdef __APPLE__
+		#define OS_OSX
+	#else
+		#define OS_LINUX
+	#endif
 
-#ifdef LINUX
 	#include <fcntl.h>
 	#include <sys/stat.h>
 	#include <sys/types.h>
@@ -15,12 +22,29 @@
 		#include <sys/inotify.h>
 	#endif
 	#include <unistd.h>
-	#include <stdio.h>
+	#include <cstdio>
+	#include <pwd.h>
+	#include <string>
+#endif
 
+#include <SDL.h>
+
+#define BUFFER_SIZE 256
+
+static SDL_Thread *thread = NULL;
+static SDL_mutex *mutex = NULL;
+static volatile char lang_buffer[BUFFER_SIZE];
+static volatile char message_buffer[BUFFER_SIZE];
+static volatile bool active = false;
+static volatile int message_len = 0;
+
+#ifdef LINUX
+	static std::string PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-pipe";
+	static volatile int out_pipe = -1;
 	void cleanup_pipe()
 	{
-		unlink(PIPE_PATH);
-		remove(PIPE_PATH);
+		unlink(PIPE_PATH.c_str());
+		remove(PIPE_PATH.c_str());
 	}
 #endif
 
@@ -48,10 +72,9 @@ int server_thread(void *data)
 	}
 	CloseHandle(pipe);
 #else
-	if (FILE *file = fopen(PIPE_PATH, "r"))
+	if (access(PIPE_PATH.c_str(), F_OK) != -1)
 	{
-		fclose(file);
-		out_pipe = open(PIPE_PATH, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+		out_pipe = open(PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		SDL_LockMutex(mutex);
 		active = true;
 		if (message_len > 0)
@@ -148,7 +171,7 @@ void journalBindingInit()
 	memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';
 #if defined __linux
-	mkfifo(PIPE_PATH, 0666);
+	mkfifo(PIPE_PATH.c_str(), 0666);
 	atexit(cleanup_pipe);
 #endif
 

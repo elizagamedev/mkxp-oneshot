@@ -30,8 +30,7 @@ class SharedFontState;
 class FileSystem
 {
 public:
-	FileSystem(const char *argv0,
-	           bool allowSymlinks);
+	FileSystem(bool allowSymlinks);
 	~FileSystem();
 
 	void addPath(const char *path);

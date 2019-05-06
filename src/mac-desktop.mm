@@ -29,10 +29,20 @@ void MacDesktop::CacheCurrentBackground() {
 void MacDesktop::ChangeBackground(std::string imageURL, double red, double green, double blue) {
 	NSURL *URL = [NSURL fileURLWithPath:@(imageURL.c_str())];
 	NSDictionary<NSWorkspaceDesktopImageOptionKey, id> *options = @{NSWorkspaceDesktopImageScalingKey : @3, NSWorkspaceDesktopImageAllowClippingKey : @0, NSWorkspaceDesktopImageFillColorKey : [NSColor colorWithSRGBRed:red green:green blue:blue alpha:1.0]};
+	NSError *error = nil;
 
-	[sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:screen options:options error:nil];
+	BOOL success = [sharedworkspace setDesktopImageURL:[URL absoluteURL] forScreen:screen options:options error:&error];
+	if (!success) {
+		NSLog(@"ERROR DURING DESKTOP BACKGROUND CHANGE: %@", error);
+	}
 }
 
 void MacDesktop::ResetBackground() {
-	if (isCached) [sharedworkspace setDesktopImageURL:originalBackground forScreen:screen options:originalOptions error:nil];
+	NSError *error = nil;
+	if (isCached) {
+		BOOL success = [sharedworkspace setDesktopImageURL:originalBackground forScreen:screen options:originalOptions error:&error];
+		if (!success) {
+			NSLog(@"ERROR DURING DESKTOP BACKGROUND RESET: %@", error);
+		}
+	}
 }
