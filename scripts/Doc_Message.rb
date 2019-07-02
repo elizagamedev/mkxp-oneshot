@@ -233,7 +233,7 @@ class Doc_Message
     end
 
     if visible
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL)
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || Input.press?(Input::R)
         terminate_message
         @fade_out = true
       end
