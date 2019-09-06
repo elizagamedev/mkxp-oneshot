@@ -15,6 +15,7 @@ class Window_Settings
       file.puts('fullscreen=' + Graphics.fullscreen.to_s)
       file.puts('default_run=' + $game_switches[251].to_s)
       file.puts('colorblind_mode=' + $game_switches[252].to_s)
+      file.puts('automash_enabled=' + $game_switches[253].to_s)
       file.puts('frameskip=' + Graphics.frameskip.to_s)
     end
   end
@@ -56,6 +57,12 @@ class Window_Settings
 		  $game_switches[252] = true
 		elsif vals[1] == "false"
 		  $game_switches[252] = false
+		end
+	  when "automash_enabled"
+	    if vals[1] == "true"
+		  $game_switches[253] = true
+		elsif vals[1] == "false"
+		  $game_switches[253] = false
 		end
 	  when "frameskip"
 	    if vals[1] == "true"
@@ -119,6 +126,7 @@ class Window_Settings
 			 tr('Fullscreen'),
 			 tr('Default movement'),
 			 tr('Colorblind mode'),
+			 tr('Skip Text (R)'),
 			 tr('Frameskip'),
 			 tr('Language'),
 			 tr('Configure Controls (Press F1)'),
@@ -183,13 +191,19 @@ class Window_Settings
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-		when 5 #frameskip
+		when 5 #automash
+		  if($game_switches[253] == true)
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+		  else
+		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+		  end
+		when 6 #frameskip
 		  if(Graphics.frameskip == true)
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-        when 6 # Language
+        when 7 # Language
           l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
           spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
         end
@@ -386,7 +400,19 @@ class Window_Settings
 		  redraw_setting_index(4)
 		end
 
-	  when 5 #frameskip
+	  when 5 #automash
+	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+
+		  $game_system.se_play($data_system.decision_se)
+          if $game_switches[253] == true
+	        $game_switches[253] = false
+	      else
+	        $game_switches[253] = true
+	      end
+		  redraw_setting_index(5)
+		end
+
+	  when 6 #frameskip
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
 
 		  $game_system.se_play($data_system.decision_se)
@@ -395,10 +421,10 @@ class Window_Settings
 	      else
 	        Graphics.frameskip = true
 	      end
-		  redraw_setting_index(5)
+		  redraw_setting_index(6)
 		end
 
-	  when 6 #language
+	  when 7 #language
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
           @lang_index += 1
           if @lang_index >= Language::LANGUAGES.length

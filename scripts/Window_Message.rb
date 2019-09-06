@@ -398,7 +398,7 @@ class Window_Message < Window_Selectable
         end
         tick
       end
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || Input.press?(Input::R)
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253])
         @skip_text = true
       end
     else
@@ -434,7 +434,7 @@ class Window_Message < Window_Selectable
         self.pause = true
 
         # Advance/Close message
-        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || Input.press?(Input::R)
+        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253])
           if @text.length <= 0
             terminate_message
           else

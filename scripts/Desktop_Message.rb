@@ -178,7 +178,7 @@ class Desktop_Message
     end
 
     if visible
-      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || Input.press?(Input::R)
+      if Input.trigger?(Input::ACTION) || Input.trigger?(Input::CANCEL) || (Input.press?(Input::R) && $game_switches[253])
         terminate_message
         @fade_out = true
       end
