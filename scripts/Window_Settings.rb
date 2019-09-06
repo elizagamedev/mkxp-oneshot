@@ -226,7 +226,7 @@ class Window_Settings
     @title.bitmap.draw_text(0, 0, @title.bitmap.width, @title.bitmap.height, tr("Settings"))
     @version.bitmap.clear
     @version.bitmap.draw_text(0, 0, @version.bitmap.width, @version.bitmap.height, tr("POT_VERSION"))
-    for i in 0..7
+    for i in 0..(@data_sprites.length - 1)
       redraw_setting_index(i)
     end
   end
