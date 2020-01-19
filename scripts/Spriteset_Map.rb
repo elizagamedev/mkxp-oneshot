@@ -28,7 +28,12 @@ class Spriteset_Map
     if $game_map.tileset_name == "blank"
       @tilemap.tileset = nil
     else
-      @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)
+	  translation_name = "#{$persistent.langcode}/#{$game_map.tileset_name}"
+	  if File.exists?("Graphics/Tilesets/#{translation_name}.png")
+        @tilemap.tileset = RPG::Cache.tileset(translation_name)
+	  else
+        @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)
+	  end
     end
     for i in 0..6
       autotile_name = $game_map.autotile_names[i]

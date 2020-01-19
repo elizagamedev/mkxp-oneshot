@@ -169,7 +169,18 @@ class Scene_Map
         @item_icon.bitmap = nil
         @item_icon_flash.bitmap = nil
       else
-        @item_icon.bitmap = RPG::Cache.icon($data_items[@item_id].icon_name)
+	    name = $data_items[@item_id].icon_name
+	    translation_name = "#{$persistent.langcode}/#{name}"
+        if File.exists?("Graphics/Icons/#{translation_name}.png")
+          @item_icon.bitmap = RPG::Cache.icon(translation_name)
+          @item_icon.zoom_x = 1.0
+          @item_icon.zoom_y = 1.0
+	    else
+          @item_icon.bitmap = RPG::Cache.icon(name)
+          @item_icon.zoom_x = 2.0
+          @item_icon.zoom_y = 2.0
+	    end
+	  
         if @item_id == 58 #clover
           @item_icon_flash.bitmap = RPG::Cache.icon($data_items[@item_id].icon_name + "2")
           @item_icon_flash.opacity = 0

@@ -45,7 +45,15 @@ class Scene_Title
     @window_settings_title = Window_Settings.new
     # Make title graphic
     @sprite = Sprite.new
-    @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+	
+	# chinese has its own special title screen so check for it
+	translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
+    if File.exists?("Graphics/Titles/#{translation_name}.png")
+       @sprite.bitmap = RPG::Cache.title(translation_name)
+ 	else
+       @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+ 	end
+	
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
     # Create/render menu options

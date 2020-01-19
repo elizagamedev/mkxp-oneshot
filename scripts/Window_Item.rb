@@ -79,12 +79,16 @@ class Window_Item < Window_Selectable
     # Geometry
     x = index % 2 * (self.width / COLUMN_MAX)
     y = index / 2 * 32
-    off = index == @index ? 2 : 0
     rect = Rect.new(x + 32, y, self.width / COLUMN_MAX - 64, 32)
     self.contents.draw_text(rect, item.name, 1)
 
-    bitmap = RPG::Cache.icon(item.icon_name)
-    self.contents.blt(x + off, y + off, bitmap, Rect.new(off, off, 32 - off * 2, 32 - off * 2), self.contents.font.color.alpha)
+	translation_name = "#{$persistent.langcode}/#{item.icon_name}"
+    if File.exists?("Graphics/Icons/#{translation_name}.png")
+      bitmap = RPG::Cache.icon(translation_name)
+	else
+      bitmap = RPG::Cache.icon(item.icon_name)
+	end
+    self.contents.stretch_blt(Rect.new(x, y, 32, 32), bitmap, Rect.new(0, 0, bitmap.width, bitmap.height), self.contents.font.color.alpha)
   end
   #--------------------------------------------------------------------------
   # * Help Text Update
