@@ -1,5 +1,6 @@
-from conans import ConanFile, CMake, tools
 import os.path
+
+from conans import CMake, ConanFile, tools
 
 
 class MkxpConan(ConanFile):
@@ -12,20 +13,22 @@ class MkxpConan(ConanFile):
     generators = "cmake"
     exports_sources = "*"
     requires = (
-        "boost/1.68.0@conan/stable",
+        "boost/1.73.0",
         "openal/1.18.2@bincrafters/stable",
         "physfs/3.0.1@bincrafters/stable",
         "pixman/0.34.0@bincrafters/stable",
-        "ruby/trunk@eliza/stable",
-        "sdl2/2.0.8@bincrafters/stable",
-        "sdl2_image/2.0.3@bincrafters/stable",
-        "sdl2_ttf/2.0.14@eliza/stable",
+        "ruby/2.5.3@eliza/testing",
+        "sdl2/2.0.10@bincrafters/stable",
+        "sdl2_image/2.0.5@bincrafters/stable",
+        "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
         "sigc++/2.10.0@bincrafters/stable",
+        # Overrides
+        "libpng/1.6.37",
+        "zlib/1.2.11",
+        "bzip2/1.0.8",
     )
-    build_requires = (
-        "ruby_installer/2.3.3@bincrafters/stable",
-    )
+    build_requires = ("ruby_installer/2.3.3@bincrafters/stable", )
     options = {
         "platform": ["standalone", "steam"],
     }
@@ -33,7 +36,11 @@ class MkxpConan(ConanFile):
         "platform=standalone",
         "boost:without_test=True",
         "cygwin_installer:packages=xxd",
+        # Avoid dead url bitrot in cygwin_installer
+        "cygwin_installer:with_pear=False",
         "openal:shared=True",
+        # Fix linker error in SDL_sound fork with SDL2
+        "sdl2:shared=True",
     )
 
     def build_requirements(self):
@@ -54,8 +61,11 @@ class MkxpConan(ConanFile):
     def build(self):
         if tools.os_info.is_windows:
             cygwin_bin = self.deps_env_info["cygwin_installer"].CYGWIN_BIN
-            with tools.environment_append({"PATH": [cygwin_bin],
-                                           "CONAN_BASH_PATH": os.path.join(cygwin_bin, "bash.exe")}):
+            with tools.environment_append({
+                    "PATH": [cygwin_bin],
+                    "CONAN_BASH_PATH":
+                    os.path.join(cygwin_bin, "bash.exe")
+            }):
                 self.build_configure()
         else:
             self.build_configure()
@@ -71,11 +81,13 @@ class MkxpConan(ConanFile):
         self.do_copy_deps(self.copy_deps)
 
     def do_copy_deps(self, copy):
-        deps = set(self.deps_cpp_info.deps) - set((
-            "cygwin_installer",
-            "msys2_installer",
-            "ruby_installer"))
+        deps = set(self.deps_cpp_info.deps) - set(
+            ("cygwin_installer", "msys2_installer", "ruby_installer"))
         for dep in deps:
-            copy("*.dll", dst="bin", src="bin", root_package=dep, keep_path=False)
+            copy("*.dll",
+                 dst="bin",
+                 src="bin",
+                 root_package=dep,
+                 keep_path=False)
             if self.settings.build_type == "Debug":
                 copy("*.pdb", dst="bin", root_package=dep, keep_path=False)
