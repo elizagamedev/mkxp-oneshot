@@ -277,6 +277,8 @@ source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
 
 ## Setup main executable ##
 
+set(CMAKE_CXX_STANDARD 11)
+
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${MAIN_HEADERS}
 	${MAIN_SOURCE}

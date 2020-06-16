@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OneShot
+Exec=oneshot %F
+Comment=A surreal puzzle adventure game with unique mechanics / capabilities.
+Icon=oneshot
+Categories=Game;
+Terminal=false
+X-AppImage-Arch=x86_64
