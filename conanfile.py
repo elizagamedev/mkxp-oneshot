@@ -9,7 +9,7 @@ class MkxpConan(ConanFile):
     license = "GPLv2"
     url = "https://github.com/elizagamedev/mkxp-oneshot"
     description = "OneShot game runtime"
-    settings = "os", "compiler", "build_type", "arch", "cppstd"
+    settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
     exports_sources = "*"
     requires = (
@@ -18,7 +18,7 @@ class MkxpConan(ConanFile):
         "physfs/3.0.1@bincrafters/stable",
         "pixman/0.34.0@bincrafters/stable",
         "ruby/2.5.3@eliza/testing",
-        "sdl2/2.0.10@bincrafters/stable",
+        "sdl2/2.0.9@bincrafters/stable",
         "sdl2_image/2.0.5@bincrafters/stable",
         "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
@@ -28,7 +28,7 @@ class MkxpConan(ConanFile):
         "zlib/1.2.11",
         "bzip2/1.0.8",
     )
-    build_requires = ("ruby_installer/2.3.3@bincrafters/stable", )
+    build_requires = ("ruby_installer/2.5.5@bincrafters/stable", )
     options = {
         "platform": ["standalone", "steam"],
     }
@@ -38,9 +38,6 @@ class MkxpConan(ConanFile):
         "cygwin_installer:packages=xxd",
         # Avoid dead url bitrot in cygwin_installer
         "cygwin_installer:with_pear=False",
-        "openal:shared=True",
-        # Fix linker error in SDL_sound fork with SDL2
-        "sdl2:shared=True",
     )
 
     def build_requirements(self):
@@ -50,6 +47,20 @@ class MkxpConan(ConanFile):
     def requirements(self):
         if self.options.platform == "steam":
             self.requires("steamworks/1.42@eliza/stable")
+        if tools.os_info.is_linux:
+            # Overrides
+            self.requires("sqlite3/3.29.0")
+            self.requires("flac/1.3.3")
+            self.requires("ogg/1.3.4")
+            self.requires("vorbis/1.3.6")
+            self.requires("libalsa/1.1.9")
+
+    def configure(self):
+        if tools.os_info.is_windows:
+            # ???
+            self.options.openal.shared = True
+            # Fix linker error in SDL_sound fork with SDL2
+            self.options.sdl2.shared = True
 
     def build_configure(self):
         cmake = CMake(self)
@@ -89,5 +100,10 @@ class MkxpConan(ConanFile):
                  src="bin",
                  root_package=dep,
                  keep_path=False)
+            copy("*.so*",
+                 dst="lib",
+                 src="lib",
+                 root_package=dep,
+                 keep_path=True)
             if self.settings.build_type == "Debug":
                 copy("*.pdb", dst="bin", root_package=dep, keep_path=False)

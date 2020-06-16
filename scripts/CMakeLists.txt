@@ -14,12 +14,12 @@ set(scripts
   Game_Actor.rb
   Game_Actors.rb
   Game_BattleAction.rb
-  Game_Battler 1.rb
-  Game_Battler 2.rb
-  Game_Battler 3.rb
-  Game_Character 1.rb
-  Game_Character 2.rb
-  Game_Character 3.rb
+  Game_Battler_1.rb
+  Game_Battler_2.rb
+  Game_Battler_3.rb
+  Game_Character_1.rb
+  Game_Character_2.rb
+  Game_Character_3.rb
   Game_CommonEvent.rb
   Game_Enemy.rb
   Game_Event.rb
@@ -37,13 +37,13 @@ set(scripts
   Game_System.rb
   Game_Temp.rb
   Game_Variables.rb
-  Interpreter 1.rb
-  Interpreter 2.rb
-  Interpreter 3.rb
-  Interpreter 4.rb
-  Interpreter 5.rb
-  Interpreter 6.rb
-  Interpreter 7.rb
+  Interpreter_1.rb
+  Interpreter_2.rb
+  Interpreter_3.rb
+  Interpreter_4.rb
+  Interpreter_5.rb
+  Interpreter_6.rb
+  Interpreter_7.rb
   Main.rb
   Particles.rb
   Persistent.rb
@@ -116,7 +116,10 @@ set(scripts
 find_program(RUBY_EXE ruby
   DOC "Location of the Ruby executable")
 set(game_dir "${CMAKE_BINARY_DIR}/bin")
-set(xscripts "${game_dir}/Data/xScripts.rxdata")
+set(data_dir "${game_dir}/Data")
+set(xscripts "${data_dir}/xScripts.rxdata")
+add_custom_target(build-time-make-directory ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${data_dir}")
 add_custom_command(
   OUTPUT "${xscripts}"
   COMMAND "${RUBY_EXE}" "${CMAKE_SOURCE_DIR}/rpgscript.rb" "${CMAKE_CURRENT_LIST_DIR}" "${game_dir}"

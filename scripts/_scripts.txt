@@ -8,9 +8,9 @@ Game_Variables
 Game_SelfSwitches
 Game_Screen
 Game_Picture
-Game_Battler 1
-Game_Battler 2
-Game_Battler 3
+Game_Battler_1
+Game_Battler_2
+Game_Battler_3
 Game_BattleAction
 Game_Actor
 Game_Enemy
@@ -18,9 +18,9 @@ Game_Actors
 Game_Party
 Game_Map
 Game_CommonEvent
-Game_Character 1
-Game_Character 2
-Game_Character 3
+Game_Character_1
+Game_Character_2
+Game_Character_3
 Game_Event
 Game_Player
 Game_Oneshot
@@ -74,13 +74,13 @@ Window_DebugLeft
 Window_DebugRight
 Window_MainMenu
 
-Interpreter 1
-Interpreter 2
-Interpreter 3
-Interpreter 4
-Interpreter 5
-Interpreter 6
-Interpreter 7
+Interpreter_1
+Interpreter_2
+Interpreter_3
+Interpreter_4
+Interpreter_5
+Interpreter_6
+Interpreter_7
 
 Scene_Title
 Scene_Map
