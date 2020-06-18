@@ -18,7 +18,7 @@ class Language
   LANG_CK = [
      'ko', 'zh_CN'
   ]
-  LANGUAGES = LANG_WESTERN + LANG_CK + LANG_J
+  LANGUAGES = Steam.enabled? ? (LANG_WESTERN + LANG_CK + LANG_J) : ['en']
 
   class << self
     def set(lc)

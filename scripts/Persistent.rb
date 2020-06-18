@@ -24,9 +24,12 @@ class Persistent
 
   def initialize
     self.lang = LanguageCode.new(Steam::LANG || Oneshot::LANG)
-	if File.exists?("zh_CN.ver")
-	  self.lang = LanguageCode.new("zh_CN")
-	end
+    if File.exists?("zh_CN.ver")
+      self.lang = LanguageCode.new("zh_CN")
+    end
+    if not Steam.enabled? then
+      self.lang = LanguageCode.new("en")
+    end
   end
 
   # Members

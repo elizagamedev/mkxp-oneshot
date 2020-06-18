@@ -2,7 +2,8 @@ PROTO_TEXT = "put me in the big portal"
 CEDRIC_TEXT = "put me in the big portal"
 RUE_TEXT = "put me in the big portal"
 
-SUPPORTED_DE = ["cinnamon", "gnome", "mate", "kde", "xfce"]
+# Gnome 3 does not show desktop entries in Nautilus.
+SUPPORTED_DE = ["cinnamon", "mate", "kde", "xfce"]
 
 module Script
   def self.px
@@ -374,6 +375,17 @@ module Script
     $game_temp.bgm_fadein_speed = speed
   end
 
+  def self.copy_file_chmod(src, dest, chmod)
+    File.open(dest, 'wb') do |output|
+      File.open(src, 'rb') do |input|
+        while buff = input.read(4096)
+          output.write(buff)
+        end
+      end
+    end
+    File.chmod(chmod, dest)
+  end
+
   def self.copy_journal
     # If the required directories don't exist, create them
     Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
@@ -382,26 +394,22 @@ module Script
       # If we're on a supported Linux DE, make a .desktop file
       # so the clover icon can be properly shown
       if Oneshot::OS == "linux" and SUPPORTED_DE.include? Oneshot::DE
+        copy_file_chmod("#{Dir.pwd}/#{Oneshot::JOURNAL}", "#{Oneshot::SAVE_PATH}/#{Oneshot::JOURNAL}", 0755)
+        copy_file_chmod("#{Dir.pwd}/#{Oneshot::JOURNAL}.png", "#{Oneshot::SAVE_PATH}/#{Oneshot::JOURNAL}.png", 0644)
         path = "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}.desktop"
         File.open(path, "wb") do |output|
           output.write("[Desktop Entry]\n")
           output.write("Comment=...\n")
           output.write("Terminal=false\n")
           output.write("Name=_______\n")
-          output.write("Exec=#{Dir.pwd}/#{Oneshot::JOURNAL}\n")
+          output.write("Exec=#{Oneshot::SAVE_PATH}/#{Oneshot::JOURNAL}\n")
           output.write("Type=Application\n")
-          output.write("Icon=#{Dir.pwd}/images/icon.png\n")
+          output.write("Icon=#{Oneshot::SAVE_PATH}/#{Oneshot::JOURNAL}.png\n")
         end
-        File.chmod(0777, path)
+        File.chmod(0755, path)
       # If the journal is a file, copy it to Documents
       elsif File.file?(Oneshot::JOURNAL)
-        File.open(Oneshot::JOURNAL, "rb") do |input|
-          File.open("#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}", "wb") do |output|
-            while buff = input.read(4096)
-              output.write(buff)
-            end
-          end
-        end
+        copy_file_chmod(Oneshot::JOURNAL, "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}", 0755)
       # If the journal isn't a file, symlink it
       else
         File.symlink "#{Dir.pwd}/#{Oneshot::JOURNAL}", "#{Oneshot::GAME_PATH}/Oneshot/#{Oneshot::JOURNAL}"

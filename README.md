@@ -44,7 +44,29 @@ Finally, you can build the project by running the following:
 conan build ..
 ```
 
-On Ubuntu, you may now run `../make-appimage.sh .. . /path/to/game/files /some/path/OneShot.AppImage` to create an AppImage. Requires [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) and [AppImageTool](https://github.com/AppImage/AppImageKit) in your `PATH`.
+On Linux, you likely want to generate an AppImage. Please refer to how to build the Journal app below, as this is a prerequisite for building the AppImage. Afterwards, you may run the command, from the root directory of the repository:
+
+```sh
+./make-appimage.sh . build /path/to/game/files /path/to/journal/_______ /some/path/OneShot.AppImage`
+```
+
+Requires [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) and [AppImageTool](https://github.com/AppImage/AppImageKit) in your `PATH`.
+
+## Building the Journal app on Unix systems
+
+As a prerequisite on Ubuntu, ensure that the following packages are installed.
+
+```sh
+sudo apt install python3-venv libxcb-xinerama
+```
+
+Then run the script. From the root of the repository:
+
+```sh
+./make-journal-linux.sh . /path/to/journal/parent/directory/
+```
+
+This will generate a file called `_______`.
 
 ### Supported image/audio formats
 These depend on the SDL auxiliary libraries. *OneShot* only makes use of bmp/png for images and oggvorbis/wav for audio.
