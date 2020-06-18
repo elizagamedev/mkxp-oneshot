@@ -81,7 +81,8 @@ class AnimationTimer(PipeThread):
 				if len(message) > 0:
 					m = message.decode()
 					if not ',' in m: pass
-					x, y = m.split(',')
+					last_line = m.splitlines()[-1]
+					x, y = last_line.split(',')
 					self.start_animation.emit(int(x), int(y))
 
 					while True:

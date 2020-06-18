@@ -163,7 +163,7 @@ RB_METHOD(nikoStart)
 	x += NIKO_X;
 	y += NIKO_Y;
 	char message[32];
-	sprintf(message, "%d,%d", x, y);
+	sprintf(message, "%d,%d\n", x, y);
 
 	SDL_LockMutex(mutex);
 	message_len = strlen(message);

@@ -36,6 +36,8 @@ for dir in Audio Data Fonts Graphics Languages Wallpaper testing_saves testing_s
   [ -d "$unix_content_path/$dir/" ] && rsync -a "$unix_content_path/$dir/" "$appdir/usr/bin/$dir/"
 done
 find "$appdir/usr/bin" \( -iname '*.bmp' -o -iname 'thumbs.db' -o -iname '*.ini' \) -delete
+# copyright :(
+find "$appdir/usr/bin" \( -iname '*.loc' -a \! -iname 'en.loc' \) -delete
 cp -af "$conan_install_path/bin/Data/xScripts.rxdata" "$appdir/usr/bin/Data/"
 
 # Create AppImage
