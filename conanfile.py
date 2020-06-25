@@ -9,7 +9,6 @@ class MkxpConan(ConanFile):
     license = "GPLv2"
     url = "https://github.com/elizagamedev/mkxp-oneshot"
     description = "OneShot game runtime"
-    arch="x86"
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
     exports_sources = "*"
@@ -36,11 +35,14 @@ class MkxpConan(ConanFile):
     default_options = (
         "platform=standalone",
         "boost:without_test=True",
+        "cygwin_installer:packages=xxd",
+        # Avoid dead url bitrot in cygwin_installer
+        "cygwin_installer:with_pear=False",
     )
 
-    #def build_requirements(self):
-       # if tools.os_info.is_windows:
-            # self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
+    def build_requirements(self):
+        if tools.os_info.is_windows:
+            self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
     def requirements(self):
         if self.options.platform == "steam":
@@ -56,9 +58,9 @@ class MkxpConan(ConanFile):
     def configure(self):
         if tools.os_info.is_windows:
             # ???
-            self.options["openal"].shared = True
+            self.options.openal.shared = True
             # Fix linker error in SDL_sound fork with SDL2
-            self.options["sdl2"].shared = True
+            self.options.sdl2.shared = True
 
     def build_configure(self):
         cmake = CMake(self)
@@ -68,17 +70,16 @@ class MkxpConan(ConanFile):
         cmake.build()
 
     def build(self):
-        #if tools.os_info.is_windows:
-        #    cygwin_bin = self.deps_env_info["cygwin_installer"].CYGWIN_BIN
-        #    with tools.environment_append({
-        #            "PATH": [cygwin_bin],
-        #            "CONAN_BASH_PATH":
-        #            os.path.join(cygwin_bin, "bash.exe")
-        #    }):
-        #        self.build_configure()
-        #else:
-        #    self.build_configure()
-        self.build_configure()
+        if tools.os_info.is_windows:
+            cygwin_bin = self.deps_env_info["cygwin_installer"].CYGWIN_BIN
+            with tools.environment_append({
+                    "PATH": [cygwin_bin],
+                    "CONAN_BASH_PATH":
+                    os.path.join(cygwin_bin, "bash.exe")
+            }):
+                self.build_configure()
+        else:
+            self.build_configure()
 
     def package(self):
         self.copy("*", dst="bin", src="bin")
