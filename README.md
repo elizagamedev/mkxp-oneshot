@@ -10,6 +10,71 @@ Thanks to [hunternet93](https://github.com/hunternet93) for starting the reimple
 
 *OneShot* also makes use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
 
+## Building using Docker on Linux
+
+A `Dockerfile` is attached that handles all the dependencies and allows you to build ModShot for Linux. You should already have Docker installed using your favorite package manager on Linux or [here](https://docs.docker.com/docker-for-windows/install/) on Windows.
+
+### Building the image
+
+To pull the image, run the following command in bash or Powershell:
+
+```sh
+docker pull rkevin/build-oneshot-linux
+```
+
+If you want to build the image manually instead, use the following (no need to do this if you pulled my image from Docker Hub):
+
+```sh
+docker build -t build-oneshot-linux .
+```
+
+### Running the image
+
+You should have 3 directories ready, and write down their paths:
+1. Source directory: This is the path to this repo (Modshot-Core or mkxp-oneshot)
+2. Data directory: This is a folder that contains the `Audio`, `Data`, `Fonts`, `Graphics`, `Languages`, and `Wallpaper` directories from the game / your mod.
+3. Distribution directory: This is the output folder where you want `OneShot.AppImage` to be placed after the build. On Linux, make sure that UID 1000 can write to this folder (easiest way is to `chmod 777` it, or you can ask the Docker container to run with your permissions)
+
+Keep in mind those paths must be absolute, so `/home/user/blah` on Linux or `C:\Users\user\blah` on Windows. No relative paths allowed.
+
+Afterwards, just run this command to build on Linux:
+
+```sh
+docker run -i -v /path/to/source:/work/src -v /path/to/data:/work/data -v /path/to/dist:/work/dist build-oneshot-linux
+```
+
+Or similarly on Windows:
+
+```powershell
+docker run -i -v C:\path\to\source:/work/src -v C:\path\to\data:/work/data -v C:\path\to\dist:/work/dist build-oneshot-linux
+```
+
+Done! Enjoy your built-from-source OneShot.
+
+### Partial compilation
+
+If you want to speed up compilation, you can ask the container to keep the build folder by mounting a directory to it, like `-v /path/to/build:/work/build`. This is optional.
+
+Also note that if the journal file (`_______`) exists in the build directory, it won't be rebuilt even if you changed the source of the journal. Please delete the file manually if you want a journal rebuild.
+
+### Unix only content
+
+If you have game files that you only want in the Linux build of OneShot and not the Windows build, you may place them in a folder that you mount to `/work/extra_unix_content`. For example, if you want a `Map123.rxdata` that's for Unix only, put it in a folder like `unixonlyfolder/Data/Map123.rxdata`, then mount it using `-v /path/to/unixonlyfolder:/work/extra_unix_content`. This has the same structure as the regular data folder and will take precedence over any files in the regular data folder. You shouldn't need to use this, but it's an option just in case.
+
+### Note on xScripts
+
+For some reason, `make-appimage.sh` seems to use a `xScripts.rxdata` built by conan as the script bundled in the AppImage. Since I still don't know why this is necessary and it seems modders can just modify `Scripts.rxdata`, copy it to `xScripts.rxdata` and make it work, I have disabled this behavior.
+
+Now the default behavior is:
+1. If you already had a xScripts.rxdata in your Data folder, that will be used.
+2. If that file doesn't exist, `Scripts.rxdata` in your Data folder will be copied over automatically to `xScripts.rxdata`. This means you don't have to rename the file constantly if you're making a mod.
+
+If you want the old behavior back, add `--keep-xscripts-behavior` to the END of the `docker run` command. This also means any script you edit will have to be reflected in the `scripts` directory in this repo (source directory), which will get built into `xScripts.rxdata`.
+
+## Building using Docker on Windows
+
+Work in progress. Keep nagging @rkevin-arch until he figures it out, or follow the instructions below to do it on bare-metal (beware dependency hell).
+
 ## Building (Supported on Windows, Ubuntu Linux, in progress on macOS)
 
 Preface: This only supports Visual Studio on Windows and Xcode on macOS. Ubuntu should work with either GCC or clang. You can probably compile with other platforms/setups, but beware.
