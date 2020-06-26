@@ -28,7 +28,7 @@ RB_METHOD(bounce_up)
 		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
 		rb_eval_string_protect("sleep 0.02", &state);
 	}
-	return Qnil
+	return Qnil;
 }
 
 
