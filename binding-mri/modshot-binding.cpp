@@ -34,6 +34,8 @@ RB_METHOD(bounce_up)
 RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
+	x *= 2;
+	y *= 2;
 	return rb_ary_new3(2, x, y);
 }
 
