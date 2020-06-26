@@ -35,9 +35,7 @@ RB_METHOD(bounce_up)
 RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
-	x *= 2;
-	y *= 2;
-	return rb_ary_new3(2, x, y);
+	return rb_ary_new3(2, LONG2FIX(x), LONG2FIX(y));
 }
 
 RB_METHOD(SetWindowPosition) {
@@ -48,9 +46,10 @@ RB_METHOD(SetWindowPosition) {
 }
 
 RB_METHOD(SetTitle) {
-	string wintitle; //i need to look at cpp tutorials
-	rb_get_args(argc, "ii", &wintitle);
+	char* wintitle; //i need to look at cpp tutorials
+	rb_get_args(argc, "z", &wintitle);
 	SetWindowText(0, wintitle);
+	return Qnil;
 }
 
 void modshotBindingInit()
