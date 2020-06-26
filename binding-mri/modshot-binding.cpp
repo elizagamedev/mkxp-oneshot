@@ -31,13 +31,13 @@ RB_METHOD(bounce_up)
 	return Qnil;
 }
 
-RB_METHOD(modshotGetWindowPosition) {
+RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
 	return rb_ary_new3(2, x, y);
 }
 
-RB_METHOD(modshotSetWindowPosition) {
+RB_METHOD(SetWindowPosition) {
 	int x, y;
 	rb_get_args(argc, argv, "ii", &x, &y);
 	SDL_SetWindowPosition(shState->rtData().window, x, y);
@@ -50,6 +50,6 @@ void modshotBindingInit()
 	VALUE msg = rb_define_module_under(module, "Msg");
 	_rb_define_module_function(module, "bounce_up", bounce_up);
 	//_rb_define_module_function(module, "defhere", exposedname);
-	_rb_define_module_function(module, "modshotGetWindowPosition", getwin);
-	_rb_define_module_function(module, "modshotSetWindowPosition", setwin);
+	_rb_define_module_function(module, "GetWindowPosition", GetWindowPosition);
+	_rb_define_module_function(module, "SetWindowPosition", SetWindowPosition);
 }
