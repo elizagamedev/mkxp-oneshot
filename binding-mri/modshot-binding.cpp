@@ -10,7 +10,7 @@
 
 RB_METHOD(bounce_up)
 {
-	//I don't really know C++ atm, forgive the spaghetti code, I will fix this later .W.
+	//Edit: this is useless garbage that doesn't work
 	int absx, absy;
 	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
 	int state;
@@ -31,6 +31,7 @@ RB_METHOD(bounce_up)
 	return Qnil;
 }
 
+//The window x and y values are halved for some reason, so we need to double them
 RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
