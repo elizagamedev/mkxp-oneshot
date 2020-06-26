@@ -46,6 +46,12 @@ RB_METHOD(SetWindowPosition) {
 	return Qnil;
 }
 
+RB_METHOD(SetTitle) {
+	string wintitle;
+	rb_get_args(argc, "ii", &wintitle);
+	SetWindowText(0, wintitle);
+}
+
 void modshotBindingInit()
 {
 	VALUE module = rb_define_module("Modshot");
@@ -54,4 +60,5 @@ void modshotBindingInit()
 	//_rb_define_module_function(module, "defhere", exposedname);
 	_rb_define_module_function(module, "GetWindowPosition", GetWindowPosition);
 	_rb_define_module_function(module, "SetWindowPosition", SetWindowPosition);
+	_rb_define_module_function(module, "SetTitle", SetTitle);
 }
