@@ -16,14 +16,14 @@ RB_METHOD(bounce_up)
 	int state;
 	for (int i = 0; i < 60; ++i) {
 		int max = 60 - i;
-		int y = 1;
+		int y = 5;
 		int x = 0;
 		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
 		rb_eval_string_protect("sleep 0.02", &state);
 	}
 	for (int i = 0; i < 60; ++i) {
 		int max = 60 - i;
-		int y = -1;
+		int y = -5;
 		int x = 0;
 		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
 		rb_eval_string_protect("sleep 0.02", &state);
