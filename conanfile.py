@@ -64,7 +64,7 @@ class MkxpConan(ConanFile):
             self.options["sdl2"].shared = True
 
     def build_configure(self):
-        cmake = CMake(self)
+        cmake = CMake(self, msbuild_verbosity='minimal')
         if self.options.platform == "steam":
             cmake.definitions["STEAM"] = "ON"
         cmake.configure()
