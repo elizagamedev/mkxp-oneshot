@@ -48,7 +48,7 @@ RB_METHOD(SetWindowPosition) {
 RB_METHOD(SetTitle) {
 	char* wintitle; //i need to look at cpp tutorials
 	rb_get_args(argc, "z", &wintitle);
-	SetWindowText(0, wintitle);
+	SetWindowTextW(0, wintitle);
 	return Qnil;
 }
 
