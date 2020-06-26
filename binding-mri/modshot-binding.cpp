@@ -47,7 +47,7 @@ RB_METHOD(SetWindowPosition) {
 }
 
 RB_METHOD(SetTitle) {
-	string wintitle;
+	string wintitle; //i need to look at cpp tutorials
 	rb_get_args(argc, "ii", &wintitle);
 	SetWindowText(0, wintitle);
 }
