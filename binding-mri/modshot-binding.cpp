@@ -36,7 +36,7 @@ RB_METHOD(bounce_up)
 
 
 
-void oneshotBindingInit()
+void modshotBindingInit()
 {
 	VALUE module = rb_define_module("Modshot");
 	VALUE msg = rb_define_module_under(module, "Msg");
