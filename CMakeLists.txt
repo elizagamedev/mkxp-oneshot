@@ -317,4 +317,4 @@ if(STEAM)
 		COPYONLY)
 endif()
 
-add_subdirectory(scripts)
+#add_subdirectory(scripts)

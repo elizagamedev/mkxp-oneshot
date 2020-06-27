@@ -25,8 +25,4 @@ pyinstaller --onefile \
             /work/src/journal/unix/journal-linux.spec
 
 # build appimage
-if [ "$1" == '--keep-xscripts-behavior' ]; then
-    KEEP_XSCRIPTS_BEHAVIOR=1 /work/src/make-appimage.sh /work/src /work/build /work/data /work/extra_unix_content /work/build/_______ /work/dist/ModShot.AppImage
-else
-    /work/src/make-appimage.sh /work/src /work/build /work/data /work/extra_unix_content /work/build/_______ /work/dist/ModShot.AppImage
-fi
+/work/src/make-appimage.sh /work/src /work/build /work/data /work/extra_unix_content /work/build/_______ /work/dist/ModShot.AppImage
