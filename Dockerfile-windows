@@ -49,11 +49,14 @@ RUN conan install openal/1.18.2@bincrafters/stable --build=missing -o openal:sha
 RUN conan install physfs/3.0.1@bincrafters/stable --build=missing
 RUN conan install pixman/0.34.0@bincrafters/stable --build=missing
 RUN conan install ruby/2.5.3@eliza/testing --build=missing
-RUN conan install sdl2/2.0.10@bincrafters/stable --build=missing -o sdl2:shared=True
-RUN conan install sdl2_image/2.0.5@bincrafters/stable --build=missing
+RUN conan install sdl2/2.0.9@bincrafters/stable --build=missing -o sdl2:shared=True
+# override sdl2 version when building sdl2_image
+RUN mkdir C:\Temp; echo "\"[requires]`nsdl2/2.0.9@bincrafters/stable`nsdl2_image/2.0.5@bincrafters/stable\"" | Set-Content C:\Temp\conanfile.txt; conan install C:\Temp sdl2_image/2.0.5@bincrafters/stable --build=missing; rm -r C:\Temp
 RUN conan install sdl2_ttf/2.0.15@bincrafters/stable --build=missing
-RUN conan install sdl_sound-mkxp/1.0.1@eliza/stable --build=missing
-RUN conan install sigc++/2.10.0@bincrafters/stable --build=missing
+# override sdl2 version when building sdl2_sound-mkxp
+RUN mkdir C:\Temp; echo "\"[requires]`nsdl2/2.0.9@bincrafters/stable`nsdl_sound-mkxp/1.0.1@eliza/stable\"" | Set-Content C:\Temp\conanfile.txt; conan install C:\Temp sdl_sound-mkxp/1.0.1@eliza/stable --build=missing; rm -r C:\Temp
+# dont use the v120 toolchain for sigc++
+RUN conan install sigc++/2.10.0@bincrafters/stable --build=missing -s compiler.toolset=v142
 
 # finally, we build oneshot when we run the container
 COPY build-entrypoint-windows.bat /

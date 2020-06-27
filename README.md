@@ -128,6 +128,8 @@ docker run -it -v C:\path\to\source:\work\src -v C:\path\to\dist:\work\dist buil
 ```
 Done! Enjoy your built-from-source OneShot.
 
+Since starting Windows Docker containers is kinda slow, once ModShot is compiled you can press any key to recompile everything. Press Ctrl+C to actually stop the container.
+
 ### Autocopying game files
 
 You can also mount a data folder into the docker container using `-v C:\path\to\data:\work\data`. This folder should contain the `Audio`, `Data`, `Fonts`, `Graphics`, `Languages` and `Wallpaper` folders that contain the game files. If you do this, these files will be automatically copied to the dist directory as well so you don't have to do it manually.
