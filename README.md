@@ -60,13 +60,13 @@ Keep in mind those paths must be absolute, so `/home/user/blah` on Linux or `C:\
 Afterwards, just run this command to build on Linux:
 
 ```sh
-docker run -it -v /path/to/source:/work/src -v /path/to/data:/work/data -v /path/to/dist:/work/dist build-oneshot-linux
+docker run -it -v /path/to/source:/work/src -v /path/to/data:/work/data -v /path/to/dist:/work/dist rkevin/build-oneshot-linux
 ```
 
 Or similarly on Windows:
 
 ```powershell
-docker run -it -v C:\path\to\source:/work/src -v C:\path\to\data:/work/data -v C:\path\to\dist:/work/dist build-oneshot-linux
+docker run -it -v C:\path\to\source:/work/src -v C:\path\to\data:/work/data -v C:\path\to\dist:/work/dist rkevin/build-oneshot-linux
 ```
 
 Done! Enjoy your built-from-source OneShot.
@@ -114,7 +114,7 @@ Keep in mind those paths must be absolute, like `C:\Users\user\blah`. No relativ
 Afterwards, just run this command to build for Windows:
 
 ```powershell
-docker run -it -v C:\path\to\source:\work\src -v C:\path\to\dist:\work\dist build-oneshot-windows
+docker run -it -v C:\path\to\source:C:\work\src -v C:\path\to\dist:C:\work\dist rkevin/build-oneshot-windows
 ```
 Done! Enjoy your built-from-source OneShot.
 
@@ -124,11 +124,11 @@ Also, this does not compile the journal (`_______.exe`). If you need it, bug rke
 
 ### Autocopying game files
 
-You can also mount a data folder into the docker container using `-v C:\path\to\data:\work\data`. This folder should contain the `Audio`, `Data`, `Fonts`, `Graphics`, `Languages` and `Wallpaper` folders that contain the game files. If you do this, these files will be automatically copied to the dist directory as well so you don't have to do it manually. Please don't include any other executables in that data directory as they might overwrite the built binaries.
+You can also mount a data folder into the docker container using `-v C:\path\to\data:C:\work\data`. This folder should contain the `Audio`, `Data`, `Fonts`, `Graphics`, `Languages` and `Wallpaper` folders that contain the game files. If you do this, these files will be automatically copied to the dist directory as well so you don't have to do it manually. Please don't include any other executables in that data directory as they might overwrite the built binaries.
 
 ### Partial compilation
 
-If you want to speed up compilation, you can ask the container to keep the build folder by mounting a directory to it, like `-v C:\path\to\build:\work\build`. This is optional. Don't reuse the same build folder for Linux and Windows, otherwise things might break.
+If you want to speed up compilation, you can ask the container to keep the build folder by mounting a directory to it, like `-v C:\path\to\build:C:\work\build`. This is optional. Don't reuse the same build folder for Linux and Windows, otherwise things might break.
 
 ## Building bare-metal (Supported on Windows, Ubuntu Linux, in progress on macOS)
 
