@@ -81,16 +81,6 @@ Also note that if the journal file (`_______`) exists in the build directory, it
 
 If you have game files that you only want in the Linux build of OneShot and not the Windows build, you may place them in a folder that you mount to `/work/extra_unix_content`. For example, if you want a `Map123.rxdata` that's for Unix only, put it in a folder like `unixonlyfolder/Data/Map123.rxdata`, then mount it using `-v /path/to/unixonlyfolder:/work/extra_unix_content`. This has the same structure as the regular data folder and will take precedence over any files in the regular data folder. You shouldn't need to use this, but it's an option just in case.
 
-### Note on xScripts
-
-For some reason, `make-appimage.sh` seems to use a `xScripts.rxdata` built by conan as the script bundled in the AppImage. Since I still don't know why this is necessary and it seems modders can just modify `Scripts.rxdata`, copy it to `xScripts.rxdata` and make it work, I have disabled this behavior.
-
-Now the default behavior is:
-1. If you already had a xScripts.rxdata in your Data folder, that will be used.
-2. If that file doesn't exist, `Scripts.rxdata` in your Data folder will be copied over automatically to `xScripts.rxdata`. This means you don't have to rename the file constantly if you're making a mod.
-
-If you want the old behavior back, add `--keep-xscripts-behavior` to the END of the `docker run` command. This also means any script you edit will have to be reflected in the `scripts` directory in this repo (source directory), which will get built into `xScripts.rxdata`.
-
 ## Building using Docker on Windows
 
 This is very similar to the Linux build instructions. The major difference is only Windows Docker Desktop can run Windows docker containers. Also, make sure to [switch to Windows containers](https://docs.docker.com/docker-for-windows/#switch-between-windows-and-linux-containers) by right clicking on the Docker icon in your system tray. Without it, you can't run Windows containers. Be sure to switch back after you're done if you need to run Linux containers later.
