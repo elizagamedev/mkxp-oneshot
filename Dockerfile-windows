@@ -1,0 +1,60 @@
+# escape=`
+# fine, windows, have your backslashes
+
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
+
+# install vs buildtools
+ADD https://aka.ms/vs/16/release/vs_buildtools.exe /vs_buildtools.exe
+RUN C:\vs_buildtools.exe --quiet --wait --norestart --nocache `
+--installPath C:\BuildTools `
+--add Microsoft.VisualStudio.Workload.VCTools `
+--remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
+--remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
+--remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
+--remove Microsoft.VisualStudio.Component.Windows81SDK `
+--includeRecommended
+
+# install chocolatey
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
+
+# install cmake, git, conan, vim (for xxd only, since installing cygwin breaks docker)
+RUN choco install -y cmake git conan vim
+
+# add xxd and cmake to path
+#RUN [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\Program Files\CMake\bin;C:\Program Files\CMake\bin;C:\tools\vim\vim82', 'Machine')
+RUN [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\Program Files\CMake\bin;C:\tools\vim\vim82', 'Machine')
+
+# add conan remotes
+RUN conan remote add eliza https://api.bintray.com/conan/eliza/conan; `
+conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+
+# fix windows path size limits for conan
+# https://docs.conan.io/en/latest/reference/env_vars.html#conan-use-always-short-paths
+RUN setx CONAN_USE_ALWAYS_SHORT_PATHS 1
+
+# fix devenv not found when building sigc++
+# ugly hack to prevent the devenv /upgrade command from running
+# running it requires vs community, and it doesn't do anything anyway since the solution is already up to date
+RUN echo "\"REM bleh\"" | Set-Content C:\BuildTools\Common7\Tools\devenv.bat
+
+# start using vs buildtools
+# actually, f**k you, we aren't, cuz that's what has been screwing me over
+#SHELL ["C:\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&"]
+
+# start conan build dependencies
+# breaking this up to debug dependency issues easier without having to do 30 min rebuilds every time
+RUN conan install boost/1.73.0@_/_ --build=missing -o boost:without_test=True
+RUN conan install openal/1.18.2@bincrafters/stable --build=missing -o openal:shared=True
+RUN conan install physfs/3.0.1@bincrafters/stable --build=missing
+RUN conan install pixman/0.34.0@bincrafters/stable --build=missing
+RUN conan install ruby/2.5.3@eliza/testing --build=missing
+RUN conan install sdl2/2.0.10@bincrafters/stable --build=missing -o sdl2:shared=True
+RUN conan install sdl2_image/2.0.5@bincrafters/stable --build=missing
+RUN conan install sdl2_ttf/2.0.15@bincrafters/stable --build=missing
+RUN conan install sdl_sound-mkxp/1.0.1@eliza/stable --build=missing
+RUN conan install sigc++/2.10.0@bincrafters/stable --build=missing
+
+# finally, we build oneshot when we run the container
+COPY build-entrypoint-windows.bat /
+ENTRYPOINT ["C:\\build-entrypoint-windows.bat"]

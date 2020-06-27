@@ -32,7 +32,7 @@ Currently there are no features.
 
 ## Building using Docker on Linux
 
-A `Dockerfile` is attached that handles all the dependencies and allows you to build ModShot for Linux. You should already have Docker installed using your favorite package manager on Linux or [here](https://docs.docker.com/docker-for-windows/install/) on Windows.
+A `Dockerfile-linux` is attached that handles all the dependencies and allows you to build ModShot for Linux. You should already have Docker installed using your favorite package manager on Linux or [here](https://docs.docker.com/docker-for-windows/install/) on Windows.
 
 ### Building the image
 
@@ -42,10 +42,10 @@ To pull the image, run the following command in bash or Powershell:
 docker pull rkevin/build-oneshot-linux
 ```
 
-If you want to build the image manually instead, use the following (no need to do this if you pulled my image from Docker Hub):
+If you want to build the image manually instead, use the following (no need to do this if you pulled rkevin's image from Docker Hub):
 
 ```sh
-docker build -t build-oneshot-linux .
+docker build -t build-oneshot-linux -f Dockerfile-linux .
 ```
 
 ### Running the image
@@ -60,13 +60,13 @@ Keep in mind those paths must be absolute, so `/home/user/blah` on Linux or `C:\
 Afterwards, just run this command to build on Linux:
 
 ```sh
-docker run -i -v /path/to/source:/work/src -v /path/to/data:/work/data -v /path/to/dist:/work/dist build-oneshot-linux
+docker run -it -v /path/to/source:/work/src -v /path/to/data:/work/data -v /path/to/dist:/work/dist build-oneshot-linux
 ```
 
 Or similarly on Windows:
 
 ```powershell
-docker run -i -v C:\path\to\source:/work/src -v C:\path\to\data:/work/data -v C:\path\to\dist:/work/dist build-oneshot-linux
+docker run -it -v C:\path\to\source:/work/src -v C:\path\to\data:/work/data -v C:\path\to\dist:/work/dist build-oneshot-linux
 ```
 
 Done! Enjoy your built-from-source OneShot.
@@ -93,9 +93,50 @@ If you want the old behavior back, add `--keep-xscripts-behavior` to the END of 
 
 ## Building using Docker on Windows
 
-Work in progress. Keep nagging @rkevin-arch until he figures it out, or follow the instructions below to do it on bare-metal (beware dependency hell).
+This is very similar to the Linux build instructions. The major difference is only Windows Docker Desktop can run Windows docker containers. Also, make sure to [switch to Windows containers](https://docs.docker.com/docker-for-windows/#switch-between-windows-and-linux-containers) by right clicking on the Docker icon in your system tray. Without it, you can't run Windows containers. Be sure to switch back after you're done if you need to run Linux containers later.
 
-## Building (Supported on Windows, Ubuntu Linux, in progress on macOS)
+### Building the image
+
+You may pull the image from Docker Hub:
+
+```powershell
+docker pull rkevin/build-oneshot-windows
+```
+
+Or build the image manually (again, no need to do this if you pulled from Docker Hub):
+
+```powershell
+docker build -t build-oneshot-windows -m 2G -f Dockerfile-windows .
+```
+
+Note the `-m 2G`. Installing VS BuildTools takes a ton of memory, and without it the build may not succeed. You don't need `-m 2G` to compile ModShot, though.
+
+Legal disclaimer: Microsoft seems to be [pretty stringent](https://github.com/conan-io/conan-docker-tools#visual-studio) about publishing Docker images that contain VS Build Tools. By pulling or building this image, you confirm that you have a valid license for Visual Studio. ~~And to not sue rkevin if things go wrong.~~
+
+### Running the image
+
+You should have at least 2 directories ready, and write down their paths:
+1. Source directory: This is the path to this repo (Modshot-Core or mkxp-oneshot)
+2. Distribution directory: This is the output folder where you want the game files to be placed after the build.
+
+Keep in mind those paths must be absolute, like `C:\Users\user\blah`. No relative paths allowed.
+
+Afterwards, just run this command to build for Windows:
+
+```powershell
+docker run -it -v C:\path\to\source:\work\src -v C:\path\to\dist:\work\dist build-oneshot-windows
+```
+Done! Enjoy your built-from-source OneShot.
+
+### Autocopying game files
+
+You can also mount a data folder into the docker container using `-v C:\path\to\data:\work\data`. This folder should contain the `Audio`, `Data`, `Fonts`, `Graphics`, `Languages` and `Wallpaper` folders that contain the game files. If you do this, these files will be automatically copied to the dist directory as well so you don't have to do it manually.
+
+### Partial compilation
+
+If you want to speed up compilation, you can ask the container to keep the build folder by mounting a directory to it, like `-v C:\path\to\build:\work\build`. This is optional. Don't reuse the same build folder for Linux and Windows, otherwise things might break.
+
+## Building bare-metal (Supported on Windows, Ubuntu Linux, in progress on macOS)
 
 Preface: This only supports Visual Studio on Windows and Xcode on macOS. Ubuntu should work with either GCC or clang. You can probably compile with other platforms/setups, but beware.
 
