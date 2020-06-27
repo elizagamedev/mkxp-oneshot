@@ -12,9 +12,8 @@ conan install \work\src --build=missing || (echo CONAN INSTALL FAILED! && exit 1
 conan build \work\src || (echo CONAN BUILD FAILED! && goto end)
 :: TODO: compile the journal?
 
-robocopy C:\work\build\bin C:\work\dist || (echo COPY BINARIES FAILED! && goto end)
-if not exist C:\work\data exit
-robocopy C:\work\data C:\work\dist /e || (echo COPY GAME DATA FAILED! && goto end)
+robocopy C:\work\build\bin C:\work\dist
+robocopy C:\work\data C:\work\dist /e
 
 echo ModShot has been built. Enjoy.
 :end
