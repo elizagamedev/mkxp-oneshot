@@ -75,14 +75,8 @@ find "$appdir/usr/bin" -type d \( \
      -exec rm -rf {} +
 # International fonts are now taking up space
 find "$appdir/usr/bin/Fonts" -type f \! -iname 'TerminusTTF-Bold.ttf' -delete
-# read readme to find out why this is changed
-if [ -n "${KEEP_XSCRIPTS_BEHAVIOR:-}" ]; then
-    cp -af "$conan_install_path/bin/Data/xScripts.rxdata" "$appdir/usr/bin/Data/"
-else
-    if [ ! -f "$appdir/usr/bin/Data/xScripts.rxdata" ]; then
-        cp -af "$appdir/usr/bin/Data/Scripts.rxdata" "$appdir/usr/bin/Data/xScripts.rxdata"
-    fi
-fi
+# no need for xScripts anymore
+#cp -af "$conan_install_path/bin/Data/xScripts.rxdata" "$appdir/usr/bin/Data/"
 
 # Create AppImage
 ARCH=x86_64 $APPIMAGETOOL "$appdir" "$appimage_file"

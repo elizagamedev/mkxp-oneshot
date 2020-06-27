@@ -9,7 +9,6 @@ class MkxpConan(ConanFile):
     license = "GPLv2"
     url = "https://github.com/elizagamedev/mkxp-oneshot"
     description = "OneShot game runtime"
-    arch="x86"
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
     exports_sources = "*"
