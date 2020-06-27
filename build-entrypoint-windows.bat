@@ -10,15 +10,15 @@ cd \work\build
 conan install \work\src --build=missing || (echo CONAN INSTALL FAILED! && exit 1)
 :startbuild
 conan build \work\src || (echo CONAN BUILD FAILED! && goto end)
-:: TODO: does this build the journal?
+:: TODO: compile the journal?
 
 robocopy C:\work\build\bin C:\work\dist || (echo COPY BINARIES FAILED! && goto end)
 if not exist C:\work\data exit
-robocopy C:\work\data C:\work\dist Audio Data Fonts Graphics Languages Wallpaper || (echo COPY GAME DATA FAILED! && goto end)
+robocopy C:\work\data C:\work\dist /e || (echo COPY GAME DATA FAILED! && goto end)
 
 echo ModShot has been built. Enjoy.
 :end
-echo Press any key to rebuild, or Ctrl+C to quit the container.
+echo Press any key to rebuild, or Ctrl+C and then Y to quit the container.
 pause >nul
 echo Rebuilding...
 goto startbuild
