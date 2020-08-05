@@ -45,16 +45,18 @@ RB_METHOD(SetWindowPosition) {
 	return Qnil;
 }
 
+
+
 RB_METHOD(SetTitle) {
-	char* wintitle; //i need to look at cpp tutorials
+	char* wintitle; //thx rkevin
 	rb_get_args(argc, argv, "z", &wintitle);
 	SDL_SetWindowTitle(shState->rtData().window, wintitle);
 	return Qnil;
 }
 
-void modshotBindingInit()
+void modshotwindowBindingInit()
 {
-	VALUE module = rb_define_module("Modshot");
+	VALUE module = rb_define_module("ModWindow");
 	VALUE msg = rb_define_module_under(module, "Msg");
 	_rb_define_module_function(module, "bounce_up", bounce_up);
 	//_rb_define_module_function(module, "defhere", exposedname);

@@ -83,7 +83,7 @@ void nikoBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
 void chromaBindingInit();
-void modshotBindingInit();
+void modshotwindowBindingInit();
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
@@ -119,7 +119,7 @@ static void mriBindingInit()
 	oneshotBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
-	modshotBindingInit();
+	modshotwindowBindingInit();
 	if (rgssVer >= 3)
 	{
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
