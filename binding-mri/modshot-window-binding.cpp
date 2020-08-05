@@ -31,7 +31,7 @@ RB_METHOD(bounce_up)
 	return Qnil;
 }
 
-//The window x and y values are halved for some reason, so we need to double them
+//nvm
 RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
