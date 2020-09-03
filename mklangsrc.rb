@@ -156,7 +156,7 @@ class StringList
 end
 
 def load_data(filename)
-  Marshal.load(File.read(filename))
+  Marshal.load(File.binread(filename))
 end
 
 # Script
@@ -304,7 +304,7 @@ map_info.each do |map_id, foo|
   end while i > 0
 
   # Load map
-  map = Marshal.load(File.read(File.join(game_dir, sprintf('Data/Map%03d.rxdata', map_id))))
+  map = Marshal.load(File.binread(File.join(game_dir, sprintf('Data/Map%03d.rxdata', map_id))))
 
   # Parse each event
   map.events.sort.each do |_, event|
