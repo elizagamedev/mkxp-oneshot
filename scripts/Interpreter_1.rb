@@ -37,6 +37,7 @@ class Interpreter
     @child_interpreter = nil          # child interpreter
     @branch = {}                      # branch data
     @event_name = nil                 # full event name
+    @fiber = nil                      # current fiber if running a coroutine
   end
   #--------------------------------------------------------------------------
   # * Event Setup
@@ -135,6 +136,15 @@ class Interpreter
       if @@chill_pill
         @@chill_pill = false
         return
+      end
+      # Fiber processing
+      if @fiber != nil
+        @fiber.resume
+        if @fiber.alive?
+          return
+        end
+        @fiber = nil
+        @index += 1
       end
       # If map is different than event startup time
       if $game_map.map_id != @map_id
