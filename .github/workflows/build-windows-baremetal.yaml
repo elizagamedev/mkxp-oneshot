@@ -10,14 +10,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install and setup conan
+      - name: Install conan and xxd
+        run: choco install -y conan vim;
+      - name: Set path to include xxd
+        run: [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\tools\vim\vim82', 'Machine')
+      - name: Configure conan
         run: |
-          mkdir ${{ runner.temp }}\build;
-          choco install -y conan vim;
-          [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\tools\vim\vim82', 'Machine');
           conan remote add eliza https://api.bintray.com/conan/eliza/conan;
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan;
-          setx CONAN_USE_ALWAYS_SHORT_PATHS 1
+          setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
+          mkdir ${{ runner.temp }}\build
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
