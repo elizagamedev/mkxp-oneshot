@@ -5,14 +5,13 @@ jobs:
     name: Build ModShot for Windows without Docker containers
     runs-on: windows-2019
     env:
-      CONAN_USER_HOME: "${{ runner.temp }}\\conan"
-      CONAN_USER_HOME_SHORT: "${{ runner.temp }}\\conan\\short"
+      CONAN_USER_HOME: C:\.conan
+      CONAN_USER_HOME_SHORT: C:\.conan
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install and setup conan
         run: |
-          mkdir ${{ runner.temp }}\conan;
           mkdir ${{ runner.temp }}\build;
           choco install -y conan vim;
           [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\tools\vim\vim82', 'Machine');
@@ -22,7 +21,7 @@ jobs:
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
-          path: env.CONAN_USER_HOME
+          path: C:\.conan
           key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
       - name: Build dependencies using conan
         run: conan install ${{ github.workspace }} --build=missing
