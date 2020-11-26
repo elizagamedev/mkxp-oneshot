@@ -11,9 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install conan and xxd
-        run: choco install -y conan vim;
+        run: choco install -y conan vim
       - name: Set path to include xxd
-        run: [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\tools\vim\vim82', 'Machine')
+        run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\vim\vim82", "Machine")'
       - name: Configure conan
         run: |
           conan remote add eliza https://api.bintray.com/conan/eliza/conan;
