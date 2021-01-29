@@ -55,6 +55,7 @@ public:
 	DECL_ATTR( ZoomX,       float   )
 	DECL_ATTR( ZoomY,       float   )
 	DECL_ATTR( Angle,       float   )
+	DECL_ATTR( VMirror,      bool    )
 	DECL_ATTR( Mirror,      bool    )
 	DECL_ATTR( BushDepth,   int     )
 	DECL_ATTR( BushOpacity, int     )

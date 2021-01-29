@@ -69,6 +69,7 @@ DEF_PROP_F(Sprite, Angle)
 DEF_PROP_F(Sprite, WavePhase)
 
 DEF_PROP_B(Sprite, Mirror)
+DEF_PROP_B(Sprite, VMirror)
 DEF_PROP_B(Sprite, Obscured)
 
 RB_METHOD(spriteWidth)
@@ -117,6 +118,7 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, ZoomY,     "zoom_y"     );
 	INIT_PROP_BIND( Sprite, Angle,     "angle"      );
 	INIT_PROP_BIND( Sprite, Mirror,    "mirror"     );
+	INIT_PROP_BIND( Sprite, VMirror,    "vmirror"     );
 	INIT_PROP_BIND( Sprite, BushDepth, "bush_depth" );
 	INIT_PROP_BIND( Sprite, Opacity,   "opacity"    );
 	INIT_PROP_BIND( Sprite, BlendType, "blend_type" );

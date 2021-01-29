@@ -253,7 +253,10 @@ struct FloatRect
 	Vec2 bottomLeft() const { return Vec2(x, y+h); }
 	Vec2 topRight() const { return Vec2(x+w, y); }
 	Vec2 bottomRight() const { return Vec2(x+w, y+h); }
-
+	FloatRect vFLipped() const
+	{
+		return FloatRect(x, y+w, w, h);
+	}
 	FloatRect hFlipped() const
 	{
 		return FloatRect(x+w, y, -w, h);

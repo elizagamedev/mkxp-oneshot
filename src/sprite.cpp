@@ -53,6 +53,7 @@ struct SpritePrivate
 	sigc::connection srcRectCon;
 
 	bool mirrored;
+	bool vmirrored;
 	int bushDepth;
 	float efBushDepth;
 	NormValue bushOpacity;
@@ -92,7 +93,8 @@ struct SpritePrivate
 	SpritePrivate()
 	    : bitmap(0),
 	      srcRect(&tmp.rect),
-	      mirrored(false),
+	      vmirrored(false),
+		  mirrored(false),
 	      bushDepth(0),
 	      efBushDepth(0),
 	      bushOpacity(128),
@@ -151,7 +153,7 @@ struct SpritePrivate
 		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
 
 		quad.setTexRect(mirrored ? rect.hFlipped() : rect);
-
+		quad.setTexRect(vmirrored ? rect.vFlipped() : rect);
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 		recomputeBushDepth();
 
@@ -321,6 +323,7 @@ DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,      float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,      float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, Angle,      float,   p->trans.getRotation())
 DEF_ATTR_RD_SIMPLE(Sprite, Mirror,     bool,    p->mirrored)
+DEF_ATTR_RD_SIMPLE(Sprite, VMirror,     bool,    p->vmirrored)
 DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,  int,     p->bushDepth)
 DEF_ATTR_RD_SIMPLE(Sprite, BlendType,  int,     p->blendType)
 DEF_ATTR_RD_SIMPLE(Sprite, Width,      int,     p->srcRect->width)
@@ -437,7 +440,16 @@ void Sprite::setAngle(float value)
 
 	p->trans.setRotation(value);
 }
+void Sprite::setvMirror(bool vmirrored)
+{
+	guardDisposed();
 
+	if (p->vmirrored == vmirrored)
+		return;
+
+	p->vmirrored = vmirrored;
+	p->onSrcRectChange();	
+}
 void Sprite::setMirror(bool mirrored)
 {
 	guardDisposed();
