@@ -440,7 +440,7 @@ void Sprite::setAngle(float value)
 
 	p->trans.setRotation(value);
 }
-void Sprite::setvMirror(bool vmirrored)
+void Sprite::setVMirror(bool vmirrored)
 {
 	guardDisposed();
 
