@@ -177,14 +177,14 @@ void Config::read(int argc, char *argv[])
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 
-	commonDataPath = prefPath(".", "Oneshot");
+	commonDataPath = prefPath(".", "Aftermath");
 
 	//Hardcode some ini/version settings
 	rgssVersion = 1;
-	game.title = "OneShot:Fading memory";
+	game.title = "Aftermath";
 	game.scripts = "Data/Scripts.rxdata";
-	defScreenW = 640;
-	defScreenH = 480;
+	defScreenW = 1280;
+	defScreenH = 960;
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */

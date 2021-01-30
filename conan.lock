@@ -1,0 +1,244 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "ref": "oneshot/0.0.0",
+    "options": "platform=standalone\nboost:asio_no_deprecated=False\nboost:bzip2=True\nboost:debug_level=0\nboost:diagnostic_definitions=False\nboost:error_code_header_only=False\nboost:extra_b2_flags=None\nboost:filesystem_no_deprecated=False\nboost:header_only=False\nboost:i18n_backend=iconv\nboost:layout=system\nboost:lzma=False\nboost:magic_autolink=False\nboost:multithreading=True\nboost:namespace=boost\nboost:namespace_alias=False\nboost:numa=False\nboost:pch=True\nboost:python_executable=None\nboost:python_version=None\nboost:segmented_stacks=False\nboost:shared=False\nboost:system_no_deprecated=False\nboost:without_atomic=False\nboost:without_chrono=False\nboost:without_container=False\nboost:without_context=False\nboost:without_contract=False\nboost:without_coroutine=False\nboost:without_date_time=False\nboost:without_exception=False\nboost:without_fiber=False\nboost:without_filesystem=False\nboost:without_graph=False\nboost:without_graph_parallel=True\nboost:without_iostreams=False\nboost:without_locale=False\nboost:without_log=False\nboost:without_math=False\nboost:without_mpi=True\nboost:without_nowide=False\nboost:without_program_options=False\nboost:without_python=True\nboost:without_random=False\nboost:without_regex=False\nboost:without_serialization=False\nboost:without_stacktrace=False\nboost:without_system=False\nboost:without_test=True\nboost:without_thread=False\nboost:without_timer=False\nboost:without_type_erasure=False\nboost:without_wave=False\nboost:zlib=True\nboost:zstd=False\nbzip2:build_executable=True\nbzip2:shared=False\nflac:shared=False\nflac:use_asm=False\nfreetype:shared=False\nfreetype:with_bzip2=True\nfreetype:with_png=True\nfreetype:with_zlib=True\njbig:build_executables=True\njbig:shared=False\nlibiconv:shared=False\nlibjpeg:shared=False\nlibpng:api_prefix=None\nlibpng:shared=False\nlibtiff:cxx=True\nlibtiff:jbig=True\nlibtiff:jpeg=libjpeg\nlibtiff:lzma=True\nlibtiff:shared=False\nlibtiff:zlib=True\nlibwebp:near_lossless=True\nlibwebp:shared=False\nlibwebp:swap_16bit_csp=False\nlibwebp:with_simd=True\nogg:shared=False\nopenal:shared=True\nphysfs:shared=False\nruby:with_dbm=False\nruby:with_gdbm=False\nruby:with_openssl=False\nruby:with_pty=False\nruby:with_readline=False\nruby:with_syslog=False\nsdl2:directx=True\nsdl2:iconv=False\nsdl2:sdl2main=True\nsdl2:shared=True\nsdl2_image:bmp=True\nsdl2_image:gif=True\nsdl2_image:jpg=True\nsdl2_image:lbm=True\nsdl2_image:pcx=True\nsdl2_image:png=True\nsdl2_image:pnm=True\nsdl2_image:shared=False\nsdl2_image:svg=True\nsdl2_image:tga=True\nsdl2_image:tif=True\nsdl2_image:webp=True\nsdl2_image:xcf=True\nsdl2_image:xpm=True\nsdl2_image:xv=True\nsdl_sound-mkxp:shared=False\nsdl_sound-mkxp:with_aiff=True\nsdl_sound-mkxp:with_au=True\nsdl_sound-mkxp:with_flac=True\nsdl_sound-mkxp:with_midi=True\nsdl_sound-mkxp:with_mikmod=False\nsdl_sound-mkxp:with_modplug=False\nsdl_sound-mkxp:with_mpg123=True\nsdl_sound-mkxp:with_ogg=True\nsdl_sound-mkxp:with_raw=True\nsdl_sound-mkxp:with_shn=True\nsdl_sound-mkxp:with_speex=False\nsdl_sound-mkxp:with_voc=True\nsdl_sound-mkxp:with_wav=True\nvorbis:shared=False\nxz_utils:shared=False\nzlib:minizip=False\nzlib:shared=False",
+    "requires": [
+     "1",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "17",
+     "19",
+     "23",
+     "15",
+     "2",
+     "3"
+    ],
+    "build_requires": [
+     "24"
+    ],
+    "path": "conanfile.py",
+    "context": "host"
+   },
+   "1": {
+    "ref": "boost/1.73.0",
+    "options": "asio_no_deprecated=False\nbzip2=True\ndebug_level=0\ndiagnostic_definitions=False\nerror_code_header_only=False\nextra_b2_flags=None\nfilesystem_no_deprecated=False\nheader_only=False\ni18n_backend=iconv\nlayout=system\nlzma=False\nmagic_autolink=False\nmultithreading=True\nnamespace=boost\nnamespace_alias=False\nnuma=False\npch=True\npython_executable=None\npython_version=None\nsegmented_stacks=False\nshared=False\nsystem_no_deprecated=False\nwithout_atomic=False\nwithout_chrono=False\nwithout_container=False\nwithout_context=False\nwithout_contract=False\nwithout_coroutine=False\nwithout_date_time=False\nwithout_exception=False\nwithout_fiber=False\nwithout_filesystem=False\nwithout_graph=False\nwithout_graph_parallel=True\nwithout_iostreams=False\nwithout_locale=False\nwithout_log=False\nwithout_math=False\nwithout_mpi=True\nwithout_nowide=False\nwithout_program_options=False\nwithout_python=True\nwithout_random=False\nwithout_regex=False\nwithout_serialization=False\nwithout_stacktrace=False\nwithout_system=False\nwithout_test=True\nwithout_thread=False\nwithout_timer=False\nwithout_type_erasure=False\nwithout_wave=False\nzlib=True\nzstd=False\nbzip2:build_executable=True\nbzip2:shared=False\nlibiconv:shared=False\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "b21150fe5e124f2259f79f609f80642999686a87",
+    "prev": "0",
+    "requires": [
+     "2",
+     "3",
+     "4"
+    ],
+    "context": "host"
+   },
+   "2": {
+    "ref": "zlib/1.2.11",
+    "options": "minizip=False\nshared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "3": {
+    "ref": "bzip2/1.0.8",
+    "options": "build_executable=True\nshared=False",
+    "package_id": "d16a91eadaaf5829b928b12d2f836ff7680d3df5",
+    "prev": "0",
+    "context": "host"
+   },
+   "4": {
+    "ref": "libiconv/1.16",
+    "options": "shared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "5": {
+    "ref": "openal/1.18.2@bincrafters/stable",
+    "options": "shared=True",
+    "package_id": "127af201a4cdf8111e2e08540525c245c9b3b99e",
+    "prev": "0",
+    "context": "host"
+   },
+   "6": {
+    "ref": "physfs/3.0.1@bincrafters/stable",
+    "options": "shared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "7": {
+    "ref": "pixman/0.34.0@bincrafters/stable",
+    "options": "",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "8": {
+    "ref": "ruby/2.5.3@eliza/testing",
+    "options": "with_dbm=False\nwith_gdbm=False\nwith_openssl=False\nwith_pty=False\nwith_readline=False\nwith_syslog=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "9": {
+    "ref": "sdl2/2.0.9@bincrafters/stable",
+    "options": "directx=True\niconv=False\nsdl2main=True\nshared=True",
+    "package_id": "953f5ad8bd5e0fedeb151754616862c323b31430",
+    "prev": "0",
+    "context": "host"
+   },
+   "10": {
+    "ref": "sdl2_image/2.0.5@bincrafters/stable",
+    "options": "bmp=True\ngif=True\njpg=True\nlbm=True\npcx=True\npng=True\npnm=True\nshared=False\nsvg=True\ntga=True\ntif=True\nwebp=True\nxcf=True\nxpm=True\nxv=True\njbig:build_executables=True\njbig:shared=False\nlibjpeg:shared=False\nlibpng:api_prefix=None\nlibpng:shared=False\nlibtiff:cxx=True\nlibtiff:jbig=True\nlibtiff:jpeg=libjpeg\nlibtiff:lzma=True\nlibtiff:shared=False\nlibtiff:zlib=True\nlibwebp:near_lossless=True\nlibwebp:shared=False\nlibwebp:swap_16bit_csp=False\nlibwebp:with_simd=True\nsdl2:directx=True\nsdl2:iconv=False\nsdl2:sdl2main=True\nsdl2:shared=True\nxz_utils:shared=False\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "bcda7074a85c43b52d88c98e87a4dcc027de4f94",
+    "prev": "0",
+    "requires": [
+     "9",
+     "11",
+     "13",
+     "15",
+     "16",
+     "2"
+    ],
+    "context": "host"
+   },
+   "11": {
+    "ref": "libtiff/4.0.9",
+    "options": "cxx=True\njbig=True\njpeg=libjpeg\nlzma=True\nshared=False\nzlib=True\njbig:build_executables=True\njbig:shared=False\nlibjpeg:shared=False\nxz_utils:shared=False\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "b2c88310503bb6a7c79efe8291199ce179f023e0",
+    "prev": "0",
+    "requires": [
+     "2",
+     "12",
+     "13",
+     "14"
+    ],
+    "context": "host"
+   },
+   "12": {
+    "ref": "xz_utils/5.2.5",
+    "options": "shared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "13": {
+    "ref": "libjpeg/9c",
+    "options": "shared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "14": {
+    "ref": "jbig/20160605",
+    "options": "build_executables=True\nshared=False",
+    "package_id": "1c06f8aa5b65435590877732bd94377a1ed95260",
+    "prev": "0",
+    "context": "host"
+   },
+   "15": {
+    "ref": "libpng/1.6.37",
+    "options": "api_prefix=None\nshared=False\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "d140711d95cc16a85766a8fc3a551dfafe84cf63",
+    "prev": "0",
+    "requires": [
+     "2"
+    ],
+    "context": "host"
+   },
+   "16": {
+    "ref": "libwebp/1.0.3",
+    "options": "near_lossless=True\nshared=False\nswap_16bit_csp=False\nwith_simd=True",
+    "package_id": "638042d3fd356128c913f5e725646a0c2af264c7",
+    "prev": "0",
+    "context": "host"
+   },
+   "17": {
+    "ref": "sdl2_ttf/2.0.15@bincrafters/stable",
+    "options": "bzip2:build_executable=True\nbzip2:shared=False\nfreetype:shared=False\nfreetype:with_bzip2=True\nfreetype:with_png=True\nfreetype:with_zlib=True\nlibpng:api_prefix=None\nlibpng:shared=False\nsdl2:directx=True\nsdl2:iconv=False\nsdl2:sdl2main=True\nsdl2:shared=True\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "17de3557bbe07e478f7ba96ee56b6a13d5aeb49c",
+    "prev": "0",
+    "requires": [
+     "18",
+     "9"
+    ],
+    "context": "host"
+   },
+   "18": {
+    "ref": "freetype/2.9.1@bincrafters/stable",
+    "options": "shared=False\nwith_bzip2=True\nwith_png=True\nwith_zlib=True\nbzip2:build_executable=True\nbzip2:shared=False\nlibpng:api_prefix=None\nlibpng:shared=False\nzlib:minizip=False\nzlib:shared=False",
+    "package_id": "2eda287fd36b7b010dea069857045000246077e3",
+    "prev": "0",
+    "requires": [
+     "15",
+     "2",
+     "3"
+    ],
+    "context": "host"
+   },
+   "19": {
+    "ref": "sdl_sound-mkxp/1.0.1@eliza/stable",
+    "options": "shared=False\nwith_aiff=True\nwith_au=True\nwith_flac=True\nwith_midi=True\nwith_mikmod=False\nwith_modplug=False\nwith_mpg123=True\nwith_ogg=True\nwith_raw=True\nwith_shn=True\nwith_speex=False\nwith_voc=True\nwith_wav=True\nflac:shared=False\nflac:use_asm=False\nogg:shared=False\nsdl2:directx=True\nsdl2:iconv=False\nsdl2:sdl2main=True\nsdl2:shared=True\nvorbis:shared=False",
+    "package_id": "82e6088737070ed0d4093d5d4fda0f63a4f765a0",
+    "prev": "0",
+    "requires": [
+     "9",
+     "20",
+     "21",
+     "22"
+    ],
+    "context": "host"
+   },
+   "20": {
+    "ref": "ogg/1.3.3@bincrafters/stable",
+    "options": "shared=False",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "21": {
+    "ref": "flac/1.3.2@bincrafters/stable",
+    "options": "shared=False\nuse_asm=False\nogg:shared=False",
+    "package_id": "becff00909fb3d957c6b4ca60fa64d4e6a32a540",
+    "prev": "0",
+    "requires": [
+     "20"
+    ],
+    "context": "host"
+   },
+   "22": {
+    "ref": "vorbis/1.3.6@bincrafters/stable",
+    "options": "shared=False\nogg:shared=False",
+    "package_id": "becff00909fb3d957c6b4ca60fa64d4e6a32a540",
+    "prev": "0",
+    "requires": [
+     "20"
+    ],
+    "context": "host"
+   },
+   "23": {
+    "ref": "sigc++/2.10.0@bincrafters/stable",
+    "options": "",
+    "package_id": "3fb49604f9c2f729b85ba3115852006824e72cab",
+    "prev": "0",
+    "context": "host"
+   },
+   "24": {
+    "ref": "ruby_installer/2.5.5@bincrafters/stable",
+    "options": "",
+    "package_id": "456f15897172eef340fcbac8a70811f2beb26a93",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=Visual Studio\ncompiler.runtime=MD\ncompiler.version=16\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n"
+}

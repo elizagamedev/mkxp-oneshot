@@ -76,7 +76,8 @@ AudioStream::~AudioStream()
 void AudioStream::play(const std::string &filename,
                        int volume,
                        int pitch,
-                       float offset)
+                       float offset,
+					   int pos)
 {
 	finiFadeOutInt();
 
@@ -252,6 +253,11 @@ float AudioStream::getVolume(VolumeType type)
 float AudioStream::playingOffset()
 {
 	return stream.queryOffset();
+}
+
+const std::string &AudioStream::getFilename()
+{
+	return current.filename;
 }
 
 void AudioStream::updateVolume()
