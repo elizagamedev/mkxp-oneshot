@@ -1,0 +1,192 @@
+# Lines starting with '#' are comments.
+#
+# About filesystem paths specified in this config:
+# The "gameFolder" path is resolved either relative
+# to the directory containing the Oneshot executable
+# (the default behavior), or relative to the current
+# working directory (when compiled with
+# -DWORKDIR_CURRENT). All other paths are resolved
+# relative to gameFolder and ignoring both RTPs and
+# encrypted archives.
+
+
+# Start the game in debug/developer mode
+# (default: disabled)
+#
+# debugMode=false
+
+
+# Continuously print average FPS to console.
+# This setting does not affect the window title
+# FPS display toggled via F2
+# (default: disabled)
+#
+# printFPS=false
+
+
+# Start game in fullscreen mode,
+# i.e. Big Picture/console mode.
+# (default: disabled)
+#
+# fullscreen=false
+
+
+# Preserve game screen aspect ratio,
+# as opposed to stretch-to-fill
+# (default: enabled)
+#
+# fixedAspectRatio=true
+
+
+# Apply linear interpolation when game screen
+# is upscaled
+# (default: disabled)
+#
+# smoothScaling=false
+
+
+# Sync screen redraws to the monitor refresh rate
+# (default: enabled)
+#
+# vsync=true
+
+
+# Override the game window title
+# (default: none)
+#
+# windowTitle=Custom Title
+
+
+# Enforce a static frame rate
+# (0 = disabled)
+#
+# fixedFramerate=0
+
+
+# Skip (don't draw) frames when behind
+# (default: enabled)
+#
+# frameSkip=true
+
+
+# Use a fixed framerate that is approx. equal to the
+# native screen refresh rate. This is different from
+# "fixedFramerate" because the actual frame rate is
+# reported back to the game, ensuring correct timers.
+# If the screen refresh rate cannot be determined,
+# this option is force-disabled
+# (default: disabled)
+#
+# syncToRefreshrate=false
+
+
+# Don't use alpha blending when rendering text
+# (default: disabled)
+#
+# solidFonts=false
+
+
+# Work around buggy graphics drivers which don't
+# properly synchronize texture access, most
+# apparent when text doesn't show up or the map
+# tileset doesn't render at all
+# (default: disabled)
+#
+# subImageFix=false
+
+
+# Enable framebuffer blitting if the driver is
+# capable of it. Some drivers carry buggy
+# implementations of this functionality, so
+# disabling it can be used as a workaround
+# (default: enabled)
+#
+# enableBlitting=true
+
+
+# Limit the maximum size (width, height) of
+# most textures mkxp will create (exceptions are
+# rendering backbuffers and similar).
+# If set to 0, the hardware maximum is used.
+# This is useful for recording traces that can
+# be played back on machines with lower specs.
+# (default: 0)
+#
+# maxTextureSize=0
+
+
+# Set the base path of the game to '/path/to/game'
+# (default: executable directory)
+#
+# gameFolder=/path/to/game
+
+
+# Allow symlinks for game assets to be followed
+# (default: disabled)
+#
+# allowSymlinks=false
+
+
+# Set the game window icon to 'path/to/icon.png'
+# (default: none)
+#
+# iconPath=/path/to/icon.png
+
+
+# Define raw scripts to be executed before the
+# actual Scripts.rxdata execution starts
+# (default: none)
+#
+# preloadScript=my_win32_wrapper.rb
+# preloadScript=ruby18_fixes.rb
+
+
+# Index all accesible assets via their lower case path
+# (emulates windows case insensitivity)
+# (default: enabled)
+#
+# pathCache=true
+
+
+# Add 'rtp1', 'rtp2.zip' and 'game.rgssad' to the
+# asset search path (multiple allowed)
+# (default: none)
+#
+# RTP=/path/to/rtp1
+# RTP=/path/to/rtp2.zip
+# RTP=/path/to/game.rgssad
+
+
+# Font substitutions allow drop-in replacements of fonts
+# to be used without changing the RGSS scripts,
+# eg. providing 'Open Sans' when the game thinkgs it's
+# using 'Arial'. Font family to be substituted and
+# replacement family are separated by one sole '>'.
+# Be careful not to include any spaces.
+# This is not connected to the built-in font, which is
+# always used when a non-existing font family is
+# requested by RGSS.
+# (default: none)
+#
+# fontSub=Arial>Open Sans
+# fontSub=Times New Roman>Liberation Serif
+
+
+# Because mkxp is usually distributed as a stand alone
+# build, no predefined load paths are initialized
+# ($:, $LOAD_PATH) in the MRI backend. With this option,
+# they can be specified manually (eg. when using a system
+# libruby.so). It is however recommended to statically
+# link all required gems into libruby.so.
+# (default: none)
+#
+# rubyLoadpath=/usr/lib64/ruby/
+# rubyLoadpath=/usr/local/share/ruby/site_ruby
+
+
+# Number of OpenAL sources to allocate for SE playback.
+# If there are a lot of sounds playing at the same time
+# and audibly cutting each other off, try increasing
+# this number. Maximum: 64.
+#
+# SE.sourceCount=6
