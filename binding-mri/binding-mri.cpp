@@ -98,6 +98,12 @@ RB_METHOD(_kernelCaller);
 
 static void mriBindingInit()
 {
+	// setup ruby library paths
+	rb_eval_string(
+		"$LOAD_PATH.unshift(File.join(Dir.pwd, 'lib', 'ruby'))\n"
+		"$LOAD_PATH.unshift(File.join(Dir.pwd, 'lib', 'ruby', RUBY_PLATFORM))\n"
+	);
+
 	tableBindingInit();
 	etcBindingInit();
 	fontBindingInit();

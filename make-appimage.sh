@@ -45,6 +45,9 @@ $LINUXDEPLOY -e "$conan_install_path/bin/oneshot" \
 	     --custom-apprun="$source_path/assets/AppRun" \
 	     --appdir "$appdir"
 
+# Copy ruby standard library
+cp -af "$conan_install_path/bin/lib/" "$appdir/usr/bin/lib"
+
 # Bundle game data
 cp -af "$journal_file" "$appdir/usr/bin/_______"
 cp -af "$source_path/assets/journal.png" "$appdir/usr/bin/_______.png"

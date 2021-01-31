@@ -38,6 +38,7 @@ class MkxpConan(ConanFile):
         "cygwin_installer:packages=xxd",
         # Avoid dead url bitrot in cygwin_installer
         "cygwin_installer:with_pear=False",
+        "ruby:with_openssl=True",
     )
 
     #def build_requirements(self):
@@ -108,3 +109,11 @@ class MkxpConan(ConanFile):
                  keep_path=True)
             if self.settings.build_type == "Debug":
                 copy("*.pdb", dst="bin", root_package=dep, keep_path=False)
+        # copy the ruby standard library
+	# this is a very ugly way of doing this (putting it in bin instead of lib)
+	# but this makes distributing mods easier, and also makes sure windows and linux are mostly the same
+        copy("*",
+            dst="bin/lib/ruby/",
+            src="lib/ruby/2.5.0/",
+            root_package="ruby",
+            keep_path=True)
