@@ -125,17 +125,15 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
+	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
+	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
+	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
+	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
+	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 
 	if (rgssVer >= 2)
 	{
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);
-
-	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
-
-	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
-	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
-	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
-	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 	}
 }

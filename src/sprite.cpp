@@ -139,26 +139,34 @@ struct SpritePrivate
 		efBushDepth = 1.0f - texBushDepth / bitmap->height();
 	}
 
-	void onSrcRectChange()
-	{
-		FloatRect rect = srcRect->toFloatRect();
-		Vec2i bmSize;
+	        void onSrcRectChange()
+        {
+                FloatRect rect = srcRect->toFloatRect();
+                Vec2i bmSize;
 
-		if (!nullOrDisposed(bitmap))
-			bmSize = Vec2i(bitmap->width(), bitmap->height());
+                if (!nullOrDisposed(bitmap))
+                        bmSize = Vec2i(bitmap->width(), bitmap->height());
 
-		/* Clamp the rectangle so it doesn't reach outside
-		 * the bitmap bounds */
-		rect.w = clamp<int>(rect.w, 0, bmSize.x-rect.x);
-		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
+                /* Clamp the rectangle so it doesn't reach outside
+                 * the bitmap bounds */
+                rect.w = clamp<int>(rect.w, 0, bmSize.x-rect.x);
+                rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
 
-		quad.setTexRect(mirrored ? rect.hFlipped() : rect);
-		quad.setTexRect(vmirrored ? rect.vFlipped() : rect);
-		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
-		recomputeBushDepth();
+                FloatRect texrect = rect;
 
-		wave.dirty = true;
-	}
+                if (mirrored) {
+                        texrect = texrect.hFlipped();
+                }
+                if (vmirrored) {
+                        texrect = texrect.vFlipped();
+                }
+                quad.setTexRect(texrect);
+
+                quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
+                recomputeBushDepth();
+
+                wave.dirty = true;
+        }
 
 	void updateSrcRectCon()
 	{
