@@ -1,0 +1,38 @@
+name: build-windows-baremetal
+on: push
+jobs:
+  build-windows:
+    name: Build ModShot for Windows without Docker containers
+    runs-on: windows-2019
+    env:
+      CONAN_USER_HOME: C:\.conan
+      CONAN_USER_HOME_SHORT: C:\.conan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install conan and xxd
+        run: choco install -y vim; pip install conan
+      - name: Set path to include xxd
+        run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\vim\vim82", "Machine")'
+      - name: Configure conan
+        run: |
+          conan remote add eliza https://api.bintray.com/conan/eliza/conan;
+          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan;
+          setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
+          mkdir ${{ runner.temp }}\build
+      - name: Cache conan dependencies
+        uses: actions/cache@v2
+        with:
+          path: C:\.conan
+          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
+      - name: Build dependencies using conan
+        run: conan install ${{ github.workspace }} --build=missing
+        working-directory: ${{ runner.temp }}\build
+      - name: Build ModShot
+        run: conan build ${{ github.workspace }}
+        working-directory: ${{ runner.temp }}\build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: modshot_build_windows_latest
+          path: ${{ runner.temp }}\build\bin
