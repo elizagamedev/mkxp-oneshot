@@ -159,6 +159,10 @@ static void mriBindingInit()
 		rb_gv_set("TEST", debug);
 
 	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
+
+	// set environment variable for openssl to detect our cert bundle
+	// the 0 means it won't overwrite the variable if the user wants to set one
+	setenv("SSL_CERT_FILE", "./ssl/cacert.pem", 0);
 }
 
 static void

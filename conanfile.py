@@ -92,6 +92,10 @@ class MkxpConan(ConanFile):
         #    self.build_configure()
         self.build_configure()
 
+        # ship certificates into the ssl folder in the game directory
+        # openssl will use this folder since we hardcoded it in binding-mri.cpp
+        tools.download("https://curl.haxx.se/ca/cacert.pem", "bin/ssl/cacert.pem", overwrite=True)
+
     def package(self):
         self.copy("*", dst="bin", src="bin")
 
