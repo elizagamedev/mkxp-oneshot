@@ -53,6 +53,7 @@ struct SpritePrivate
 	sigc::connection srcRectCon;
 
 	bool mirrored;
+	bool vmirrored;
 	int bushDepth;
 	float efBushDepth;
 	NormValue bushOpacity;
@@ -92,7 +93,8 @@ struct SpritePrivate
 	SpritePrivate()
 	    : bitmap(0),
 	      srcRect(&tmp.rect),
-	      mirrored(false),
+	      vmirrored(false),
+		  mirrored(false),
 	      bushDepth(0),
 	      efBushDepth(0),
 	      bushOpacity(128),
@@ -137,6 +139,17 @@ struct SpritePrivate
 		efBushDepth = 1.0f - texBushDepth / bitmap->height();
 	}
 
+	FloatRect getMirroredTexRect(FloatRect texrect)
+	{
+		if (mirrored) {
+			texrect = texrect.hFlipped();
+		}
+		if (vmirrored) {
+			texrect = texrect.vFlipped();
+		}
+		return texrect;
+	}
+
 	void onSrcRectChange()
 	{
 		FloatRect rect = srcRect->toFloatRect();
@@ -150,7 +163,7 @@ struct SpritePrivate
 		rect.w = clamp<int>(rect.w, 0, bmSize.x-rect.x);
 		rect.h = clamp<int>(rect.h, 0, bmSize.y-rect.y);
 
-		quad.setTexRect(mirrored ? rect.hFlipped() : rect);
+		quad.setTexRect(getMirroredTexRect(rect));
 
 		quad.setPosRect(FloatRect(0, 0, rect.w, rect.h));
 		recomputeBushDepth();
@@ -210,9 +223,16 @@ struct SpritePrivate
 		float wavePos = phase + (chunkY / (float) wave.length) * (float) (M_PI * 2);
 		float chunkX = sin(wavePos) * wave.amp;
 
-		FloatRect tex(0, chunkY / zoomY, width, chunkLength / zoomY);
-		FloatRect pos = tex;
-		pos.x = chunkX;
+		FloatRect tex = getMirroredTexRect(srcRect->toFloatRect());
+		// note: width is ignored, we're using the mirrored srcRect (the original width is from srcRect anyway)
+		if (tex.h < 0) { // texture itself is vflipped
+			tex.y -= chunkY / zoomY;
+			tex.h = -chunkLength / zoomY;
+		} else {
+			tex.y += chunkY / zoomY;
+			tex.h = chunkLength / zoomY;
+		}
+		FloatRect pos(chunkX, chunkY / zoomY, abs(tex.w), abs(tex.h));
 
 		Quad::setTexPosRect(vert, tex, pos);
 		vert += 4;
@@ -253,7 +273,7 @@ struct SpritePrivate
 
 			FloatRect tex(x, srcRect->y, w, srcRect->height);
 
-			Quad::setTexPosRect(&wave.qArray.vertices[0], tex, tex);
+			Quad::setTexPosRect(&wave.qArray.vertices[0], getMirroredTexRect(tex), tex);
 			wave.qArray.commit();
 
 			return;
@@ -321,6 +341,7 @@ DEF_ATTR_RD_SIMPLE(Sprite, ZoomX,      float,   p->trans.getScale().x)
 DEF_ATTR_RD_SIMPLE(Sprite, ZoomY,      float,   p->trans.getScale().y)
 DEF_ATTR_RD_SIMPLE(Sprite, Angle,      float,   p->trans.getRotation())
 DEF_ATTR_RD_SIMPLE(Sprite, Mirror,     bool,    p->mirrored)
+DEF_ATTR_RD_SIMPLE(Sprite, VMirror,     bool,    p->vmirrored)
 DEF_ATTR_RD_SIMPLE(Sprite, BushDepth,  int,     p->bushDepth)
 DEF_ATTR_RD_SIMPLE(Sprite, BlendType,  int,     p->blendType)
 DEF_ATTR_RD_SIMPLE(Sprite, Width,      int,     p->srcRect->width)
@@ -377,11 +398,8 @@ void Sprite::setY(int value)
 
 	p->trans.setPosition(Vec2(getX(), value));
 
-	if (rgssVer >= 2)
-	{
-		p->wave.dirty = true;
-		setSpriteY(value);
-	}
+	p->wave.dirty = true;
+	setSpriteY(value);
 }
 
 void Sprite::setOX(int value)
@@ -424,8 +442,7 @@ void Sprite::setZoomY(float value)
 	p->trans.setScale(Vec2(getZoomX(), value));
 	p->recomputeBushDepth();
 
-	if (rgssVer >= 2)
-		p->wave.dirty = true;
+	p->wave.dirty = true;
 }
 
 void Sprite::setAngle(float value)
@@ -437,7 +454,16 @@ void Sprite::setAngle(float value)
 
 	p->trans.setRotation(value);
 }
+void Sprite::setVMirror(bool vmirrored)
+{
+	guardDisposed();
 
+	if (p->vmirrored == vmirrored)
+		return;
+
+	p->vmirrored = vmirrored;
+	p->onSrcRectChange();	
+}
 void Sprite::setMirror(bool mirrored)
 {
 	guardDisposed();
