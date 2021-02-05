@@ -2,7 +2,7 @@ name: build-windows-baremetal
 on: push
 jobs:
   build-windows:
-    name: Build ModShot for Windows without Docker containers
+    name: Build ModShot for Windows
     runs-on: windows-2019
     env:
       CONAN_USER_HOME: C:\.conan
@@ -34,5 +34,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: modshot_build_windows_latest
+          name: modshot_build_windows_${{ github.sha }}
           path: ${{ runner.temp }}\build\bin
