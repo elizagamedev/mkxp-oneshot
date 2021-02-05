@@ -6,16 +6,9 @@ conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-c
 RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync
 RUN sudo python -m pip install mako pyqt5 pyinstaller
 
-RUN conan install boost/1.73.0@_/_ --build=missing -o boost:without_test=True
-RUN conan install openal/1.18.2@bincrafters/stable --build=missing
-RUN conan install physfs/3.0.1@bincrafters/stable --build=missing
-RUN conan install pixman/0.34.0@bincrafters/stable --build=missing
-RUN conan install ruby/2.5.3@eliza/testing --build=missing
-RUN conan install sdl2/2.0.9@bincrafters/stable --build=missing
-RUN conan install sdl2_image/2.0.5@bincrafters/stable --build=missing
-RUN conan install sdl2_ttf/2.0.15@bincrafters/stable --build=missing
-RUN conan install sdl_sound-mkxp/1.0.1@eliza/stable --build=missing
-RUN conan install sigc++/2.10.0@bincrafters/stable --build=missing
+# install all dependencies for the conanfile in commit
+COPY --chown=conan:root conanfile.py /tmp/install_deps/conanfile.py
+RUN conan install --build=missing /tmp/install_deps && sudo rm -r /tmp/install_deps
 
 ADD https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage /tmp
 # can't find a stable release for linuxdeploy, oh well
