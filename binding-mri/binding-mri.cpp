@@ -168,7 +168,7 @@ static void mriBindingInit()
 #ifdef _WIN32
 	char tmpbuf[2];
 	if(GetEnvironmentVariableA("SSL_CERT_FILE", tmpbuf, 2) == 0) {
-		SetEnvironmentVariableA("SSL_CERT_FILE", ".\ssl\cacert.pem");
+		SetEnvironmentVariableA("SSL_CERT_FILE", ".\\ssl\\cacert.pem");
 	}
 #else
 	// the 0 means it won't overwrite the variable if the user wants to set one
