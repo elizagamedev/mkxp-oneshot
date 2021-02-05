@@ -41,10 +41,6 @@
 
 #include <SDL_filesystem.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 extern const char module_rpg1[];
 
 static void mriBindingExecute();
@@ -165,15 +161,12 @@ static void mriBindingInit()
 	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
 
 	// set environment variable for openssl to detect our cert bundle
-#ifdef _WIN32
-	char tmpbuf[2];
-	if(GetEnvironmentVariableA("SSL_CERT_FILE", tmpbuf, 2) == 0) {
-		SetEnvironmentVariableA("SSL_CERT_FILE", ".\\ssl\\cacert.pem");
-	}
-#else
-	// the 0 means it won't overwrite the variable if the user wants to set one
-	setenv("SSL_CERT_FILE", "./ssl/cacert.pem", 0);
-#endif
+
+	rb_eval_string(
+		"if ENV['SSL_CERT_FILE'].nil?\n"
+		"    ENV['SSL_CERT_FILE'] = './ssl/cacert.pem'\n"
+		"end\n"
+	);
 }
 
 static void
