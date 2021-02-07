@@ -69,6 +69,7 @@ DEF_PROP_F(Sprite, Angle)
 DEF_PROP_F(Sprite, WavePhase)
 
 DEF_PROP_B(Sprite, Mirror)
+DEF_PROP_B(Sprite, VMirror)
 DEF_PROP_B(Sprite, Obscured)
 
 RB_METHOD(spriteWidth)
@@ -117,23 +118,22 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, ZoomY,     "zoom_y"     );
 	INIT_PROP_BIND( Sprite, Angle,     "angle"      );
 	INIT_PROP_BIND( Sprite, Mirror,    "mirror"     );
+	INIT_PROP_BIND( Sprite, VMirror,    "vmirror"     );
 	INIT_PROP_BIND( Sprite, BushDepth, "bush_depth" );
 	INIT_PROP_BIND( Sprite, Opacity,   "opacity"    );
 	INIT_PROP_BIND( Sprite, BlendType, "blend_type" );
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
+	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
+	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
+	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
+	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
+	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 
 	if (rgssVer >= 2)
 	{
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);
-
-	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
-
-	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
-	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );
-	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
-	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 	}
 }

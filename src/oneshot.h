@@ -70,8 +70,10 @@ public:
 
 	//Functions
 	bool msgbox(int type, const char *body, const char *title);
-	std::string textinput(const char* prompt, int char_limit, const char* fontName);
-
+	void textinput();
+	bool Oneshot::checkctrlzinput();
+	std::string Oneshot::updatetextinput();
+	bool Oneshot::istextinputstopped();
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
 

@@ -5,6 +5,102 @@
    "standalone"
   ],
   [
+   "OpenSSL:386",
+   "False"
+  ],
+  [
+   "OpenSSL:capieng_dialog",
+   "False"
+  ],
+  [
+   "OpenSSL:no_asm",
+   "False"
+  ],
+  [
+   "OpenSSL:no_async",
+   "False"
+  ],
+  [
+   "OpenSSL:no_bf",
+   "False"
+  ],
+  [
+   "OpenSSL:no_cast",
+   "False"
+  ],
+  [
+   "OpenSSL:no_des",
+   "False"
+  ],
+  [
+   "OpenSSL:no_dh",
+   "False"
+  ],
+  [
+   "OpenSSL:no_dsa",
+   "False"
+  ],
+  [
+   "OpenSSL:no_dso",
+   "False"
+  ],
+  [
+   "OpenSSL:no_hmac",
+   "False"
+  ],
+  [
+   "OpenSSL:no_md2",
+   "False"
+  ],
+  [
+   "OpenSSL:no_md5",
+   "False"
+  ],
+  [
+   "OpenSSL:no_mdc2",
+   "False"
+  ],
+  [
+   "OpenSSL:no_rc2",
+   "False"
+  ],
+  [
+   "OpenSSL:no_rc4",
+   "False"
+  ],
+  [
+   "OpenSSL:no_rc5",
+   "False"
+  ],
+  [
+   "OpenSSL:no_rsa",
+   "False"
+  ],
+  [
+   "OpenSSL:no_sha",
+   "False"
+  ],
+  [
+   "OpenSSL:no_sse2",
+   "False"
+  ],
+  [
+   "OpenSSL:no_threads",
+   "False"
+  ],
+  [
+   "OpenSSL:no_zlib",
+   "False"
+  ],
+  [
+   "OpenSSL:openssldir",
+   "None"
+  ],
+  [
+   "OpenSSL:shared",
+   "False"
+  ],
+  [
    "boost:asio_no_deprecated",
    "False"
   ],
@@ -338,7 +434,7 @@
   ],
   [
    "ruby:with_openssl",
-   "False"
+   "True"
   ],
   [
    "ruby:with_pty",

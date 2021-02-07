@@ -183,8 +183,8 @@ void Config::read(int argc, char *argv[])
 	rgssVersion = 1;
 	game.title = "Aftermath";
 	game.scripts = "Data/Scripts.rxdata";
-	defScreenW = 1280;
-	defScreenH = 960;
+	defScreenW = 640;
+	defScreenH = 480;
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */

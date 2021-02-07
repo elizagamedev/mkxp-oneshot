@@ -83,7 +83,8 @@ void nikoBindingInit();
 void oneshotBindingInit();
 void steamBindingInit();
 void chromaBindingInit();
-void modshotBindingInit();
+void modshotwindowBindingInit();
+void modshotFiberBindingInit();
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
@@ -119,7 +120,8 @@ static void mriBindingInit()
 	oneshotBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
-	modshotBindingInit();
+	modshotwindowBindingInit();
+	modshotFiberBindingInit();
 	if (rgssVer >= 3)
 	{
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
@@ -157,6 +159,14 @@ static void mriBindingInit()
 		rb_gv_set("TEST", debug);
 
 	rb_gv_set("BTEST", rb_bool_new(shState->config().editor.battleTest));
+
+	// set environment variable for openssl to detect our cert bundle
+
+	rb_eval_string(
+		"if ENV['SSL_CERT_FILE'].nil?\n"
+		"    ENV['SSL_CERT_FILE'] = './ssl/cacert.pem'\n"
+		"end\n"
+	);
 }
 
 static void
@@ -587,6 +597,22 @@ static void mriBindingExecute()
 	ruby_sysinit(&argc, &argv);
 
 	ruby_setup();
+
+	// setup ruby library paths
+	rb_eval_string(
+		"$LOAD_PATH.unshift(File.join(Dir.pwd, 'lib', 'ruby'))\n"
+		"$LOAD_PATH.unshift(File.join(Dir.pwd, 'lib', 'ruby', RUBY_PLATFORM))\n"
+	);
+
+	// we probably should only be calling this if we are a ruby executable
+        // but we need to initialize things like the prelude (provides important library functions like IO#read_nonblock
+        // Init_prelude is not exposed anywhere else
+
+        // the three arguments are the executable name, and the '-e ""' is to tell ruby to run an empty file
+        // otherwise (since this parses options for the ruby executable) it's gonna wait on stdin for code
+        char* options_argv[] = {"oneshot", "-e", "", NULL};
+	ruby_options(3, options_argv);
+
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 
 	Config &conf = shState->rtData().config;
