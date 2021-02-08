@@ -26,12 +26,19 @@ Please credit the project in some wayy, either by a direct title card, or some o
 <There are a large multitude of additional features modshot adds and it is iddifuclt to explain them all. Please refer to the wiki for in-depth usage.>
   
  Main features currently:
+ 
  Ruby gem support
+ 
  Vertical sprite mirroring
+ 
  Net::HTTP support
+ 
  Custom audio bindings
+ 
  Docker containers
+ 
  Simplified build process
+ 
 
 # Wiki
 
