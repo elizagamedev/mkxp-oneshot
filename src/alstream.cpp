@@ -293,6 +293,8 @@ void ALStream::startStream(float offset)
 	startOffset = offset;
 	procFrames = offset * source->sampleRate();
 
+	needsRewind = true;
+
 	thread = createSDLThread
 		<ALStream, &ALStream::streamData>(this, threadName);
 }
