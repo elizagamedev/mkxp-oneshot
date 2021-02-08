@@ -68,6 +68,10 @@ public:
 	float bgmPos();
 	float bgsPos();
 
+	bool bgmIsPlaying();
+	bool bgsIsPlaying();
+	bool meIsPlaying();
+
 	void reset();
 
         /* Non-standard extension */

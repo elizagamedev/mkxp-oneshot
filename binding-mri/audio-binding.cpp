@@ -32,10 +32,7 @@
 		int volume = 100; \
 		int pitch = 100; \
 		double pos = 0.0; \
-		if (rgssVer >= 3) \
-			rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
-		else \
-			rb_get_args(argc, argv, "z|ii", &filename, &volume, &pitch RB_ARG_END); \
+		rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
 		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos); ) \
 		return Qnil; \
 	} \
@@ -86,6 +83,13 @@ RB_METHOD(audio_##entity##Fade) \
 		return rb_float_new(shState->audio().entity##Pos()); \
 	}
 
+#define DEF_ISPLAYING(entity) \
+	RB_METHOD(audio_##entity##IsPlaying) \
+	{ \
+		RB_UNUSED_PARAM; \
+		return shState->audio().entity##IsPlaying() ? Qtrue : Qfalse; \
+	}
+
 #define DEF_AUD_PROP_I(PropName) \
 	RB_METHOD(audio##Get##PropName) \
 	{ \
@@ -109,6 +113,10 @@ DEF_PLAY_STOP( me )
 DEF_FADE( bgm )
 DEF_FADE( bgs )
 DEF_FADE( me )
+
+DEF_ISPLAYING( bgm )
+DEF_ISPLAYING( bgs )
+DEF_ISPLAYING( me )
 
 DEF_PLAY_STOP( se )
 
@@ -139,6 +147,9 @@ RB_METHOD(audioReset)
 #define BIND_POS(entity) \
 	_rb_define_module_function(module, #entity "_pos", audio_##entity##Pos);
 
+#define BIND_IS_PLAYING(entity) \
+	_rb_define_module_function(module, #entity "_playing?", audio_##entity##IsPlaying);
+
 #define INIT_AUD_PROP_BIND(PropName, prop_name_s) \
 { \
 	_rb_define_module_function(module, prop_name_s, audio##Get##PropName); \
@@ -154,13 +165,14 @@ audioBindingInit()
 	BIND_PLAY_STOP_FADE( bgs );
 	BIND_PLAY_STOP_FADE( me  );
 
-	if (rgssVer >= 3)
-	{
 	BIND_POS( bgm );
 	BIND_POS( bgs );
-	}
 
 	BIND_PLAY_STOP( se )
+
+	BIND_IS_PLAYING( bgm );
+	BIND_IS_PLAYING( bgs );
+	BIND_IS_PLAYING( me );
 
 	_rb_define_module_function(module, "__reset__", audioReset);
 
