@@ -28,6 +28,7 @@
 
 void* invokeGraphicsUpdate(void* unused) {
 	shState->graphics().update();
+	return NULL;
 }
 
 RB_METHOD(graphicsUpdate)
