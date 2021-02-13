@@ -24,12 +24,17 @@
 #include "binding-util.h"
 #include "binding-types.h"
 #include "exception.h"
+#include <ruby/thread.h>
+
+void* invokeGraphicsUpdate(void* unused) {
+	shState->graphics().update();
+}
 
 RB_METHOD(graphicsUpdate)
 {
 	RB_UNUSED_PARAM;
 
-	shState->graphics().update();
+	rb_thread_call_without_gvl(invokeGraphicsUpdate, NULL, NULL, NULL);
 
 	return Qnil;
 }
