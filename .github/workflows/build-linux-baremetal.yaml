@@ -7,7 +7,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Install dependencies
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt install -y \
+          libgtk2.0-dev libxfconf-0-dev
+      - name: Setup Python
+        uses: actions/setup-python@v2
       - name: Install and configure conan
         run: |
           pip3 install conan
