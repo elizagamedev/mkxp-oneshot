@@ -7,6 +7,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
       - name: Install and configure conan
         run: |
           pip3 install conan
