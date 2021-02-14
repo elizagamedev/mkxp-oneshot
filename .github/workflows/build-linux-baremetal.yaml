@@ -10,7 +10,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt install -y \
-          libgtk2.0-dev libxfconf-0-dev &&
+          libgtk2.0-dev libxfconf-0-dev libwmf0.2-7-gtk &&
           sudo curl -Lo /usr/local/bin/linuxdeploy-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage &&
           sudo chmod +x /usr/local/bin/linuxdeploy-x86_64.AppImage
       - name: Setup Python
