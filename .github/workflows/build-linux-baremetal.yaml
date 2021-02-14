@@ -4,6 +4,8 @@ jobs:
   build-linux:
     name: Build ModShot for Linux
     runs-on: ubuntu-latest
+    env:
+      CONAN_USER_HOME: /tmp/conan-build-cache
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,7 +26,7 @@ jobs:
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.conan
+          path: /tmp/conan-build-cache
           key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
       - name: Build dependencies using conan
         run: conan install ${{ github.workspace }} --build=missing
