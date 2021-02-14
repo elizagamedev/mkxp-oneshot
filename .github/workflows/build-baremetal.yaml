@@ -1,4 +1,4 @@
-name: build-windows-baremetal
+name: Build Modshot
 on: push
 jobs:
   build-windows:
