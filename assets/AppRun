@@ -10,4 +10,5 @@ sed "s,%RETARGET%,$appdir_lib_escaped," \
     "$APPDIR/usr/lib/loaders.cache" > "$temp_gdk_loaders_cache"
 export GDK_PIXBUF_MODULE_FILE="$temp_gdk_loaders_cache"
 
-"$APPDIR/usr/bin/oneshot"
+cd ($dirname $0)
+"./usr/bin/oneshot"
