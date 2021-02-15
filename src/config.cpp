@@ -182,7 +182,7 @@ void Config::read(int argc, char *argv[])
 	//Hardcode some ini/version settings
 	rgssVersion = 1;
 	game.title = "Aftermath";
-	game.scripts = "Data/Scripts.rxdata";
+	game.scripts = "Data/xScripts.rxdata";
 	defScreenW = 640;
 	defScreenH = 480;
 
