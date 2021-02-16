@@ -11,6 +11,13 @@ fi
 source_path="$1"
 conan_install_path="$2"
 appdir="$3"
+tmp_appdir="$(mktemp -d)"
+function atexit {
+  [ -n "$tmp_appdir" ] && rm -rf "$tmp_appdir"
+}
+
+trap atexit EXIT
+
 
 $LINUXDEPLOY -e "$conan_install_path/bin/oneshot" \
 	     -l "$conan_install_path/lib/libruby.so.2.5.3" \
@@ -32,7 +39,10 @@ $LINUXDEPLOY -e "$conan_install_path/bin/oneshot" \
 	     -i "$source_path/assets/oneshot.png" \
 	     -d "$source_path/assets/oneshot.desktop" \
 	     --custom-apprun="$source_path/assets/AppRun" \
-	     --appdir "$appdir"
+	     --appdir "$tmp_appdir"
+shopt -s dotglob
+cp -af "$tmp_appdir"/* "$appdir"
+
 
 # Copy ruby standard library and ssl cert bundle
 cp -af "$conan_install_path/bin/lib/" "$appdir/usr/bin/lib"
