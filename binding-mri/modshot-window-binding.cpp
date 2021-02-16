@@ -42,7 +42,6 @@ RB_METHOD(SetIcon) {
 void modshotwindowBindingInit()
 {
 	VALUE module = rb_define_module("ModWindow");
-	VALUE msg = rb_define_module_under(module, "Msg");
 	_rb_define_module_function(module, "GetWindowPosition", GetWindowPosition);
 	_rb_define_module_function(module, "SetWindowPosition", SetWindowPosition);
 	_rb_define_module_function(module, "SetTitle", SetTitle);
