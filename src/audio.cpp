@@ -336,17 +336,26 @@ float Audio::bgsPos()
 
 bool Audio::bgmIsPlaying()
 {
-	return p->bgm.stream.queryState() == ALStream::Playing;
+	p->bgm.lockStream();
+	bool result = p->bgm.stream.queryState() == ALStream::Playing;
+	p->bgm.unlockStream();
+	return result;
 }
 
 bool Audio::bgsIsPlaying()
 {
-	return p->bgs.stream.queryState() == ALStream::Playing;
+	p->bgs.lockStream();
+	bool result = p->bgs.stream.queryState() == ALStream::Playing;
+	p->bgs.unlockStream();
+	return result;
 }
 
 bool Audio::meIsPlaying()
 {
-	return p->me.stream.queryState() == ALStream::Playing;
+	p->me.lockStream();
+	bool result = p->me.stream.queryState() == ALStream::Playing;
+	p->me.unlockStream();
+	return result;
 }
 
 void Audio::reset()
