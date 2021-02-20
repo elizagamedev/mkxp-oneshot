@@ -71,9 +71,9 @@ public:
 	//Functions
 	bool msgbox(int type, const char *body, const char *title);
 	void textinput();
-	bool Oneshot::checkctrlzinput();
-	std::string Oneshot::updatetextinput();
-	bool Oneshot::istextinputstopped();
+	bool checkctrlzinput();
+	std::string updatetextinput();
+	bool istextinputstopped();
 	//Dirty flag for obscured texture
 	bool obscuredDirty;
 
