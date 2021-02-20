@@ -271,7 +271,8 @@ set(BINDING_SOURCE
 	binding-mri/journal-binding.cpp
 	binding-mri/chroma-binding.cpp
 	binding-mri/niko-binding.cpp
-	binding-mri/modshot-binding.cpp
+	binding-mri/modshot-window-binding.cpp
+	binding-mri/modshot-fiber-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})

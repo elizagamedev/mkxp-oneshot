@@ -334,6 +334,21 @@ float Audio::bgsPos()
 	return p->bgs.playingOffset();
 }
 
+bool Audio::bgmIsPlaying()
+{
+	return p->bgm.stream.queryState() == ALStream::Playing;
+}
+
+bool Audio::bgsIsPlaying()
+{
+	return p->bgs.stream.queryState() == ALStream::Playing;
+}
+
+bool Audio::meIsPlaying()
+{
+	return p->me.stream.queryState() == ALStream::Playing;
+}
+
 void Audio::reset()
 {
 	p->bgm.stop();
