@@ -16,15 +16,25 @@ Thanks to [rkevin-arch](https://github.com/rkevin-arch) for the docker build!
 
 > Modshot makes full use of all of these and is designed to add features not added in vanilla OneShot. It adds a number of new features and aims to make modding easier, whilst adding general purpose and specialized features, such as custom window titles, discord rich presence, chroma support, and much more. With this, oneshot now reads Scripts.rxdata instead of xScripts.rxdata, meaning modders won't have to delete and rename files constantly. Feel free to make pull requests of features you would like to see.
 
-Currently there are no features.
+# Usage
+Please credit the project in some wayy, either by a direct title card, or some other means.
 
-# Config
-
-> Using features such as the GameJolt API, Discord Richpresence, and anything else that requires such data will need to be edited with in a config file inside the executable. This is for security purposes so nobody can steal your game/application keys. I apologize for the inconvenience. 
-
-# Calling scripts
-
-> Just call them with Modshot.\[script] 
+<There are a large multitude of additional features modshot adds and it is iddifuclt to explain them all. Please refer to the wiki for in-depth usage.>
+  
+ Main features currently:
+ 
+ Ruby gem support
+ 
+ Vertical sprite mirroring
+ 
+ Net::HTTP support
+ 
+ Custom audio bindings
+ 
+ Docker containers
+ 
+ Simplified build process
+ 
 
 # Wiki
 

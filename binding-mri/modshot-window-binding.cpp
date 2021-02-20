@@ -6,32 +6,9 @@
 #include "eventthread.h"
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <boost/crc.hpp>
 
-RB_METHOD(bounce_up)
-{
-	//Edit: this is useless garbage that doesn't work
-	int absx, absy;
-	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
-	int state;
-	for (int i = 0; i < 60; ++i) {
-		int max = 60 - i;
-		int y = -5;
-		int x = 0;
-		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
-		rb_eval_string_protect("sleep 0.02", &state);
-	}
-	for (int i = 0; i < 60; ++i) {
-		int max = 60 - i;
-		int y = 5;
-		int x = 0;
-		SDL_SetWindowPosition(shState->rtData().window, absx + x, absy + y);
-		rb_eval_string_protect("sleep 0.02", &state);
-	}
-	return Qnil;
-}
-
-//nvm
 RB_METHOD(GetWindowPosition) {
 	int x, y;
 	SDL_GetWindowPosition(shState->rtData().window, &x, &y);
@@ -45,8 +22,6 @@ RB_METHOD(SetWindowPosition) {
 	return Qnil;
 }
 
-
-
 RB_METHOD(SetTitle) {
 	char* wintitle; //thx rkevin
 	rb_get_args(argc, argv, "z", &wintitle);
@@ -54,13 +29,21 @@ RB_METHOD(SetTitle) {
 	return Qnil;
 }
 
+RB_METHOD(SetIcon) {
+	char* path;
+	rb_get_args(argc, argv, "z", &path);
+	SDL_Surface* icon = IMG_Load(path);
+	if (!icon) {
+		rb_raise(rb_eRuntimeError, "Loading icon from path failed");
+	}
+	SDL_SetWindowIcon(shState->rtData().window, icon);
+}
+
 void modshotwindowBindingInit()
 {
 	VALUE module = rb_define_module("ModWindow");
-	VALUE msg = rb_define_module_under(module, "Msg");
-	_rb_define_module_function(module, "bounce_up", bounce_up);
-	//_rb_define_module_function(module, "defhere", exposedname);
 	_rb_define_module_function(module, "GetWindowPosition", GetWindowPosition);
 	_rb_define_module_function(module, "SetWindowPosition", SetWindowPosition);
 	_rb_define_module_function(module, "SetTitle", SetTitle);
+	_rb_define_module_function(module, "SetIcon", SetIcon);
 }
