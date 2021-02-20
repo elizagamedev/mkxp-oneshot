@@ -26,6 +26,7 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "sdl-util.h"
+#include "aldatasource.h"
 
 #include <string>
 
@@ -36,7 +37,8 @@ struct AudioPrivate
 {
 	int bgm_volume;
 	int sfx_volume;
-
+	int bgm_pitch;
+	
 	AudioStream bgm;
 	AudioStream bgs;
 	AudioStream me;
@@ -44,7 +46,8 @@ struct AudioPrivate
 	int current_bgm_volume;
 	int current_bgs_volume;
 	int current_me_volume;
-
+	bool bgm_custom_loop;
+	std::string bgm_custom_loop_filename;
 	SoundEmitter se;
 
 	SyncPoint &syncPoint;
@@ -77,10 +80,13 @@ struct AudioPrivate
 	      syncPoint(rtData.syncPoint)
 	{
 		bgm_volume = 100;
+		bgm_pitch = 100;
 		sfx_volume = 100;
 		current_bgm_volume = 100;
 		current_bgs_volume = 100;
 		current_me_volume = 100;
+		bgm_custom_loop = false;
+		bgm_custom_loop_filename = "";
 		meWatch.state = MeNotPlaying;
 		meWatch.thread = createSDLThread
 			<AudioPrivate, &AudioPrivate::meWatchFun>(this, "audio_mewatch");
@@ -103,7 +109,17 @@ struct AudioPrivate
 
 			if (meWatch.termReq)
 				return;
-
+			
+			// too lazy to make another function so i'm just doing it here
+			if (bgm.stream.doing_loop == true)
+			{
+				if (bgm_custom_loop == true)
+				{
+					bgm.play(bgm_custom_loop_filename.c_str(), bgm_volume, bgm_pitch, 0.0);
+					bgm_custom_loop = false;
+				}
+			}
+			
 			switch (meWatch.state)
 			{
 			case MeNotPlaying:
@@ -259,11 +275,26 @@ void Audio::bgmPlay(const char *filename,
                     float pos)
 {
 	p->current_bgm_volume = volume;
-	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
+	p->bgm_pitch = pitch;
+	// alright so here's a stupid hack to do looping audio similar to VX ace games except not
+	// how it works is that you play the Intro file, and it'll play the Loop file afterwards
+	p->bgm_custom_loop = false;
+	const char * pch;
+	pch = strstr(filename, "Intro");
+	if (pch != NULL)
+	{
+		p->bgm_custom_loop_filename = filename;
+		const std::string from = "Intro";
+		size_t start_pos = p->bgm_custom_loop_filename.find(from);
+		p->bgm_custom_loop_filename.replace(start_pos, from.length(), "Loop");
+		p->bgm_custom_loop = true;
+	}
+	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos, 0);
 }
 
 void Audio::bgmStop()
 {
+	p->bgm_custom_loop = false;
 	p->bgm.stop();
 }
 

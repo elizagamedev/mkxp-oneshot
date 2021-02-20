@@ -43,7 +43,7 @@ ALStream::ALStream(LoopMode loopMode,
       pitch(1.0f)
 {
 	alSrc = AL::Source::gen();
-
+	doing_loop = false;
 	AL::Source::setVolume(alSrc, 1.0f);
 	AL::Source::setPitch(alSrc, 1.0f);
 	AL::Source::detachBuffer(alSrc);
@@ -125,7 +125,7 @@ void ALStream::stop()
 	state = Stopped;
 }
 
-void ALStream::play(float offset)
+void ALStream::play(float offset, int pos)
 {
 	if (!source)
 		return;
@@ -138,7 +138,7 @@ void ALStream::play(float offset)
 	case Playing:
 		return;
 	case Stopped:
-		startStream(offset);
+		startStream(offset, pos);
 		break;
 	case Paused :
 		resumeStream();
@@ -281,7 +281,7 @@ void ALStream::stopStream()
 	procFrames = 0;
 }
 
-void ALStream::startStream(float offset)
+void ALStream::startStream(float offset, int pos)
 {
 	AL::Source::clearQueue(alSrc);
 
@@ -295,8 +295,7 @@ void ALStream::startStream(float offset)
 
 	needsRewind = true;
 
-	thread = createSDLThread
-		<ALStream, &ALStream::streamData>(this, threadName);
+	startPos = pos;
 }
 
 void ALStream::pauseStream()
@@ -355,11 +354,18 @@ void ALStream::streamData()
 {
 	/* Fill up queue */
 	bool firstBuffer = true;
+	doing_loop = false;
 	ALDataSource::Status status;
 
 	if (threadTermReq)
 		return;
-
+	
+	if (startPos > 0)
+	{
+		source->seekToOffset(startPos);
+		startPos = 0;
+	}
+	
 	if (needsRewind)
 	{
 		source->seekToOffset(startOffset);
@@ -422,6 +428,7 @@ void ALStream::streamData()
 				 * querying the playback offset returns 0.0 again */
 				procFrames = source->loopStartFrames();
 				lastBuf = AL::Buffer::ID(0);
+				doing_loop = true;
 			}
 			else
 			{
@@ -459,7 +466,6 @@ void ALStream::streamData()
 			 * sample count once it gets unqueued */
 			if (status == ALDataSource::WrapAround)
 				lastBuf = buf;
-
 			if (status == ALDataSource::EndOfStream)
 				sourceExhausted.set();
 		}

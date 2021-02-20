@@ -77,6 +77,7 @@ set(MAIN_HEADERS
 	chromasdk/RzErrors.h
 	chromasdk/ChromaApi.h
 	src/i18n.h
+	src/secretwindow.h
 )
 
 set(MAIN_SOURCE
@@ -119,6 +120,7 @@ set(MAIN_SOURCE
 	src/oneshot.cpp
 	src/screen.cpp
 	src/i18n.cpp
+	src/secretwindow.cpp
 )
 
 if(WIN32)
