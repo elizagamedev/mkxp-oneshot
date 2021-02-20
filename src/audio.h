@@ -43,14 +43,16 @@ public:
 	void bgmPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0);
+	             float pos = 0,
+				 bool fadeInOnOffset = true);
 	void bgmStop();
 	void bgmFade(int time);
 
 	void bgsPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0);
+	             float pos = 0,
+				 bool fadeInOnOffset = true);
 	void bgsStop();
 	void bgsFade(int time);
 

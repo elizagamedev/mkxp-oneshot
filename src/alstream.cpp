@@ -40,7 +40,8 @@ ALStream::ALStream(LoopMode loopMode,
 	  source(0),
 	  thread(0),
 	  preemptPause(false),
-      pitch(1.0f)
+      pitch(1.0f),
+	  crossfadeVolume(1.0f)
 {
 	alSrc = AL::Source::gen();
 
@@ -166,7 +167,7 @@ void ALStream::pause()
 
 void ALStream::setVolume(float value)
 {
-	AL::Source::setVolume(alSrc, value);
+	AL::Source::setVolume(alSrc, value * crossfadeVolume);
 }
 
 void ALStream::setPitch(float value)
@@ -290,7 +291,7 @@ void ALStream::startStream(float offset)
 	sourceExhausted.clear();
 	threadTermReq.clear();
 
-	startOffset = offset;
+	startOffset = offset<0 ? 0 : offset;
 	procFrames = offset * source->sampleRate();
 
 	needsRewind = true;

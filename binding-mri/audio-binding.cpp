@@ -31,9 +31,10 @@
 		const char *filename; \
 		int volume = 100; \
 		int pitch = 100; \
-		double pos = 0.0; \
-		rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
-		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos); ) \
+		double pos = -1.0; \
+		bool fadeInOnOffset = true; \
+		rb_get_args(argc, argv, "z|iifb", &filename, &volume, &pitch, &pos, &fadeInOnOffset RB_ARG_END); \
+		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos, fadeInOnOffset); ) \
 		return Qnil; \
 	} \
 	RB_METHOD(audio_##entity##Stop) \

@@ -27,6 +27,7 @@
 #include "sdl-util.h"
 
 #include <string>
+#include <deque>
 
 struct AudioStream
 {
@@ -78,7 +79,7 @@ struct AudioStream
 	 * soon as the ME ends, so we unset this flag. */
 	bool noResumeStop;
 
-	ALStream stream;
+	std::deque<ALStream> streams;
 	SDL_mutex *streamMut;
 
 	/* Fade out */
@@ -118,6 +119,15 @@ struct AudioStream
 		uint32_t startTicks;
 	} fadeIn;
 
+	/* crossfade manager (always running) */
+	struct 
+	{
+		SDL_Thread *thread;
+		std::string threadName;
+		AtomicFlag reqTerm;
+	} crossfade;
+	
+
 	AudioStream(ALStream::LoopMode loopMode,
 	            const std::string &threadId);
 	~AudioStream();
@@ -125,7 +135,9 @@ struct AudioStream
 	void play(const std::string &filename,
 	          int volume,
 	          int pitch,
-	          float offset = 0);
+	          float offset = 0,
+			  bool fadeInOnOffset = true);
+	void pause();
 	void stop();
 	void fadeOut(int duration);
 
@@ -139,16 +151,21 @@ struct AudioStream
 	float getVolume(VolumeType type);
 
 	float playingOffset();
+	ALStream::State queryState();
 
 private:
 	float volumes[VolumeTypeCount];
+	int alStreamThreadID;
 	void updateVolume();
+
+	void destroyCrossfades();
 
 	void finiFadeOutInt();
 	void startFadeIn();
 
 	void fadeOutThread();
 	void fadeInThread();
+	void crossfadeThread();
 };
 
 #endif // AUDIOSTREAM_H
