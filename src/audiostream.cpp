@@ -46,14 +46,15 @@ AudioStream::AudioStream(ALStream::LoopMode loopMode,
 	fadeIn.thread = 0;
 	fadeIn.threadName = std::string("audio_fadein (") + threadId + ")";
 
-	streams.emplace_front(loopMode, threadId + "_" + std::to_string(alStreamThreadID));
+	alStreamThreadIDPrefix = threadId + "_";
+	streams.emplace_front(loopMode, alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
 	alStreamThreadID++;
 
 	streamMut = SDL_CreateMutex();
 
-	crossfade.threadName = std::string("audio_crossfade_mgr (") + threadId + ")";
-	crossfade.thread = createSDLThread
-		<AudioStream, &AudioStream::crossfadeThread>(this, crossfade.threadName);
+	crossfademgr.threadName = std::string("audio_crossfade_mgr (") + threadId + ")";
+	crossfademgr.thread = createSDLThread
+		<AudioStream, &AudioStream::crossfadeThread>(this, crossfademgr.threadName);
 }
 
 AudioStream::~AudioStream()
@@ -70,8 +71,8 @@ AudioStream::~AudioStream()
 		SDL_WaitThread(fadeIn.thread, 0);
 	}
 
-	crossfade.reqTerm.set();
-	SDL_WaitThread(crossfade.thread, 0);
+	crossfademgr.reqTerm.set();
+	SDL_WaitThread(crossfademgr.thread, 0);
 
 	lockStream();
 
@@ -179,6 +180,72 @@ void AudioStream::play(const std::string &filename,
 		setVolume(FadeIn, 0);
 		startFadeIn();
 	}
+
+	current.filename = filename;
+	current.volume = _volume;
+	current.pitch = _pitch;
+
+	if (!extPaused)
+		streams[0].play(offset);
+	else
+		noResumeStop = false;
+
+	unlockStream();
+}
+
+void AudioStream::crossfade(const std::string &filename,
+							float time,
+			       			int volume,
+				   			int pitch,
+				   			float offset)
+{
+	finiFadeOutInt();
+	lockStream();
+
+	float _volume = clamp<int>(volume, 0, 100) / 100.0f;
+	float _pitch  = clamp<int>(pitch, 50, 150) / 100.0f;
+	time = time <= 0 ? 1 : time;
+	float fadespeed = 1.0f / (time * 1000 / AUDIO_SLEEP);
+
+	ALStream::State sState = streams[0].queryState();
+
+	if (sState != ALStream::Playing) {
+		// just fade in current music, destroy crossfades
+		play(filename, volume, pitch, offset, false);
+		// but still use our crossfader for the fade in part, because the time is not hardcoded
+		streams[0].crossfadeVolume = 0;
+		streams[0].crossfadeSpeed = fadespeed;
+		unlockStream();
+		return;
+	}
+
+	// construct new stream for crossfading
+
+	streams.emplace_front(
+		streams[0].looped ? ALStream::LoopMode::Looped : ALStream::LoopMode::NotLooped,
+		alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
+	alStreamThreadID++;
+
+	try {
+		streams[0].open(filename);
+	}
+	catch (const Exception &e) {
+		// crap, bail ship
+		// (and actually destroy new stream, keep old stream)
+		streams.erase(streams.begin());
+		unlockStream();
+		throw e;
+	}
+
+	// set first stream to fade in
+	streams[0].crossfadeVolume = 0;
+	streams[0].crossfadeSpeed = fadespeed;
+	// set second stream to fade out
+	streams[1].crossfadeSpeed = fadespeed;
+	// ignore further streams
+
+	setVolume(Base, _volume);
+	streams[0].setPitch(_pitch);
 
 	current.filename = filename;
 	current.volume = _volume;
@@ -418,12 +485,11 @@ void AudioStream::fadeInThread()
 void AudioStream::crossfadeThread()
 {
 	while (true) {
-		if (crossfade.reqTerm)
+		if (crossfademgr.reqTerm)
 			break;
 		lockStream();
 		if (streams.size() > 1 || streams[0].crossfadeVolume != 1) {
 			// fade out streams 1~n
-			fprintf(stderr,"streams size %d\n", streams.size());
 			for (std::deque<ALStream>::iterator i=streams.begin() + 1; i!=streams.end();) {
 				i->crossfadeVolume -= i->crossfadeSpeed;
 				if (i->crossfadeVolume<0) {

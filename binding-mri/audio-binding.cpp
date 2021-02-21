@@ -77,6 +77,20 @@ RB_METHOD(audio_##entity##Fade) \
 	return Qnil; \
 }
 
+#define DEF_CROSSFADE(entity) \
+RB_METHOD(audio_##entity##Crossfade) \
+{ \
+	RB_UNUSED_PARAM; \
+	const char *filename; \
+	double time = 2; \
+	int volume = 100; \
+	int pitch = 100; \
+	double pos = -1.0; \
+	rb_get_args(argc, argv, "z|fiif", &filename, &time, &volume, &pitch, &pos RB_ARG_END); \
+	GUARD_EXC(shState->audio().entity##Crossfade(filename, time, volume, pitch, pos);) \
+	return Qnil; \
+}
+
 #define DEF_POS(entity) \
 	RB_METHOD(audio_##entity##Pos) \
 	{ \
@@ -115,6 +129,10 @@ DEF_FADE( bgm )
 DEF_FADE( bgs )
 DEF_FADE( me )
 
+DEF_CROSSFADE( bgm )
+DEF_CROSSFADE( bgs )
+DEF_CROSSFADE( me )
+
 DEF_ISPLAYING( bgm )
 DEF_ISPLAYING( bgs )
 DEF_ISPLAYING( me )
@@ -141,9 +159,13 @@ RB_METHOD(audioReset)
 #define BIND_FADE(entity) \
 	_rb_define_module_function(module, #entity "_fade", audio_##entity##Fade);
 
-#define BIND_PLAY_STOP_FADE(entity) \
+#define BIND_CROSSFADE(entity) \
+	_rb_define_module_function(module, #entity "_crossfade", audio_##entity##Crossfade);
+
+#define BIND_PLAY_STOP_FADE_CROSS(entity) \
 	BIND_PLAY_STOP(entity) \
-	BIND_FADE(entity)
+	BIND_FADE(entity) \
+	BIND_CROSSFADE(entity)
 
 #define BIND_POS(entity) \
 	_rb_define_module_function(module, #entity "_pos", audio_##entity##Pos);
@@ -162,9 +184,9 @@ audioBindingInit()
 {
 	VALUE module = rb_define_module("Audio");
 
-	BIND_PLAY_STOP_FADE( bgm );
-	BIND_PLAY_STOP_FADE( bgs );
-	BIND_PLAY_STOP_FADE( me  );
+	BIND_PLAY_STOP_FADE_CROSS( bgm );
+	BIND_PLAY_STOP_FADE_CROSS( bgs );
+	BIND_PLAY_STOP_FADE_CROSS( me  );
 
 	BIND_POS( bgm );
 	BIND_POS( bgs );

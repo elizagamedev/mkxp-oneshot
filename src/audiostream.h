@@ -125,7 +125,7 @@ struct AudioStream
 		SDL_Thread *thread;
 		std::string threadName;
 		AtomicFlag reqTerm;
-	} crossfade;
+	} crossfademgr;
 	
 
 	AudioStream(ALStream::LoopMode loopMode,
@@ -137,6 +137,11 @@ struct AudioStream
 	          int pitch,
 	          float offset = 0,
 			  bool fadeInOnOffset = true);
+	void crossfade(const std::string &filename,
+				   float time,
+			       int volume,
+				   int pitch,
+				   float offset = 0);
 	void pause();
 	void stop();
 	void fadeOut(int duration);
@@ -156,6 +161,7 @@ struct AudioStream
 private:
 	float volumes[VolumeTypeCount];
 	int alStreamThreadID;
+	std::string alStreamThreadIDPrefix;
 	void updateVolume();
 
 	void destroyCrossfades();

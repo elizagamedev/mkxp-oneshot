@@ -43,7 +43,7 @@ public:
 	void bgmPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0,
+	             float pos = -1,
 				 bool fadeInOnOffset = true);
 	void bgmStop();
 	void bgmFade(int time);
@@ -51,7 +51,7 @@ public:
 	void bgsPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0,
+	             float pos = -1,
 				 bool fadeInOnOffset = true);
 	void bgsStop();
 	void bgsFade(int time);
@@ -66,6 +66,22 @@ public:
 	            int volume = 100,
 	            int pitch = 100);
 	void seStop();
+
+	void bgmCrossfade(const char *filename,
+				 	  float time = 2,
+			     	  int volume = 100,
+				 	  int pitch = 100,
+					  float offset = -1);
+	void bgsCrossfade(const char *filename,
+				 	  float time = 2,
+			     	  int volume = 100,
+				 	  int pitch = 100,
+					  float offset = -1);
+	void meCrossfade(const char *filename,
+					 float time = 2,
+			    	 int volume = 100,
+					 int pitch = 100,
+					 float offset = -1);
 
 	float bgmPos();
 	float bgsPos();

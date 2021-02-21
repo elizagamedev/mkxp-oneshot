@@ -326,6 +326,33 @@ void Audio::seStop()
 	p->se.stop();
 }
 
+void Audio::bgmCrossfade(const char *filename,
+						 float time,
+			       		 int volume,
+				   		 int pitch,
+				   		 float offset)
+{
+	p->bgm.crossfade(filename, time, volume, pitch, offset);
+}
+
+void Audio::bgsCrossfade(const char *filename,
+						 float time,
+			       		 int volume,
+				   		 int pitch,
+				   		 float offset)
+{
+	p->bgs.crossfade(filename, time, volume, pitch, offset);
+}
+
+void Audio::meCrossfade(const char *filename,
+						float time,
+			       		int volume,
+				   		int pitch,
+				   		float offset)
+{
+	p->me.crossfade(filename, time, volume, pitch, offset);
+}
+
 float Audio::bgmPos()
 {
 	return p->bgm.playingOffset();
