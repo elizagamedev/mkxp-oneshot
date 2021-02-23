@@ -112,6 +112,9 @@ struct ALStream
 	void addFilter(AudioFilter* filter);
 	void clearFilters();
 
+	void addALFilter(AL::Filter::ID filter);
+	void clearALFilter();
+
 private:
 	void closeSource();
 	void openSource(const std::string &filename);

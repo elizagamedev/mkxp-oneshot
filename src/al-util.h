@@ -23,8 +23,22 @@
 #define ALUTIL_H
 
 #include <al.h>
+#include <efx.h>
 #include <SDL_audio.h>
 #include <assert.h>
+
+#define alGenEffects ((LPALGENEFFECTS)alGetProcAddress("alGenEffects"))
+#define alDeleteEffects ((LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects"))
+#define alEffecti ((LPALEFFECTI)alGetProcAddress("alEffecti"))
+#define alEffectf ((LPALEFFECTF)alGetProcAddress("alEffectf"))
+#define alEffectfv ((LPALEFFECTFV)alGetProcAddress("alEffectfv"))
+#define alGetEffecti ((LPALGETEFFECTI)alGetProcAddress("alGetEffecti"))
+#define alGetEffectf ((LPALGETEFFECTF)alGetProcAddress("alGetEffectf"))
+#define alGetEffectfv ((LPALGETEFFECTFV)alGetProcAddress("alGetEffectfv"))
+#define alGenFilters ((LPALGENFILTERS)alGetProcAddress("alGenFilters"))
+#define alDeleteFilters ((LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters"))
+#define alFilteri ((LPALFILTERI)alGetProcAddress("alFilteri"))
+#define alFilterf ((LPALFILTERF)alGetProcAddress("alFilterf"))
 
 namespace AL
 {
@@ -90,6 +104,73 @@ namespace Buffer
 	inline ALint getChannels(Buffer::ID id)
 	{
 		return getInteger(id, AL_CHANNELS);
+	}
+}
+
+namespace Filter
+{
+	DEF_AL_ID
+
+	inline void del(Filter::ID id)
+	{
+		alDeleteFilters(1, &id.al);
+	}
+
+	inline bool isNullFilter(Filter::ID id)
+	{
+		return id.al == AL_FILTER_NULL;
+	}
+
+	inline Filter::ID nullFilter()
+	{
+		Filter::ID id;
+		id.al = AL_FILTER_NULL;
+		return id;
+	}
+
+	inline void setInteger(Filter::ID id, ALenum prop, ALint value)
+	{
+		alFilteri(id.al, prop, value);
+	}
+
+	inline void setFloat(Filter::ID id, ALenum prop, ALfloat value)
+	{
+		alFilterf(id.al, prop, value);
+	}
+
+	inline Filter::ID createLowpassFilter(float gain, float gainhf) {
+		Filter::ID id;
+		alGenFilters(1, &id.al);
+		setInteger(id, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
+		setFloat(id, AL_LOWPASS_GAIN, gain);
+		setFloat(id, AL_LOWPASS_GAINHF, gainhf);
+	}
+
+	inline Filter::ID createHighpassFilter(float gain, float gainlf) {
+		Filter::ID id;
+		alGenFilters(1, &id.al);
+		setFloat(id, AL_HIGHPASS_GAIN, gain);
+		setFloat(id, AL_HIGHPASS_GAINLF, gainlf);
+	}
+
+	inline Filter::ID createBandpassFilter(float gain, float gainlf, float gainhf) {
+		Filter::ID id;
+		alGenFilters(1, &id.al);
+		setInteger(id, AL_FILTER_TYPE, AL_FILTER_BANDPASS);
+		setFloat(id, AL_BANDPASS_GAIN, gain);
+		setFloat(id, AL_BANDPASS_GAINLF, gainlf);
+		setFloat(id, AL_BANDPASS_GAINHF, gainhf);
+	}
+
+}
+
+namespace Effect
+{
+	DEF_AL_ID
+
+	inline void del(Effect::ID id)
+	{
+		alDeleteEffects(1, &id.al);
 	}
 }
 
@@ -162,6 +243,27 @@ namespace Source
 		alGetSourcef(id.al, AL_SEC_OFFSET, &value);
 
 		return value;
+	}
+
+	inline Filter::ID getFilter(Source::ID id)
+	{
+		Filter::ID filter;
+		alGetSourcei(id.al, AL_DIRECT_FILTER, (ALint*) &filter.al);
+		return filter;
+	}
+
+	inline void setFilter(Source::ID id, Filter::ID filter)
+	{
+		Filter::ID oldfilter = getFilter(id);
+		if (!Filter::isNullFilter(oldfilter)) {
+			Filter::del(filter);
+		}
+		alSourcei(id.al, AL_DIRECT_FILTER, filter.al);
+	}
+
+	inline void clearFilter(Source::ID id)
+	{
+		setFilter(id, Filter::nullFilter());
 	}
 
 	inline void setVolume(Source::ID id, float value)

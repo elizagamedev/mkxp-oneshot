@@ -321,6 +321,10 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	if(alcIsExtensionPresent(alcDev, "ALC_EXT_EFX") != ALC_TRUE) {
+		showInitError("OpenAL device does not support Effects extension.");
+	}
+
 	SDL_DisplayMode mode;
 	SDL_GetDisplayMode(0, 0, &mode);
 

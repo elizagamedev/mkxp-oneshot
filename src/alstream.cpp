@@ -62,6 +62,7 @@ ALStream::~ALStream()
 	close();
 
 	AL::Source::clearQueue(alSrc);
+	clearALFilter();
 	AL::Source::del(alSrc);
 
 	for (int i = 0; i < STREAM_BUFS; ++i)
@@ -207,6 +208,14 @@ void ALStream::clearFilters() {
 	if (state == Closed)
 		return;
 	source->clearFilters();
+}
+
+void ALStream::addALFilter(AL::Filter::ID filter) {
+	AL::Source::setFilter(alSrc, filter);
+}
+
+void ALStream::clearALFilter() {
+	AL::Source::clearFilter(alSrc);
 }
 
 void ALStream::closeSource()
