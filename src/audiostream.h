@@ -158,6 +158,9 @@ struct AudioStream
 	float playingOffset();
 	ALStream::State queryState();
 
+	void addFilter(AudioFilter* filter);
+	void clearFilters();
+
 private:
 	float volumes[VolumeTypeCount];
 	int alStreamThreadID;

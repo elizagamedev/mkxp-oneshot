@@ -12,7 +12,7 @@
 
 class AudioFilter {
     public:
-    void process(ALenum format, const ALvoid *data, ALsizei size, ALsizei freq);
+    virtual void process(ALenum format, const ALvoid *data, ALsizei size, ALsizei freq);
 
     protected:
     // note to anyone implementing a filter:
@@ -30,11 +30,11 @@ class RectifierAudioFilter : public AudioFilter {
     RectifierAudioFilter(float intensity = 0.5);
     float intensity;
 
-    private:
-    void process_mono(uint8_t *data, int size, int freq);
-    void process_mono(int16_t *data, int size, int freq);
-    void process_stereo(uint8_t *data, int size, int freq);
-    void process_stereo(int16_t *data, int size, int freq);
+    protected:
+    void process_mono(uint8_t *data, int size, int freq) override;
+    void process_mono(int16_t *data, int size, int freq) override;
+    void process_stereo(uint8_t *data, int size, int freq) override;
+    void process_stereo(int16_t *data, int size, int freq) override;
     void rectify(uint8_t *data, int count);
     void rectify(int16_t *data, int count);
 };

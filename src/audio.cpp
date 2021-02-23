@@ -426,4 +426,26 @@ void Audio::setSFX_Volume(int value)
 	
 }
 
+void Audio::addFilter(const char* type, AudioFilter* filter) {
+	if (!strcmp(type, "bgm")) {
+		p->bgm.addFilter(filter);
+	} else if (!strcmp(type, "bgs")) {
+		p->bgs.addFilter(filter);
+	} else if (!strcmp(type, "me")) {
+		p->me.addFilter(filter);
+	}
+}
+
+void Audio::bgmClearFilters() {
+	p->bgm.clearFilters();
+}
+
+void Audio::bgsClearFilters() {
+	p->bgs.clearFilters();
+}
+
+void Audio::meClearFilters() {
+	p->me.clearFilters();
+}
+
 Audio::~Audio() { delete p; }

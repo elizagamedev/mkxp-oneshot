@@ -113,6 +113,7 @@ set(MAIN_SOURCE
 	src/vertex.cpp
 	src/soundemitter.cpp
 	src/sdlsoundsource.cpp
+	src/aldatasource.cpp
 	src/alstream.cpp
 	src/audiostream.cpp
 	src/audiofilter.cpp

@@ -23,6 +23,7 @@
 #define AUDIO_H
 
 #include "util.h"
+#include "audiofilter.h"
 
 /* Concerning the 'pos' parameter:
  *   RGSS3 actually doesn't specify a format for this,
@@ -89,6 +90,11 @@ public:
 	bool bgmIsPlaying();
 	bool bgsIsPlaying();
 	bool meIsPlaying();
+
+	void addFilter(const char* type, AudioFilter* filter);
+	void bgmClearFilters();
+	void bgsClearFilters();
+	void meClearFilters();
 
 	void reset();
 

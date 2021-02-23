@@ -23,6 +23,7 @@
 #include "sharedstate.h"
 #include "binding-util.h"
 #include "exception.h"
+#include "audiofilter.h"
 
 #define DEF_PLAY_STOP_POS(entity) \
 	RB_METHOD(audio_##entity##Play) \
@@ -120,6 +121,31 @@ RB_METHOD(audio_##entity##Crossfade) \
 		return rb_fix_new(value); \
 	}
 
+void addFilterToAudioSource(const char* audiotype, int argc, VALUE *argv) {
+	char* filtertype;
+	rb_get_args(argc, argv, "z|", &filtertype RB_ARG_END);
+	if (!strcmp(filtertype, "Rectifier")) {
+		double intensity;
+		rb_get_args(argc, argv, "zf", &filtertype, &intensity RB_ARG_END);
+		RectifierAudioFilter* filter = new RectifierAudioFilter(intensity);
+		shState->audio().addFilter(audiotype, filter);
+		return;
+	}
+
+	rb_raise(rb_eArgError, "Unrecognized audio filter type");
+}
+
+#define DEF_AUD_FILTER(entity) \
+	RB_METHOD(audio_##entity##AddFilter) { \
+		addFilterToAudioSource(#entity, argc, argv); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##ClearFilters) { \
+		shState->audio().entity##ClearFilters(); \
+		return Qnil; \
+	}
+
+
 DEF_PLAY_STOP_POS( bgm )
 DEF_PLAY_STOP_POS( bgs )
 
@@ -141,6 +167,10 @@ DEF_PLAY_STOP( se )
 
 DEF_AUD_PROP_I(BGM_Volume)
 DEF_AUD_PROP_I(SFX_Volume)
+
+DEF_AUD_FILTER(bgm)
+DEF_AUD_FILTER(bgs)
+DEF_AUD_FILTER(me)
 
 RB_METHOD(audioReset)
 {
@@ -179,6 +209,10 @@ RB_METHOD(audioReset)
 	_rb_define_module_function(module, prop_name_s "=", audio##Set##PropName); \
 }
 
+#define BIND_AUDIO_FILTER(entity) \
+	_rb_define_module_function(module, #entity "_add_filter", audio_##entity##AddFilter); \
+	_rb_define_module_function(module, #entity "_clear_filters", audio_##entity##ClearFilters); \
+
 void
 audioBindingInit()
 {
@@ -196,6 +230,10 @@ audioBindingInit()
 	BIND_IS_PLAYING( bgm );
 	BIND_IS_PLAYING( bgs );
 	BIND_IS_PLAYING( me );
+
+	BIND_AUDIO_FILTER(bgm);
+	BIND_AUDIO_FILTER(bgs);
+	BIND_AUDIO_FILTER(me);
 
 	_rb_define_module_function(module, "__reset__", audioReset);
 

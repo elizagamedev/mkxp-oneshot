@@ -29,19 +29,21 @@ void AudioFilter::process(ALenum format, const ALvoid *data, ALsizei size, ALsiz
 }
 
 void AudioFilter::process_mono(uint8_t *data, int size, int freq) {
-    throw std::logic_error("Not Implemented");
+    throw std::logic_error("AudioFilter cannot process 8bit mono data");
 }
 
 void AudioFilter::process_mono(int16_t *data, int size, int freq) {
-    throw std::logic_error("Not Implemented");
+    throw std::logic_error("AudioFilter cannot process 16bit mono data");
 }
 
 void AudioFilter::process_stereo(uint8_t *data, int size, int freq) {
-    throw std::logic_error("Not Implemented");
+    throw std::logic_error("AudioFilter cannot process 8bit stereo data");
+
 }
 
 void AudioFilter::process_stereo(int16_t *data, int size, int freq) {
-    throw std::logic_error("Not Implemented");
+    throw std::logic_error("AudioFilter cannot process 16bit stereo data");
+
 }
 
 /* Rectifier filter */
