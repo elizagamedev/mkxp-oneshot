@@ -146,6 +146,7 @@ namespace Filter
 		setInteger(id, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
 		setFloat(id, AL_LOWPASS_GAIN, gain);
 		setFloat(id, AL_LOWPASS_GAINHF, gainhf);
+		return id;
 	}
 
 	inline Filter::ID createHighpassFilter(float gain, float gainlf) {
@@ -153,6 +154,7 @@ namespace Filter
 		alGenFilters(1, &id.al);
 		setFloat(id, AL_HIGHPASS_GAIN, gain);
 		setFloat(id, AL_HIGHPASS_GAINLF, gainlf);
+		return id;
 	}
 
 	inline Filter::ID createBandpassFilter(float gain, float gainlf, float gainhf) {
@@ -162,6 +164,7 @@ namespace Filter
 		setFloat(id, AL_BANDPASS_GAIN, gain);
 		setFloat(id, AL_BANDPASS_GAINLF, gainlf);
 		setFloat(id, AL_BANDPASS_GAINHF, gainhf);
+		return id;
 	}
 
 }
