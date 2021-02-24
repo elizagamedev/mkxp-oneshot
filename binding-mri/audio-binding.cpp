@@ -121,29 +121,71 @@ RB_METHOD(audio_##entity##Crossfade) \
 		return rb_fix_new(value); \
 	}
 
-void addFilterToAudioSource(const char* audiotype, int argc, VALUE *argv) {
+AudioFilter* constructAudioFilter(int argc, VALUE *argv) {
 	char* filtertype;
 	rb_get_args(argc, argv, "z|", &filtertype RB_ARG_END);
 	if (!strcmp(filtertype, "Rectifier")) {
 		double intensity;
 		rb_get_args(argc, argv, "zf", &filtertype, &intensity RB_ARG_END);
-		RectifierAudioFilter* filter = new RectifierAudioFilter(intensity);
-		shState->audio().addFilter(audiotype, filter);
-		return;
+		return new RectifierAudioFilter(intensity);
 	}
+	return NULL;
+}
 
-	rb_raise(rb_eArgError, "Unrecognized audio filter type");
+AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
+	int type;
+	double gain, gainlf, gainhf;
+	rb_get_args(argc, argv, "i|", &type RB_ARG_END);
+	switch(type) {
+		case 0: // lowpass
+			rb_get_args(argc, argv, "iff", &type, &gain, &gainhf RB_ARG_END);
+			return AL::Filter::createLowpassFilter(gain, gainhf);
+		case 1: // highpass
+			rb_get_args(argc, argv, "iff", &type, &gain, &gainlf RB_ARG_END);
+			return AL::Filter::createHighpassFilter(gain, gainlf);
+		case 2: // bandpass
+			rb_get_args(argc, argv, "ifff", &type, &gain, &gainlf, &gainhf RB_ARG_END);
+			return AL::Filter::createBandpassFilter(gain, gainlf, gainhf);
+		default:
+			rb_raise(rb_eArgError, "Unrecognized AL filter type");
+	}
 }
 
 #define DEF_AUD_FILTER(entity) \
 	RB_METHOD(audio_##entity##AddFilter) { \
-		addFilterToAudioSource(#entity, argc, argv); \
+		AudioFilter* af = constructAudioFilter(argc, argv); \
+		if (af == NULL) { \
+			rb_raise(rb_eArgError, "Unrecognized audio filter type"); \
+		} \
+		shState->audio().entity##AddFilter(af); \
 		return Qnil; \
 	} \
+	\
 	RB_METHOD(audio_##entity##ClearFilters) { \
 		shState->audio().entity##ClearFilters(); \
 		return Qnil; \
-	}
+	} \
+	RB_METHOD(audio_##entity##SetALFilter) { \
+		AL::Filter::ID filter = constructALFilter(argc, argv); \
+		shState->audio().entity##SetALFilter(filter); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##ClearALFilter) { \
+		shState->audio().entity##ClearALFilter(); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##SetALEffect) { \
+		VALUE effect_obj; \
+		rb_get_args(argc, argv, "o", &effect_obj RB_ARG_END); \
+		ALuint effect = NUM2INT(rb_iv_get(effect_obj, "@handle")); \
+		shState->audio().entity##SetALEffect(effect); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##ClearALEffect) { \
+		shState->audio().entity##ClearALEffect(); \
+		return Qnil; \
+	} \
+
 
 
 DEF_PLAY_STOP_POS( bgm )
@@ -212,6 +254,10 @@ RB_METHOD(audioReset)
 #define BIND_AUDIO_FILTER(entity) \
 	_rb_define_module_function(module, #entity "_add_filter", audio_##entity##AddFilter); \
 	_rb_define_module_function(module, #entity "_clear_filters", audio_##entity##ClearFilters); \
+	_rb_define_module_function(module, #entity "_set_al_filter", audio_##entity##SetALFilter); \
+	_rb_define_module_function(module, #entity "_clear_al_filter", audio_##entity##ClearALFilter); \
+	_rb_define_module_function(module, #entity "_set_al_effect", audio_##entity##SetALEffect); \
+	_rb_define_module_function(module, #entity "_clear_al_effect", audio_##entity##ClearALEffect); \
 
 void
 audioBindingInit()

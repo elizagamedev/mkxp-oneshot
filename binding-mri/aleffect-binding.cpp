@@ -15,6 +15,7 @@
 	VALUE rb_aleffect_##type##_init(VALUE self) { \
 		ALuint id; \
 		alGenEffects(1, &id); \
+		alEffecti(id, AL_EFFECT_TYPE, identifier); \
 		rb_iv_set(self, "@handle", INT2NUM(id)); \
 		return self; \
 	}
@@ -68,7 +69,7 @@
 	}
 
 #define ALEFFECT_CREATE_CLASS(type) \
-	VALUE rb_c##type = rb_define_class_under(module, #type, rb_cData); \
+	VALUE rb_c##type = rb_define_class_under(module, #type, rb_cObject); \
 	rb_define_method(rb_c##type, "initialize", (VALUE(*)(...)) rb_aleffect_##type##_init, 0);
 
 #define ALEFFECT_EXPOSE_ATTRIBUTE(type, name) \
@@ -229,6 +230,7 @@ ALEFFECT_DEFINE_ATTRIBUTE_FLOAT(Equalizer, AL_EQUALIZER_HIGH_CUTOFF, high_cutoff
 		alEffectf(id, AL_EAXREVERB_LFREFERENCE, properties.flLFReference); \
 		alEffectf(id, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, properties.flRoomRolloffFactor); \
 		alEffecti(id, AL_EAXREVERB_DECAY_HFLIMIT, properties.iDecayHFLimit); \
+		return Qnil; \
 	}
 
 #define ALEFFECT_EXPOSE_PRESET(name) \

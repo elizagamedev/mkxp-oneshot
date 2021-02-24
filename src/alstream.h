@@ -70,6 +70,7 @@ struct ALStream
 	float pitch;
 
 	AL::Source::ID alSrc;
+	AL::AuxiliaryEffectSlot::ID alAES;
 	AL::Buffer::ID alBuf[STREAM_BUFS];
 
 	uint64_t procFrames;
@@ -111,9 +112,10 @@ struct ALStream
 
 	void addFilter(AudioFilter* filter);
 	void clearFilters();
-
-	void addALFilter(AL::Filter::ID filter);
+	void setALFilter(AL::Filter::ID filter);
 	void clearALFilter();
+	void setALEffect(ALuint effect);
+	void clearALEffect();
 
 private:
 	void closeSource();

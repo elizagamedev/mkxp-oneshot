@@ -379,6 +379,30 @@ void AudioStream::clearFilters() {
 	unlockStream();
 }
 
+void AudioStream::setALFilter(AL::Filter::ID filter) {
+	lockStream();
+	streams[0].setALFilter(filter);
+	unlockStream();
+}
+
+void AudioStream::clearALFilter(){
+	lockStream();
+	streams[0].clearALFilter();
+	unlockStream();
+}
+
+void AudioStream::setALEffect(ALuint effect) {
+	lockStream();
+	streams[0].setALEffect(effect);
+	unlockStream();
+}
+
+void AudioStream::clearALEffect() {
+	lockStream();
+	streams[0].clearALEffect();
+	unlockStream();
+}
+
 void AudioStream::updateVolume()
 {
 	float vol = GLOBAL_VOLUME;

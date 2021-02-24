@@ -39,6 +39,10 @@
 #define alDeleteFilters ((LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters"))
 #define alFilteri ((LPALFILTERI)alGetProcAddress("alFilteri"))
 #define alFilterf ((LPALFILTERF)alGetProcAddress("alFilterf"))
+#define alGenAuxiliaryEffectSlots ((LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots"))
+#define alDeleteAuxiliaryEffectSlots ((LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots"))
+#define alAuxiliaryEffectSloti ((LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti"))
+#define alGetAuxiliaryEffectSloti ((LPALGETAUXILIARYEFFECTSLOTI)alGetProcAddress("alGetAuxiliaryEffectSloti"))
 
 namespace AL
 {
@@ -123,9 +127,7 @@ namespace Filter
 
 	inline Filter::ID nullFilter()
 	{
-		Filter::ID id;
-		id.al = AL_FILTER_NULL;
-		return id;
+		return Filter::ID(AL_FILTER_NULL);
 	}
 
 	inline void setInteger(Filter::ID id, ALenum prop, ALint value)
@@ -164,13 +166,49 @@ namespace Filter
 
 }
 
-namespace Effect
+namespace AuxiliaryEffectSlot
 {
-	DEF_AL_ID
+	struct ID {
+		ALuint al;
+		ALuint effect;
+		explicit ID(ALuint al = 0)
+	    	: al(al),
+			  effect(AL_EFFECT_NULL)
+		{}
+		ID &operator=(const ID &o)
+		{
+			al = o.al;
+			effect = o.effect;
+			return *this;
+		}
+		bool operator==(const ID &o) const
+		{
+			return al == o.al;
+		}
+};
 
-	inline void del(Effect::ID id)
+	inline AuxiliaryEffectSlot::ID gen() {
+		AuxiliaryEffectSlot::ID id;
+		alGenAuxiliaryEffectSlots(1, &id.al);
+		// disable 3d audio adjustments for reverb
+		alAuxiliaryEffectSloti(id.al, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, AL_FALSE);
+		return id;
+	}
+
+	inline void attachEffect(AuxiliaryEffectSlot::ID id, ALuint effect) {
+		alAuxiliaryEffectSloti(id.al, AL_EFFECTSLOT_EFFECT, effect);
+		if (id.effect != AL_EFFECT_NULL) {
+			alDeleteEffects(1, &id.effect);
+		}
+		id.effect = effect;
+	}
+
+	inline void del(AuxiliaryEffectSlot::ID id)
 	{
-		alDeleteEffects(1, &id.al);
+		alDeleteAuxiliaryEffectSlots(1, &id.al);
+		if (id.effect != AL_EFFECT_NULL) {
+			alDeleteEffects(1, &id.effect);
+		}
 	}
 }
 
@@ -247,6 +285,7 @@ namespace Source
 
 	inline Filter::ID getFilter(Source::ID id)
 	{
+		return Filter::nullFilter();
 		Filter::ID filter;
 		alGetSourcei(id.al, AL_DIRECT_FILTER, (ALint*) &filter.al);
 		return filter;

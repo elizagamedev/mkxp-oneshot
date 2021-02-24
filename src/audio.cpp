@@ -426,26 +426,33 @@ void Audio::setSFX_Volume(int value)
 	
 }
 
-void Audio::addFilter(const char* type, AudioFilter* filter) {
-	if (!strcmp(type, "bgm")) {
-		p->bgm.addFilter(filter);
-	} else if (!strcmp(type, "bgs")) {
-		p->bgs.addFilter(filter);
-	} else if (!strcmp(type, "me")) {
-		p->me.addFilter(filter);
+#define AUDIO_CPP_DEF_FILTER_FUNCS(entity) \
+	void Audio::entity##AddFilter(AudioFilter* filter) { \
+		p->entity.addFilter(filter); \
+	} \
+	\
+	void Audio::entity##ClearFilters() { \
+		p->entity.clearFilters(); \
+	} \
+	\
+	void Audio::entity##SetALFilter(AL::Filter::ID filter) { \
+		p->entity.setALFilter(filter); \
+	} \
+	\
+	void Audio::entity##ClearALFilter() { \
+		p->entity.clearALFilter(); \
+	} \
+	\
+	void Audio::entity##SetALEffect(ALuint effect) { \
+		p->entity.setALEffect(effect); \
+	} \
+	\
+	void Audio::entity##ClearALEffect() { \
+		p->entity.clearALEffect(); \
 	}
-}
 
-void Audio::bgmClearFilters() {
-	p->bgm.clearFilters();
-}
-
-void Audio::bgsClearFilters() {
-	p->bgs.clearFilters();
-}
-
-void Audio::meClearFilters() {
-	p->me.clearFilters();
-}
+AUDIO_CPP_DEF_FILTER_FUNCS(bgm)
+AUDIO_CPP_DEF_FILTER_FUNCS(bgs)
+AUDIO_CPP_DEF_FILTER_FUNCS(me)
 
 Audio::~Audio() { delete p; }

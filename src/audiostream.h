@@ -160,6 +160,10 @@ struct AudioStream
 
 	void addFilter(AudioFilter* filter);
 	void clearFilters();
+	void setALFilter(AL::Filter::ID filter);
+	void clearALFilter();
+	void setALEffect(ALuint effect);
+	void clearALEffect();
 
 private:
 	float volumes[VolumeTypeCount];
