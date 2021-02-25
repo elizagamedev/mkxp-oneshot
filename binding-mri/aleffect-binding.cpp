@@ -12,7 +12,8 @@
 // helpers
 
 #define ALEFFECT_DEFINE_INITIALIZER(type, identifier) \
-	VALUE rb_aleffect_##type##_init(VALUE self) { \
+	RB_METHOD(rb_aleffect_##type##_init) { \
+		RB_UNUSED_PARAM; \
 		ALuint id; \
 		alGenEffects(1, &id); \
 		alEffecti(id, AL_EFFECT_TYPE, identifier); \
@@ -21,46 +22,54 @@
 	}
 
 #define ALEFFECT_DEFINE_ATTRIBUTE_FLOAT(type, identifier, name) \
-	VALUE rb_aleffect_##type##_get_##name(VALUE self) { \
+	RB_METHOD(rb_aleffect_##type##_get_##name) { \
+		RB_UNUSED_PARAM; \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle"));\
 		float value = 0; \
 		alGetEffectf(id, identifier, &value); \
 		return DBL2NUM(value); \
 	} \
 	\
-	VALUE rb_aleffect_##type##_set_##name(VALUE self, VALUE value) { \
+	RB_METHOD(rb_aleffect_##type##_set_##name) { \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
-		float val = RFLOAT_VALUE(value); \
+		double val; \
+		rb_get_args(argc, argv, "f", &val); \
 		alEffectf(id, identifier, val); \
 		return Qnil; \
 	}
 
 #define ALEFFECT_DEFINE_ATTRIBUTE_INT(type, identifier, name) \
-	VALUE rb_aleffect_##type##_get_##name(VALUE self) { \
+	RB_METHOD(rb_aleffect_##type##_get_##name) { \
+		RB_UNUSED_PARAM; \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
 		int value = 0; \
 		alGetEffecti(id, identifier, &value); \
 		return INT2NUM(value); \
 	} \
 	\
-	VALUE rb_aleffect_##type##_set_##name(VALUE self, VALUE value) { \
+	RB_METHOD(rb_aleffect_##type##_set_##name) { \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
-		int val = NUM2INT(value); \
+		int val; \
+		rb_get_args(argc, argv, "i", &val); \
 		alEffecti(id, identifier, val); \
 		return Qnil; \
 	}
 
 #define ALEFFECT_DEFINE_ATTRIBUTE_FLOAT3(type, identifier, name) \
-	VALUE rb_aleffect_##type##_get_##name(VALUE self) { \
+	RB_METHOD(rb_aleffect_##type##_get_##name) { \
+		RB_UNUSED_PARAM; \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
 		float value[3] = {0, 0, 0}; \
 		alGetEffectfv(id, identifier, value); \
 		return rb_ary_new_from_args(3, DBL2NUM(value[0]), DBL2NUM(value[1]), DBL2NUM(value[2])); \
 	} \
 	\
-	VALUE rb_aleffect_##type##_set_##name(VALUE self, VALUE value) { \
+	RB_METHOD(rb_aleffect_##type##_set_##name) { \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
 		float val[3]; \
+		VALUE value; \
+		rb_get_args(argc, argv, "o", &value); \
+		Check_Type(value, T_ARRAY); \
 		val[0] = NUM2DBL(rb_ary_entry(value, 0)); \
 		val[1] = NUM2DBL(rb_ary_entry(value, 1)); \
 		val[2] = NUM2DBL(rb_ary_entry(value, 2)); \
@@ -70,11 +79,11 @@
 
 #define ALEFFECT_CREATE_CLASS(type) \
 	VALUE rb_c##type = rb_define_class_under(module, #type, rb_cObject); \
-	rb_define_method(rb_c##type, "initialize", (VALUE(*)(...)) rb_aleffect_##type##_init, 0);
+	_rb_define_method(rb_c##type, "initialize", rb_aleffect_##type##_init);
 
 #define ALEFFECT_EXPOSE_ATTRIBUTE(type, name) \
-	rb_define_method(rb_c##type, #name, (VALUE(*)(...)) rb_aleffect_##type##_get_##name, 0); \
-	rb_define_method(rb_c##type, #name "=", (VALUE(*)(...)) rb_aleffect_##type##_set_##name, 1);
+	_rb_define_method(rb_c##type, #name, rb_aleffect_##type##_get_##name); \
+	_rb_define_method(rb_c##type, #name "=", rb_aleffect_##type##_set_##name);
 
 // EAXReverb
 ALEFFECT_DEFINE_INITIALIZER(EAXReverb, AL_EFFECT_EAXREVERB)
@@ -204,7 +213,8 @@ ALEFFECT_DEFINE_ATTRIBUTE_FLOAT(Equalizer, AL_EQUALIZER_HIGH_CUTOFF, high_cutoff
 
 // EAXReverb Presets
 #define ALEFFECT_DEFINE_PRESET(preset, name) \
-	VALUE rb_aleffect_EAXReverb_load_preset_##name(VALUE self) { \
+	RB_METHOD(rb_aleffect_EAXReverb_load_preset_##name) { \
+		RB_UNUSED_PARAM; \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
 		EFXEAXREVERBPROPERTIES properties = preset; \
 		alEffectf(id, AL_EAXREVERB_DENSITY, properties.flDensity); \
@@ -234,7 +244,7 @@ ALEFFECT_DEFINE_ATTRIBUTE_FLOAT(Equalizer, AL_EQUALIZER_HIGH_CUTOFF, high_cutoff
 	}
 
 #define ALEFFECT_EXPOSE_PRESET(name) \
-	rb_define_method(rb_cEAXReverb, "load_preset_" #name, (VALUE(*)(...)) rb_aleffect_EAXReverb_load_preset_##name, 0);
+	_rb_define_method(rb_cEAXReverb, "load_preset_" #name, rb_aleffect_EAXReverb_load_preset_##name);
 
 ALEFFECT_DEFINE_PRESET(EFX_REVERB_PRESET_GENERIC, generic)
 ALEFFECT_DEFINE_PRESET(EFX_REVERB_PRESET_PADDEDCELL, paddedcell)
