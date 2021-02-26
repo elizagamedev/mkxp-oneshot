@@ -67,12 +67,11 @@
 	RB_METHOD(rb_aleffect_##type##_set_##name) { \
 		ALuint id = NUM2INT(rb_iv_get(self, "@handle")); \
 		float val[3]; \
-		VALUE value; \
-		rb_get_args(argc, argv, "o", &value); \
-		Check_Type(value, T_ARRAY); \
-		val[0] = NUM2DBL(rb_ary_entry(value, 0)); \
-		val[1] = NUM2DBL(rb_ary_entry(value, 1)); \
-		val[2] = NUM2DBL(rb_ary_entry(value, 2)); \
+		double val0, val1, val2; \
+		rb_get_args(argc, argv, "fff", &val0, &val1, &val2); \
+		val[0] = val0; \
+		val[1] = val1; \
+		val[2] = val2; \
 		alEffectfv(id, identifier, val); \
 		return Qnil; \
 	}
