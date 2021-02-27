@@ -3,7 +3,9 @@ FROM conanio/gcc5
 RUN conan remote add eliza "https://api.bintray.com/conan/eliza/conan" && \
 conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
-RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync
+RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y \
+xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync patchelf && \
+sudo rm -rf /var/lib/apt/lists/*
 RUN sudo python -m pip install mako pyqt5 pyinstaller
 
 # install all dependencies for the conanfile in commit
@@ -22,7 +24,8 @@ RUN cd /tmp && sudo chmod 755 appimagetool-x86_64.AppImage linuxdeploy-x86_64.Ap
 sudo ln -s /usr/local/bin/appimagetool/AppRun /usr/local/bin/appimagetool-x86_64.AppImage && \
 sudo ln -s /usr/local/bin/linuxdeploy/AppRun /usr/local/bin/linuxdeploy-x86_64.AppImage
 
-ENTRYPOINT ["/work/src/build-entrypoint-linux.sh"]
+ENTRYPOINT ["bash", "-c"]
+CMD ["/work/src/build-entrypoint-linux.sh"]
 
 # build this docker image as follows:
 # docker build -t oneshot-build-linux .
