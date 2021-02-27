@@ -193,8 +193,6 @@ namespace AuxiliaryEffectSlot
 	inline AuxiliaryEffectSlot::ID gen() {
 		AuxiliaryEffectSlot::ID id;
 		alGenAuxiliaryEffectSlots(1, &id.al);
-		// disable 3d audio adjustments for reverb
-		alAuxiliaryEffectSloti(id.al, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, AL_FALSE);
 		return id;
 	}
 
