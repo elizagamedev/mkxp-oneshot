@@ -151,20 +151,7 @@ AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
 	}
 }
 
-#define DEF_AUD_FILTER(entity) \
-	RB_METHOD(audio_##entity##AddFilter) { \
-		AudioFilter* af = constructAudioFilter(argc, argv); \
-		if (af == NULL) { \
-			rb_raise(rb_eArgError, "Unrecognized audio filter type"); \
-		} \
-		shState->audio().entity##AddFilter(af); \
-		return Qnil; \
-	} \
-	\
-	RB_METHOD(audio_##entity##ClearFilters) { \
-		shState->audio().entity##ClearFilters(); \
-		return Qnil; \
-	} \
+#define DEF_AUD_ALFILTER(entity) \
 	RB_METHOD(audio_##entity##SetALFilter) { \
 		AL::Filter::ID filter = constructALFilter(argc, argv); \
 		shState->audio().entity##SetALFilter(filter); \
@@ -186,6 +173,21 @@ AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
 		return Qnil; \
 	} \
 
+#define DEF_AUD_FILTER(entity) \
+	RB_METHOD(audio_##entity##AddFilter) { \
+		AudioFilter* af = constructAudioFilter(argc, argv); \
+		if (af == NULL) { \
+			rb_raise(rb_eArgError, "Unrecognized audio filter type"); \
+		} \
+		shState->audio().entity##AddFilter(af); \
+		return Qnil; \
+	} \
+	\
+	RB_METHOD(audio_##entity##ClearFilters) { \
+		shState->audio().entity##ClearFilters(); \
+		return Qnil; \
+	} \
+	DEF_AUD_ALFILTER(entity)
 
 
 DEF_PLAY_STOP_POS( bgm )
@@ -213,6 +215,7 @@ DEF_AUD_PROP_I(SFX_Volume)
 DEF_AUD_FILTER(bgm)
 DEF_AUD_FILTER(bgs)
 DEF_AUD_FILTER(me)
+DEF_AUD_ALFILTER(se)
 
 RB_METHOD(audioReset)
 {
@@ -251,13 +254,16 @@ RB_METHOD(audioReset)
 	_rb_define_module_function(module, prop_name_s "=", audio##Set##PropName); \
 }
 
-#define BIND_AUDIO_FILTER(entity) \
-	_rb_define_module_function(module, #entity "_add_filter", audio_##entity##AddFilter); \
-	_rb_define_module_function(module, #entity "_clear_filters", audio_##entity##ClearFilters); \
+#define BIND_AUDIO_ALFILTER(entity) \
 	_rb_define_module_function(module, #entity "_set_al_filter", audio_##entity##SetALFilter); \
 	_rb_define_module_function(module, #entity "_clear_al_filter", audio_##entity##ClearALFilter); \
 	_rb_define_module_function(module, #entity "_set_al_effect", audio_##entity##SetALEffect); \
 	_rb_define_module_function(module, #entity "_clear_al_effect", audio_##entity##ClearALEffect); \
+
+#define BIND_AUDIO_FILTER(entity) \
+	_rb_define_module_function(module, #entity "_add_filter", audio_##entity##AddFilter); \
+	_rb_define_module_function(module, #entity "_clear_filters", audio_##entity##ClearFilters); \
+	BIND_AUDIO_ALFILTER(entity)
 
 void
 audioBindingInit()
@@ -280,6 +286,7 @@ audioBindingInit()
 	BIND_AUDIO_FILTER(bgm);
 	BIND_AUDIO_FILTER(bgs);
 	BIND_AUDIO_FILTER(me);
+	BIND_AUDIO_ALFILTER(se);
 
 	_rb_define_module_function(module, "__reset__", audioReset);
 

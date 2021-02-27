@@ -201,7 +201,7 @@ namespace AuxiliaryEffectSlot
 	inline void attachEffect(AuxiliaryEffectSlot::ID id, ALuint effect) {
 		alAuxiliaryEffectSloti(id.al, AL_EFFECTSLOT_EFFECT, effect);
 		if (id.effect != AL_EFFECT_NULL) {
-			alDeleteEffects(1, &id.effect);
+			//alDeleteEffects(1, &id.effect);
 		}
 		id.effect = effect;
 	}
@@ -210,7 +210,7 @@ namespace AuxiliaryEffectSlot
 	{
 		alDeleteAuxiliaryEffectSlots(1, &id.al);
 		if (id.effect != AL_EFFECT_NULL) {
-			alDeleteEffects(1, &id.effect);
+			//alDeleteEffects(1, &id.effect);
 		}
 	}
 }
@@ -298,7 +298,7 @@ namespace Source
 	{
 		Filter::ID oldfilter = getFilter(id);
 		if (!Filter::isNullFilter(oldfilter)) {
-			Filter::del(filter);
+			//Filter::del(filter);
 		}
 		alSourcei(id.al, AL_DIRECT_FILTER, filter.al);
 	}
@@ -306,6 +306,10 @@ namespace Source
 	inline void clearFilter(Source::ID id)
 	{
 		setFilter(id, Filter::nullFilter());
+	}
+
+	inline void setAuxEffectSlot(Source::ID id, AuxiliaryEffectSlot::ID effectSlot) {
+		alSource3i(id.al, AL_AUXILIARY_SEND_FILTER, effectSlot.al, 0, AL_FILTER_NULL);
 	}
 
 	inline void setVolume(Source::ID id, float value)

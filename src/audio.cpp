@@ -426,15 +426,7 @@ void Audio::setSFX_Volume(int value)
 	
 }
 
-#define AUDIO_CPP_DEF_FILTER_FUNCS(entity) \
-	void Audio::entity##AddFilter(AudioFilter* filter) { \
-		p->entity.addFilter(filter); \
-	} \
-	\
-	void Audio::entity##ClearFilters() { \
-		p->entity.clearFilters(); \
-	} \
-	\
+#define AUDIO_CPP_DEF_ALFILTER_FUNCS(entity) \
 	void Audio::entity##SetALFilter(AL::Filter::ID filter) { \
 		p->entity.setALFilter(filter); \
 	} \
@@ -451,8 +443,20 @@ void Audio::setSFX_Volume(int value)
 		p->entity.clearALEffect(); \
 	}
 
+#define AUDIO_CPP_DEF_FILTER_FUNCS(entity) \
+	void Audio::entity##AddFilter(AudioFilter* filter) { \
+		p->entity.addFilter(filter); \
+	} \
+	\
+	void Audio::entity##ClearFilters() { \
+		p->entity.clearFilters(); \
+	} \
+	\
+	AUDIO_CPP_DEF_ALFILTER_FUNCS(entity)
+
 AUDIO_CPP_DEF_FILTER_FUNCS(bgm)
 AUDIO_CPP_DEF_FILTER_FUNCS(bgs)
 AUDIO_CPP_DEF_FILTER_FUNCS(me)
+AUDIO_CPP_DEF_ALFILTER_FUNCS(se)
 
 Audio::~Audio() { delete p; }

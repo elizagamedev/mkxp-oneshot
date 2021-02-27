@@ -46,9 +46,12 @@ AudioStream::AudioStream(ALStream::LoopMode loopMode,
 	fadeIn.thread = 0;
 	fadeIn.threadName = std::string("audio_fadein (") + threadId + ")";
 
+	effectSlot = AL::AuxiliaryEffectSlot::gen();
+
 	alStreamThreadIDPrefix = threadId + "_";
-	streams.emplace_front(loopMode, alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
+	streams.emplace_front(loopMode, effectSlot, alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
 	alStreamThreadID++;
+
 
 	streamMut = SDL_CreateMutex();
 
@@ -223,6 +226,7 @@ void AudioStream::crossfade(const std::string &filename,
 
 	streams.emplace_front(
 		streams[0].looped ? ALStream::LoopMode::Looped : ALStream::LoopMode::NotLooped,
+		effectSlot,
 		alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
 	alStreamThreadID++;
 
@@ -393,13 +397,13 @@ void AudioStream::clearALFilter(){
 
 void AudioStream::setALEffect(ALuint effect) {
 	lockStream();
-	streams[0].setALEffect(effect);
+	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, effect);
 	unlockStream();
 }
 
 void AudioStream::clearALEffect() {
 	lockStream();
-	streams[0].clearALEffect();
+	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, AL_EFFECT_NULL);
 	unlockStream();
 }
 

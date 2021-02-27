@@ -34,6 +34,7 @@
 #include <SDL_timer.h>
 
 ALStream::ALStream(LoopMode loopMode,
+				   AL::AuxiliaryEffectSlot::ID effectSlot,
 		           const std::string &threadId)
 	: looped(loopMode == Looped),
 	  state(Closed),
@@ -49,8 +50,7 @@ ALStream::ALStream(LoopMode loopMode,
 	AL::Source::setPitch(alSrc, 1.0f);
 	AL::Source::detachBuffer(alSrc);
 
-	alAES = AL::AuxiliaryEffectSlot::gen();
-	alSource3i(alSrc.al, AL_AUXILIARY_SEND_FILTER, alAES.al, 0, AL_FILTER_NULL);
+	AL::Source::setAuxEffectSlot(alSrc, effectSlot);
 
 	for (int i = 0; i < STREAM_BUFS; ++i)
 		alBuf[i] = AL::Buffer::gen();
@@ -65,10 +65,7 @@ ALStream::~ALStream()
 	close();
 
 	AL::Source::clearQueue(alSrc);
-	clearALFilter();
 	AL::Source::del(alSrc);
-
-	AL::AuxiliaryEffectSlot::del(alAES);
 
 	for (int i = 0; i < STREAM_BUFS; ++i)
 		AL::Buffer::del(alBuf[i]);
@@ -221,14 +218,6 @@ void ALStream::setALFilter(AL::Filter::ID filter) {
 
 void ALStream::clearALFilter() {
 	AL::Source::clearFilter(alSrc);
-}
-
-void ALStream::setALEffect(ALuint effect) {
-	AL::AuxiliaryEffectSlot::attachEffect(alAES, effect);
-}
-
-void ALStream::clearALEffect() {
-	AL::AuxiliaryEffectSlot::attachEffect(alAES, AL_EFFECT_NULL);
 }
 
 void ALStream::closeSource()

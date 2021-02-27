@@ -91,17 +91,21 @@ public:
 	bool bgsIsPlaying();
 	bool meIsPlaying();
 
-#define AUDIO_H_DECL_FILTER_FUNCS(entity) \
-	void entity##AddFilter(AudioFilter* filter); \
-	void entity##ClearFilters(); \
+#define AUDIO_H_DECL_ALFILTER_FUNCS(entity) \
 	void entity##SetALFilter(AL::Filter::ID filter); \
 	void entity##ClearALFilter(); \
 	void entity##SetALEffect(ALuint effect); \
 	void entity##ClearALEffect();
 
+#define AUDIO_H_DECL_FILTER_FUNCS(entity) \
+	void entity##AddFilter(AudioFilter* filter); \
+	void entity##ClearFilters(); \
+	AUDIO_H_DECL_ALFILTER_FUNCS(entity)
+
 	AUDIO_H_DECL_FILTER_FUNCS(bgm)
 	AUDIO_H_DECL_FILTER_FUNCS(bgs)
 	AUDIO_H_DECL_FILTER_FUNCS(me)
+	AUDIO_H_DECL_ALFILTER_FUNCS(se)
 
 	void reset();
 

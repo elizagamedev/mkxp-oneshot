@@ -169,6 +169,7 @@ private:
 	float volumes[VolumeTypeCount];
 	int alStreamThreadID;
 	std::string alStreamThreadIDPrefix;
+	AL::AuxiliaryEffectSlot::ID effectSlot;
 	void updateVolume();
 
 	void destroyCrossfades();
