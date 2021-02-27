@@ -31,11 +31,16 @@ jobs:
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
         working-directory: ${{ runner.temp }}\build
+      - name: Create dist folder
+        run: |
+          mkdir ${{ runner.temp }}\built_artifact;
+          move ${{ runner.temp }}\build\bin ${{ runner.temp }}\built_artifact\lib
+          mklink ${{ runner.temp }}\built_artifact\oneshot.exe ".\lib\oneshot.exe"
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: modshot_build_windows_${{ github.sha }}
-          path: ${{ runner.temp }}\build\bin
+          path: ${{ runner.temp }}\built_artifact
   build-linux:
     name: Build ModShot for Linux
     runs-on: ubuntu-latest

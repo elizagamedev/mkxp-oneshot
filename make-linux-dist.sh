@@ -53,7 +53,7 @@ copy_dependencies oneshot "$1/bin/oneshot"
 
 mkdir -p "$2/ruby"
 cp -ar "$1/bin/lib/ruby" "$2/lib/"
-cp -ar "$1/lib/ssl/cacert.pem" "$2/lib/"
+cp -ar "$1/lib/lib/cacert.pem" "$2/lib/"
 ln -sf "lib/oneshot" "$2/oneshot"
 
 echo "Done!"
