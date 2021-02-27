@@ -34,8 +34,8 @@ jobs:
       - name: Create dist folder
         run: |
           mkdir ${{ runner.temp }}\built_artifact;
-          move ${{ runner.temp }}\build\bin ${{ runner.temp }}\built_artifact\lib
-          mklink ${{ runner.temp }}\built_artifact\oneshot.exe ".\lib\oneshot.exe"
+          move ${{ runner.temp }}\build\bin ${{ runner.temp }}\built_artifact\lib;
+          New-Item -Path "${{ runner.temp }}\built_artifact\oneshot.exe" -Value "lib\oneshot.exe"
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
