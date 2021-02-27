@@ -4,7 +4,7 @@ RUN conan remote add eliza "https://api.bintray.com/conan/eliza/conan" && \
 conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y \
-xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync patchelf && \
+xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync patchelf dos2unix && \
 sudo rm -rf /var/lib/apt/lists/*
 RUN sudo python -m pip install mako pyqt5 pyinstaller
 
