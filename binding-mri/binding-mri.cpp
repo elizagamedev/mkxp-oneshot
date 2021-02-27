@@ -164,7 +164,7 @@ static void mriBindingInit()
 
 	rb_eval_string(
 		"if ENV['SSL_CERT_FILE'].nil?\n"
-		"    ENV['SSL_CERT_FILE'] = './ssl/cacert.pem'\n"
+		"    ENV['SSL_CERT_FILE'] = './lib/cacert.pem'\n"
 		"end\n"
 	);
 }
