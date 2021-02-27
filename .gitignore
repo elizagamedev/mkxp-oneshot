@@ -60,5 +60,7 @@ steamworks/
 assets/icon.ico
 assets/icon.ico
 
+src/version.h
+
 !build-entrypoint-linux.sh
 !build-entrypoint-windows.bat
