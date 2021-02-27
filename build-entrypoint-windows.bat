@@ -15,7 +15,7 @@ conan build \work\src || (echo CONAN BUILD FAILED! && goto end)
 robocopy C:\work\build\bin C:\work\dist\lib /e
 if exist C:\work\data (robocopy C:\work\data C:\work\dist /e)
 
-mklink C:\work\dist\oneshot.exe ".\lib\oneshot.exe"
+move C:\work\dist\lib\oneshot-shim.exe C:\work\dist\oneshot.exe
 
 echo ModShot has been built. Enjoy.
 :end
