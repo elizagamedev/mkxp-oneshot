@@ -24,8 +24,7 @@ RUN cd /tmp && sudo chmod 755 appimagetool-x86_64.AppImage linuxdeploy-x86_64.Ap
 sudo ln -s /usr/local/bin/appimagetool/AppRun /usr/local/bin/appimagetool-x86_64.AppImage && \
 sudo ln -s /usr/local/bin/linuxdeploy/AppRun /usr/local/bin/linuxdeploy-x86_64.AppImage
 
-ENTRYPOINT ["bash", "-c"]
-CMD "dos2unix /work/src/build-entrypoint-linux.sh && chmod +x /work/src/build-entrypoint-linux.sh && /work/src/build-entrypoint-linux.sh"
+ENTRYPOINT ["bash", "-c", "dos2unix /work/src/build-entrypoint-linux.sh && chmod +x /work/src/build-entrypoint-linux.sh && /work/src/build-entrypoint-linux.sh"]
 
 # build this docker image as follows:
 # docker build -t oneshot-build-linux .
