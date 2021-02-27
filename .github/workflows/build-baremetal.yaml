@@ -35,8 +35,8 @@ jobs:
         run: |
           mkdir ${{ runner.temp }}\built_artifact;
           move ${{ runner.temp }}\build\bin\lib ${{ runner.temp }}\built_artifact\lib;
-          move ${{ runner.temp }}\build\bin ${{ runner.temp }}\built_artifact\lib;
-          New-Item -Path "${{ runner.temp }}\built_artifact\oneshot.exe" -Type symboliclink -Value "lib\oneshot.exe"
+          move ${{ runner.temp }}\build\bin\* ${{ runner.temp }}\built_artifact\lib;
+          # TODO: figure out how to symlink oneshot.exe to lib\oneshot.exe
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
