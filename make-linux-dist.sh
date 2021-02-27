@@ -13,16 +13,13 @@ function fail() {
 
 function copy_dependencies() {
     if [[ $SO_BLACKLIST =~ $1 ]]; then
-        echo "Skipping blacklisted library $1"
         return
     fi
     if [[ $SO_PROCESSED =~ $1 ]]; then
-        echo "Skipping processed library $1"
         return
     fi
     [[ ! $1 =~ ^[a-zA-Z0-9+\.-]*$ ]] && fail "The library $1 has weird characters!"
 
-    echo "Processing $1"
     SO_PROCESSED="$SO_PROCESSED $1"
     cp "$2" "$DESTDIR/$1"
     patchelf --set-rpath '$ORIGIN' "$DESTDIR/$1"
@@ -43,15 +40,16 @@ fi
 shopt -s dotglob
 
 if [ $# -eq 3 ] && [ -d $3 ]; then
-    echo "Copying game files"
+    echo "Copying game files..."
     cp -ar $3/* $2
 fi
 
+echo "Relocating dependencies..."
 DESTDIR="$2/lib"
 mkdir -p $DESTDIR
 copy_dependencies oneshot "$1/bin/oneshot"
 
-mkdir -p "$2/ruby"
+echo "Copying standard library..."
 cp -ar "$1/bin/lib/ruby" "$2/lib/"
 cp -ar "$1/bin/lib/cacert.pem" "$2/lib/"
 ln -sf "lib/oneshot" "$2/oneshot"
