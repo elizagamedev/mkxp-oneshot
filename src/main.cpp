@@ -48,6 +48,7 @@
 #include "binding.h"
 
 #include "icon.png.xxd"
+#include "version.h"
 
 #ifdef STEAM
 #include "steamshim/steamshim_child.h"
@@ -194,6 +195,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win)
 
 int main(int argc, char *argv[])
 {
+	Debug() << "ModShot version" << MODSHOT_VERSION;
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 	SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
