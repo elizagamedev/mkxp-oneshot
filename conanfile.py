@@ -84,14 +84,6 @@ class MkxpConan(ConanFile):
 
     def build_configure(self):
         self.generate_version_number()
-        # if we are on windows, git might clone files using the CRLF newline
-        # this will cause issues when building for linux, as some scripts cannot run properly
-        # we run dos2unix on them to convert their line endings
-        for file in ['make-appimage.sh', 'assets/AppRun', 'assets/oneshot.desktop']:
-            try:
-                tools.dos2unix(os.path.join(self.source_folder, file))
-            except FileNotFoundError:
-                pass # in case windows users don't need those files
 
         cmake = CMake(self, msbuild_verbosity='minimal')
         if self.options.platform == "steam":
@@ -114,7 +106,7 @@ class MkxpConan(ConanFile):
 
         # ship certificates into the ssl folder in the game directory
         # openssl will use this folder since we hardcoded it in binding-mri.cpp
-        tools.download("https://curl.haxx.se/ca/cacert.pem", "bin/ssl/cacert.pem", overwrite=True)
+        tools.download("https://curl.haxx.se/ca/cacert.pem", "bin/lib/cacert.pem", overwrite=True)
 
     def package(self):
         self.copy("*", dst="bin", src="bin")
