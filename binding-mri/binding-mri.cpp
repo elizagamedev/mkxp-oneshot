@@ -30,6 +30,7 @@
 #include "graphics.h"
 #include "audio.h"
 #include "boost-hash.h"
+#include "version.h"
 
 #include <ruby.h>
 #include <ruby/encoding.h>
@@ -120,6 +121,7 @@ static void mriBindingInit()
 	steamBindingInit();
 	chromaBindingInit();
 	modshotwindowBindingInit();
+	rb_define_global_const("MODSHOT_VERSION", rb_str_new_cstr(MODSHOT_VERSION));
 	if (rgssVer >= 3)
 	{
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
