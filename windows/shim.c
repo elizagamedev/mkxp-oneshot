@@ -1,23 +1,35 @@
 #include <windows.h>
-#include <direct.h>
-#include <process.h>
+#include <wchar.h>
 
-char* ARGV0 = "lib\\oneshot.exe"
+const wchar_t *ARGV0 = "lib\\oneshot.exe";
 
-int main(int argc, char* argv[]) {
+int WINAPI WinMain(HINSTANCE hInstance,
+                   HINSTANCE hPrevInstance,
+                   LPSTR lpCmdLine,
+                   int nCmdShow) {
+    (void)hInstance;
+    (void)hPrevInstance;
+    (void)lpCmdLine;
+    (void)nCmdShow;
+
+    int argc;
+    LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule != NULL) {
-        char oneshotDir[MAX_PATH];
-        GetModuleFileName(hModule, oneshotDir, sizeof(oneshotDir));
-        _chdir(oneshotDir);
+        wchar_t *oneshotDir[MAX_PATH];
+        GetModuleFileNameW(hModule, oneshotDir, sizeof(oneshotDir));
+        _wchdir(oneshotDir);
     }
 
-    argv[0] = ARGV0
-    if (argc == 0)
-        argv[1] = NULL
-    _execv("lib\\oneshot.exe", argv);
-    MessageBox(NULL,
-        (LPCWSTR)L"Cannot start ModShot for some reason.\nPlease check your ModShot installation.",
-        (LPCWSTR)L"ModShot shim",
+    if (argc != 0) {
+        argv[0] = ARGV0;
+    }
+
+    _wexecv(L"lib\\oneshot.exe", argv);
+    MessageBoxW(NULL,
+        L"Cannot start ModShot for some reason.\nPlease check your ModShot installation.",
+        L"ModShot Shim",
         MB_ICONERROR);
+    return 1;
 }

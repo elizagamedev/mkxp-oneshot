@@ -319,7 +319,7 @@ if(STEAM)
 endif()
 
 if(WIN32)
-	add_executable("oneshot-shim.exe" WIN32
+	add_executable("oneshot-shim" WIN32
 	"${CMAKE_SOURCE_DIR}/windows/shim.c"
 	"${CMAKE_SOURCE_DIR}/assets/resources.rc")
 endif()
