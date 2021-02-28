@@ -1,7 +1,13 @@
 import os.path
+import datetime
 
 from conans import CMake, ConanFile, tools
+from conans.errors import ConanException
 
+MODSHOT_VERSION_H='''#ifndef MODSHOT_VERSION
+#define MODSHOT_VERSION "%s"
+#endif
+'''
 
 class MkxpConan(ConanFile):
     name = "oneshot"
@@ -63,7 +69,22 @@ class MkxpConan(ConanFile):
             # Fix linker error in SDL_sound fork with SDL2
             self.options["sdl2"].shared = True
 
+    def generate_version_number(self):
+        try:
+            git = tools.Git(self.source_folder)
+            revision = git.get_commit()[0:7]
+            if not git.is_pristine():
+                revision += "-dirty"
+        except ConanException:
+            # this is either not a git repo, or we don't have git on the system
+            revision = "nongit"
+        revision += datetime.datetime.now().strftime("-%y%m%d-%H%M%S")
+
+        tools.save(os.path.join(self.source_folder, 'src/version.h'), MODSHOT_VERSION_H%revision)
+
     def build_configure(self):
+        self.generate_version_number()
+
         cmake = CMake(self, msbuild_verbosity='minimal')
         if self.options.platform == "steam":
             cmake.definitions["STEAM"] = "ON"
