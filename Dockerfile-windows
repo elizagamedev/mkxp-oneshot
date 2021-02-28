@@ -23,5 +23,4 @@ COPY conanfile.py C:/Temp/install_deps/
 RUN conan install --build=missing C:\Temp\install_deps
 
 # finally, we build oneshot when we run the container
-COPY build-entrypoint-windows.bat /
-ENTRYPOINT ["C:\\build-entrypoint-windows.bat"]
+ENTRYPOINT ["C:\\work\\src\\build-entrypoint-windows.bat"]

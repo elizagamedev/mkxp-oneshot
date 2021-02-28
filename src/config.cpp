@@ -183,6 +183,8 @@ void Config::read(int argc, char *argv[])
 	rgssVersion = 1;
 	game.title = "OneShot";
 	game.scripts = "Data/xScripts.rxdata";
+	gameFolder = "..";
+	
 	defScreenW = 640;
 	defScreenH = 480;
 

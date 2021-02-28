@@ -16,4 +16,5 @@ cd /work/build
 conan install /work/src --build=missing
 conan build /work/src
 
-/work/src/make-linux-appdir.sh /work/src /work/build /work/dist
+dos2unix /work/src/make-linux-dist.sh
+/work/src/make-linux-dist.sh /work/build /work/dist /work/data
