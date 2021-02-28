@@ -84,7 +84,6 @@ void oneshotBindingInit();
 void steamBindingInit();
 void chromaBindingInit();
 void modshotwindowBindingInit();
-void modshotFiberBindingInit();
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
@@ -121,7 +120,6 @@ static void mriBindingInit()
 	steamBindingInit();
 	chromaBindingInit();
 	modshotwindowBindingInit();
-	modshotFiberBindingInit();
 	if (rgssVer >= 3)
 	{
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
