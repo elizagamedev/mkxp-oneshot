@@ -272,7 +272,6 @@ set(BINDING_SOURCE
 	binding-mri/chroma-binding.cpp
 	binding-mri/niko-binding.cpp
 	binding-mri/modshot-window-binding.cpp
-	binding-mri/modshot-fiber-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
@@ -316,6 +315,12 @@ if(STEAM)
 		"${CMAKE_SOURCE_DIR}/steam_appid.txt"
 		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
 		COPYONLY)
+endif()
+
+if(WIN32)
+	add_executable("oneshot-shim" WIN32
+	"${CMAKE_SOURCE_DIR}/windows/shim.c"
+	"${CMAKE_SOURCE_DIR}/assets/resources.rc")
 endif()
 
 #add_subdirectory(scripts)

@@ -12,8 +12,10 @@ conan install \work\src --build=missing || (echo CONAN INSTALL FAILED! && exit 1
 conan build \work\src || (echo CONAN BUILD FAILED! && goto end)
 :: TODO: compile the journal?
 
-robocopy C:\work\build\bin C:\work\dist /e
 if exist C:\work\data (robocopy C:\work\data C:\work\dist /e)
+robocopy C:\work\build\bin\lib C:\work\dist\lib /e
+robocopy C:\work\build\bin\ C:\work\dist\lib
+move C:\work\dist\lib\oneshot-shim.exe C:\work\dist\oneshot.exe
 
 echo ModShot has been built. Enjoy.
 :end

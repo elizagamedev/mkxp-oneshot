@@ -5,6 +5,7 @@
 #  Game_System class and the Game_Event class.
 #==============================================================================
 
+require 'fiber'
 class Interpreter
   #--------------------------------------------------------------------------
   # * Change Enemy HP
