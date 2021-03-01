@@ -365,17 +365,17 @@ float Audio::bgsPos()
 
 bool Audio::bgmIsPlaying()
 {
-	return p->bgm.queryState();
+	return p->bgm.queryState() == ALStream::Playing;
 }
 
 bool Audio::bgsIsPlaying()
 {
-	return p->bgs.queryState();
+	return p->bgs.queryState() == ALStream::Playing;
 }
 
 bool Audio::meIsPlaying()
 {
-	return p->me.queryState();
+	return p->me.queryState() == ALStream::Playing;
 }
 
 void Audio::reset()
