@@ -385,8 +385,8 @@ void AudioStream::clearFilters() {
 
 void AudioStream::setALFilter(AL::Filter::ID filter) {
 	lockStream();
-	for(std::deque<ALStream>::iterator i = streams.begin(); i!=streams.end(); i++) {
-		i->setALFilter(filter);
+	for(ALStream& stream : streams) {
+		stream.setALFilter(filter);
 	}
 	if(!(curfilter == filter) && !AL::Filter::isNullFilter(curfilter)) {
 		AL::Filter::del(curfilter);

@@ -14,8 +14,8 @@ void ALDataSource::addFilter(AudioFilter* filter) {
 
 void ALDataSource::clearFilters() {
     SDL_LockMutex(filterMut);
-    for(std::list<AudioFilter*>::iterator i = filters.begin(); i != filters.end(); i++) {
-        delete *i;
+    for(AudioFilter*& filter : filters) {
+        delete filter;
     }
     filters.clear();
     SDL_UnlockMutex(filterMut);
@@ -23,8 +23,8 @@ void ALDataSource::clearFilters() {
 
 void ALDataSource::applyFilters(ALenum format, const ALvoid *data, ALsizei size, ALsizei freq) {
     SDL_LockMutex(filterMut);
-    for(std::list<AudioFilter*>::iterator i = filters.begin(); i != filters.end(); i++) {
-        (*i)->process(format, data, size, freq);
+    for(AudioFilter*& filter : filters) {
+        filter->process(format, data, size, freq);
     }
     SDL_UnlockMutex(filterMut);
 }
