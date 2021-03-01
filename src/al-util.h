@@ -22,27 +22,11 @@
 #ifndef ALUTIL_H
 #define ALUTIL_H
 
+#define AL_ALEXT_PROTOTYPES
 #include <al.h>
 #include <efx.h>
 #include <SDL_audio.h>
 #include <assert.h>
-
-#define alGenEffects ((LPALGENEFFECTS)alGetProcAddress("alGenEffects"))
-#define alDeleteEffects ((LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects"))
-#define alEffecti ((LPALEFFECTI)alGetProcAddress("alEffecti"))
-#define alEffectf ((LPALEFFECTF)alGetProcAddress("alEffectf"))
-#define alEffectfv ((LPALEFFECTFV)alGetProcAddress("alEffectfv"))
-#define alGetEffecti ((LPALGETEFFECTI)alGetProcAddress("alGetEffecti"))
-#define alGetEffectf ((LPALGETEFFECTF)alGetProcAddress("alGetEffectf"))
-#define alGetEffectfv ((LPALGETEFFECTFV)alGetProcAddress("alGetEffectfv"))
-#define alGenFilters ((LPALGENFILTERS)alGetProcAddress("alGenFilters"))
-#define alDeleteFilters ((LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters"))
-#define alFilteri ((LPALFILTERI)alGetProcAddress("alFilteri"))
-#define alFilterf ((LPALFILTERF)alGetProcAddress("alFilterf"))
-#define alGenAuxiliaryEffectSlots ((LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots"))
-#define alDeleteAuxiliaryEffectSlots ((LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots"))
-#define alAuxiliaryEffectSloti ((LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti"))
-#define alGetAuxiliaryEffectSloti ((LPALGETAUXILIARYEFFECTSLOTI)alGetProcAddress("alGetAuxiliaryEffectSloti"))
 
 namespace AL
 {
