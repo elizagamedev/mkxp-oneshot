@@ -164,7 +164,7 @@ AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
 	RB_METHOD(audio_##entity##SetALEffect) { \
 		VALUE effect_obj; \
 		rb_get_args(argc, argv, "o", &effect_obj RB_ARG_END); \
-		ALuint effect = NUM2INT(rb_iv_get(effect_obj, "@handle")); \
+		ALuint effect = NUM2INT(rb_funcall(effect_obj, rb_intern("create_underlying_effect"), 0)); \
 		shState->audio().entity##SetALEffect(effect); \
 		return Qnil; \
 	} \
