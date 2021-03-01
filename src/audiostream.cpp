@@ -385,25 +385,23 @@ void AudioStream::clearFilters() {
 
 void AudioStream::setALFilter(AL::Filter::ID filter) {
 	lockStream();
-	streams[0].setALFilter(filter);
-	unlockStream();
-}
-
-void AudioStream::clearALFilter(){
-	lockStream();
-	streams[0].clearALFilter();
+	for(std::deque<ALStream>::iterator i = streams.begin(); i!=streams.end(); i++) {
+		i->setALFilter(filter);
+	}
+	if(!(curfilter == filter) && !AL::Filter::isNullFilter(curfilter)) {
+		AL::Filter::del(curfilter);
+	}
+	curfilter = filter;
 	unlockStream();
 }
 
 void AudioStream::setALEffect(ALuint effect) {
 	lockStream();
 	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, effect);
-	unlockStream();
-}
-
-void AudioStream::clearALEffect() {
-	lockStream();
-	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, AL_EFFECT_NULL);
+	if(cureffect != effect && cureffect != AL_EFFECT_NULL) {
+		alDeleteEffects(1, &cureffect);
+	}
+	cureffect = effect;
 	unlockStream();
 }
 

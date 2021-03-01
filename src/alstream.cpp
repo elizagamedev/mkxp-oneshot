@@ -216,10 +216,6 @@ void ALStream::setALFilter(AL::Filter::ID filter) {
 	AL::Source::setFilter(alSrc, filter);
 }
 
-void ALStream::clearALFilter() {
-	AL::Source::clearFilter(alSrc);
-}
-
 void ALStream::closeSource()
 {
 	delete source;

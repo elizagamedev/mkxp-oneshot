@@ -192,22 +192,19 @@ void SoundEmitter::setALFilter(AL::Filter::ID filter) {
 	{
 		AL::Source::setFilter(alSrcs[i], filter);
 	}
-	
-}
-
-void SoundEmitter::clearALFilter() {
-	for (size_t i = 0; i < srcCount; ++i)
-	{
-		AL::Source::clearFilter(alSrcs[i]);
+	if(!(curfilter == filter) && !AL::Filter::isNullFilter(curfilter)) {
+		AL::Filter::del(curfilter);
 	}
+	curfilter = filter;
+	
 }
 
 void SoundEmitter::setALEffect(ALuint effect) {
 	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, effect);
-}
-
-void SoundEmitter::clearALEffect() {
-	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, AL_EFFECT_NULL);
+	if(cureffect != effect && cureffect != AL_EFFECT_NULL) {
+		alDeleteEffects(1, &cureffect);
+	}
+	cureffect = effect;
 }
 
 struct SoundOpenHandler : FileSystem::OpenHandler

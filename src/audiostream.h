@@ -161,15 +161,15 @@ struct AudioStream
 	void addFilter(AudioFilter* filter);
 	void clearFilters();
 	void setALFilter(AL::Filter::ID filter);
-	void clearALFilter();
 	void setALEffect(ALuint effect);
-	void clearALEffect();
 
 private:
 	float volumes[VolumeTypeCount];
 	int alStreamThreadID;
 	std::string alStreamThreadIDPrefix;
 	AL::AuxiliaryEffectSlot::ID effectSlot;
+	AL::Filter::ID curfilter = AL::Filter::ID(AL_FILTER_NULL);
+	ALuint cureffect = AL_EFFECT_NULL;
 	void updateVolume();
 
 	void destroyCrossfades();

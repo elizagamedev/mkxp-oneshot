@@ -268,26 +268,9 @@ namespace Source
 		return value;
 	}
 
-	inline Filter::ID getFilter(Source::ID id)
-	{
-		return Filter::nullFilter();
-		Filter::ID filter;
-		alGetSourcei(id.al, AL_DIRECT_FILTER, (ALint*) &filter.al);
-		return filter;
-	}
-
 	inline void setFilter(Source::ID id, Filter::ID filter)
 	{
-		Filter::ID oldfilter = getFilter(id);
-		if (!Filter::isNullFilter(oldfilter)) {
-			//Filter::del(filter);
-		}
 		alSourcei(id.al, AL_DIRECT_FILTER, filter.al);
-	}
-
-	inline void clearFilter(Source::ID id)
-	{
-		setFilter(id, Filter::nullFilter());
 	}
 
 	inline void setAuxEffectSlot(Source::ID id, AuxiliaryEffectSlot::ID effectSlot) {

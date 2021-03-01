@@ -432,7 +432,7 @@ void Audio::setSFX_Volume(int value)
 	} \
 	\
 	void Audio::entity##ClearALFilter() { \
-		p->entity.clearALFilter(); \
+		p->entity.setALFilter(AL::Filter::nullFilter()); \
 	} \
 	\
 	void Audio::entity##SetALEffect(ALuint effect) { \
@@ -440,7 +440,7 @@ void Audio::setSFX_Volume(int value)
 	} \
 	\
 	void Audio::entity##ClearALEffect() { \
-		p->entity.clearALEffect(); \
+		p->entity.setALEffect(AL_EFFECT_NULL); \
 	}
 
 #define AUDIO_CPP_DEF_FILTER_FUNCS(entity) \

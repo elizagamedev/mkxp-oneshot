@@ -113,7 +113,6 @@ struct ALStream
 	void addFilter(AudioFilter* filter);
 	void clearFilters();
 	void setALFilter(AL::Filter::ID filter);
-	void clearALFilter();
 
 private:
 	void closeSource();
