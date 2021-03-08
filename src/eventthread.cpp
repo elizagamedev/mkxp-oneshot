@@ -47,6 +47,8 @@
 
 #include <iostream>
 
+#define KEYCODE_TO_SCUFFEDCODE(keycode) ((keycode & 0xff | (keycode & 0x180 == 0x100 ? 0x180 : 0)) + SDL_NUM_SCANCODES)
+
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
 
@@ -77,6 +79,7 @@ initALCFunctions(ALCdevice *alcDev)
 #define HAVE_ALC_DEVICE_PAUSE alc.DevicePause
 
 uint8_t EventThread::keyStates[];
+Uint16 EventThread::modkeys;
 EventThread::ControllerState EventThread::gcState;
 EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
@@ -294,10 +297,13 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_TEXTINPUT:
+			fprintf(stderr, "TextInput event: %s\n", event.text.text);
 			if (rtData.inputText.length() < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
 			break;
 
 		case SDL_KEYDOWN :
+			keyStates[KEYCODE_TO_SCUFFEDCODE(event.key.keysym.sym)] = true;
+			modkeys = event.key.keysym.mod;
 			if (event.key.keysym.scancode == SDL_SCANCODE_F1)
 			{
 				if (!sMenu)
@@ -365,6 +371,8 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_KEYUP :
+			keyStates[KEYCODE_TO_SCUFFEDCODE(event.key.keysym.sym)] = false;
+			modkeys = event.key.keysym.mod;
 			if (event.key.keysym.scancode == SDL_SCANCODE_F12)
 			{
 				if (!rtData.config.debugMode)
@@ -611,6 +619,7 @@ void EventThread::cleanup()
 void EventThread::resetInputStates()
 {
 	memset(&keyStates, 0, sizeof(keyStates));
+	memset(&modkeys, 0, sizeof(modkeys));
 	memset(&gcState, 0, sizeof(gcState));
 	memset(&joyState, 0, sizeof(joyState));
 	memset(&mouseState.buttons, 0, sizeof(mouseState.buttons));
