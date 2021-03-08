@@ -110,6 +110,8 @@ public:
 	/* Called on game screen (size / offset) changes */
 	void notifyGameScreenChange(const SDL_Rect &screen);
 
+	static SDL_mutex *inputMut;
+
 private:
 	static int eventFilter(void *, SDL_Event*);
 

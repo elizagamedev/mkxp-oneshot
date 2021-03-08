@@ -21,6 +21,7 @@
 
 #include "input.h"
 #include "sharedstate.h"
+#include "eventthread.h"
 #include "exception.h"
 #include "binding-util.h"
 #include "util.h"
@@ -126,6 +127,33 @@ RB_METHOD(inputQuit)
 RB_METHOD(inputModkeys) {
 	RB_UNUSED_PARAM;
 	return INT2FIX(shState->input().modkeys);
+}
+
+RB_METHOD(inputStartTextInput) {
+	int limit = 4096;
+	rb_get_args(argc, argv, "|i", &limit RB_ARG_END);
+	SDL_LockMutex(EventThread::inputMut);
+	shState->rtData().acceptingTextInput = true;
+	shState->rtData().inputTextLimit = limit;
+	shState->rtData().inputText.clear();
+	SDL_UnlockMutex(EventThread::inputMut);
+	return Qnil;
+}
+
+RB_METHOD(inputStopTextInput) {
+	RB_UNUSED_PARAM;
+	SDL_LockMutex(EventThread::inputMut);
+	shState->rtData().acceptingTextInput = false;
+	SDL_UnlockMutex(EventThread::inputMut);
+	return Qnil;
+}
+
+RB_METHOD(inputTextInput) {
+	RB_UNUSED_PARAM;
+	SDL_LockMutex(EventThread::inputMut);
+	VALUE retval = rb_utf8_str_new_cstr(shState->rtData().inputText.c_str());
+	SDL_UnlockMutex(EventThread::inputMut);
+	return retval;
 }
 
 struct
@@ -425,6 +453,10 @@ inputBindingInit()
 	_rb_define_module_function(module, "mouse_y", inputMouseY);
 
 	_rb_define_module_function(module, "quit?", inputQuit);
+
+	_rb_define_module_function(module, "start_text_input", inputStartTextInput);
+	_rb_define_module_function(module, "stop_text_input", inputStopTextInput);
+	_rb_define_module_function(module, "text_input", inputTextInput);
 
 	if (rgssVer >= 3)
 	{
