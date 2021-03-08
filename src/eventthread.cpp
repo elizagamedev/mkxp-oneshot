@@ -47,7 +47,7 @@
 
 #include <iostream>
 
-#define KEYCODE_TO_SCUFFEDCODE(keycode) ((keycode & 0xff | (keycode & 0x180 == 0x100 ? 0x180 : 0)) + SDL_NUM_SCANCODES)
+#define KEYCODE_TO_SCUFFEDCODE(keycode) (((keycode & 0xff) | ((keycode & 0x180) == 0x100 ? 0x180 : 0)) + SDL_NUM_SCANCODES)
 
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
