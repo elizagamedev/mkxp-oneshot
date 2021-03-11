@@ -33,7 +33,15 @@
 #include <string.h>
 #include <assert.h>
 
-#define BUTTON_CODE_COUNT 24
+#define BUTTON_CODE_COUNT 259
+// SDLK can range from 0x00 to 0x7f for ones with character representation
+// and 0x40000039 to 0x4000011a for ones without character representation
+// we squash 0x40000039 - 0x4000007f to 0x139 - 0x17f
+// and 0x40000080 - 0x400000ff to 0x80 - 0xff
+// and 0x40000100 - 0x4000011a to 0x100 - 0x11a
+// very ugly, but this saves a ton of space, allowing us to use only 0x180 codes max (still a ton of holes in it, but close enough)
+// convert actual keycode to this scuffed mapping: (keycode & 0xff | (keycode & 0x180 == 0x100 ? 0x180 : 0)) + BUTTONCODE_SDLK_OFFSET
+// no need for reverse conversion, fortunately
 
 struct ButtonState
 {
@@ -277,7 +285,34 @@ static const int mapToIndex[] =
 	0,
 	16, 17, 18, 19, 20,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	21, 22, 23
+	21, 22, 23,
+
+	// pad: index 41 to 59
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	// sdl keycodes, 60 (0x00) to 91 (0x1f)
+	24, 0, 0, 0, 0, 0, 0, 0, 25, 26, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0,
+	// sdl keycodes, 92 (0x20) to 123 (0x3f)
+	29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+	// sdl keycodes, 124 (0x40) to 155 (0x5f)
+	61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 64, 65, 66,
+	// sdl keycodes, 156 (0x60) to 187 (0x7f)
+	67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 0, 0, 0, 0, 94,
+	// sdl keycodes, 188 (0x80 or 0x40000080) to 219 (0x9f or 0x4000009f)
+	95, 96, 0, 0, 0, 97, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99, 100, 101, 102, 103, 104, 105,
+	// sdl keycodes, 220 (0xa0 or 0x400000a0) to 251 (0xbf or 0x400000bf)
+	106, 107, 108, 109, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
+	// sdl keycodes, 252 (0xc0 or 0x400000c0) to 283 (0xdf or 0x400000df)
+	127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 0, 0,
+	// sdl keycodes, 284 (0xe0 or 0x400000e0) to 315 (0xdf or 0x400000ff)
+	157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	// sdl keycodes, 316 (0x100 or 0x40000100) to 347 (0x11f or 0x4000011f) (range is not a typo! read comment at top of file)
+	0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 0, 0, 0, 0, 0,
+	// sdl keycodes, 348 (0x120 or 0x40000020) to 379 (0x13f or 0x4000003f)
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 191, 192, 193, 194, 195, 196, 197,
+	// sdl keycodes, 380 (0x140 or 0x40000040) to 411 (0x15f or 0x4000005f)
+	198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 0, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228,
+	// sdl keycodes, 412 (0x160 or 0x40000060) to 443 (0x17f or 0x4000007f)
+	229, 230, 231, 232, 0, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259,
 };
 
 static elementsN(mapToIndex);
@@ -542,6 +577,9 @@ struct InputPrivate
 		for (size_t i = 0; i < bindings.size(); ++i)
 			pollBindingPriv(*bindings[i], repeatCand);
 
+		for(int i = 0; i < BUTTONCODE_SDLK_COUNT; i++)
+			pollKeyboardCode(i);
+
 		updateDir4();
 		updateDir8();
 	}
@@ -577,6 +615,15 @@ struct InputPrivate
 				/* Unrepeatable keys still break current repeat */
 				repeating = Input::None;
 		}
+	}
+
+	void pollKeyboardCode(int i) {
+		if (!EventThread::keyStates[SDL_NUM_SCANCODES + i])
+			return;
+		ButtonState & state = getState((Input::ButtonCode) (BUTTONCODE_SDLK_OFFSET + i));
+		ButtonState & oldState = getOldState((Input::ButtonCode) (BUTTONCODE_SDLK_OFFSET + i));
+		state.pressed = true;
+		state.triggered = !oldState.pressed;
 	}
 
 	void updateDir4()
@@ -679,6 +726,7 @@ void Input::update()
 
 	/* Poll all bindings */
 	p->pollBindings(repeatCand);
+	modkeys = EventThread::modkeys;
 
 	/* Check for new repeating key */
 	if (repeatCand != None && repeatCand != p->repeating)

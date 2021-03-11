@@ -352,6 +352,8 @@ int main(int argc, char *argv[])
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 
+	EventThread::inputMut = SDL_CreateMutex();
+
 	/* Start RGSS thread */
 	SDL_Thread *rgssThread =
 	        SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
