@@ -6,6 +6,7 @@
 #==============================================================================
 
 class Interpreter
+  require "fiber"
   attr_accessor :index
   @@chill_pill = false
   #--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ class Interpreter
     # Clear inner situation of interpreter
     clear
   end
+
   #--------------------------------------------------------------------------
   # * Clear
   #--------------------------------------------------------------------------
@@ -39,6 +41,7 @@ class Interpreter
     @event_name = nil                 # full event name
     @fiber = nil                      # current fiber if running a coroutine
   end
+
   #--------------------------------------------------------------------------
   # * Event Setup
   #     list     : list of event commands
@@ -66,12 +69,14 @@ class Interpreter
       @event_name = "/" + common_event_name
     end
   end
+
   #--------------------------------------------------------------------------
   # * Determine if Running
   #--------------------------------------------------------------------------
   def running?
     return @list != nil
   end
+
   #--------------------------------------------------------------------------
   # * Starting Event Setup
   #--------------------------------------------------------------------------
@@ -116,6 +121,7 @@ class Interpreter
       end
     end
   end
+
   #--------------------------------------------------------------------------
   # * Frame Update
   #--------------------------------------------------------------------------
@@ -221,6 +227,7 @@ class Interpreter
       @index += 1
     end
   end
+
   #--------------------------------------------------------------------------
   # * Button Input
   #--------------------------------------------------------------------------
@@ -241,18 +248,20 @@ class Interpreter
       @button_input_variable_id = 0
     end
   end
+
   #--------------------------------------------------------------------------
   # * Setup Choices
   #--------------------------------------------------------------------------
   def setup_choices(parameters)
     # Set choices
-    $game_temp.choices = parameters[0].map{|s| Language.tr(s.strip)}
+    $game_temp.choices = parameters[0].map { |s| Language.tr(s.strip) }
     # Set cancel processing
     $game_temp.choice_cancel_type = parameters[1]
     # Set callback
     current_indent = @list[@index].indent
     $game_temp.choice_proc = Proc.new { |n| @branch[current_indent] = n }
   end
+
   #--------------------------------------------------------------------------
   # * Actor Iterator (consider all party members)
   #     parameter : if 1 or more, ID; if 0, all
@@ -265,7 +274,7 @@ class Interpreter
         # Evaluate block
         yield actor
       end
-    # If single actor
+      # If single actor
     else
       # Get actor
       actor = $game_actors[parameter]
@@ -273,6 +282,7 @@ class Interpreter
       yield actor if actor != nil
     end
   end
+
   #--------------------------------------------------------------------------
   # * Enemy Iterator (consider all troop members)
   #     parameter : If 0 or above, index; if -1, all
@@ -285,7 +295,7 @@ class Interpreter
         # Evaluate block
         yield enemy
       end
-    # If single enemy
+      # If single enemy
     else
       # Get enemy
       enemy = $game_troop.enemies[parameter]
@@ -293,6 +303,7 @@ class Interpreter
       yield enemy if enemy != nil
     end
   end
+
   #--------------------------------------------------------------------------
   # * Battler Iterator (consider entire troop and entire party)
   #     parameter1 : If 0, enemy; if 1, actor
@@ -305,7 +316,7 @@ class Interpreter
       iterate_enemy(parameter2) do |enemy|
         yield enemy
       end
-    # If actor
+      # If actor
     else
       # If entire party
       if parameter2 == -1
@@ -314,7 +325,7 @@ class Interpreter
           # Evaluate block
           yield actor
         end
-      # If single actor (N exposed)
+        # If single actor (N exposed)
       else
         # Get actor
         actor = $game_party.actors[parameter2]
@@ -323,6 +334,7 @@ class Interpreter
       end
     end
   end
+
   # Chill out
   def self.take_a_chill_pill
     @@chill_pill = true
