@@ -158,8 +158,6 @@ struct AudioStream
 	float playingOffset();
 	ALStream::State queryState();
 
-	void addFilter(AudioFilter* filter);
-	void clearFilters();
 	void setALFilter(AL::Filter::ID filter);
 	void setALEffect(ALuint effect);
 

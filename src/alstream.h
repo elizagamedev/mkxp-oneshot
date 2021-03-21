@@ -24,7 +24,6 @@
 
 #include "al-util.h"
 #include "sdl-util.h"
-#include "aldatasource.h"
 
 #include <string>
 #include <SDL_rwops.h>
@@ -110,8 +109,6 @@ struct ALStream
 	float queryOffset();
 	bool queryNativePitch();
 
-	void addFilter(AudioFilter* filter);
-	void clearFilters();
 	void setALFilter(AL::Filter::ID filter);
 
 private:

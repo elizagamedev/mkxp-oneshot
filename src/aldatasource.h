@@ -23,13 +23,10 @@
 #define ALDATASOURCE_H
 
 #include "al-util.h"
-#include "audiofilter.h"
 
 #ifdef _WIN32
 #include <cstring>
 #endif
-
-#include <list>
 
 struct ALDataSource
 {
@@ -58,13 +55,6 @@ struct ALDataSource
 
 	/* Returns false if not supported */
 	virtual bool setPitch(float value) = 0;
-
-	/* Add / clear audio effects on this data source */
-	std::list<AudioFilter*> filters;
-	SDL_mutex *filterMut;
-	void addFilter(AudioFilter* filter);
-	void clearFilters();
-	void applyFilters(ALenum format, const ALvoid *data, ALsizei size, ALsizei freq);
 };
 
 ALDataSource *createSDLSource(SDL_RWops &ops,
