@@ -1,3 +1,9 @@
+# NOTE: THIS IS DEFUNCT.
+
+The steamshim parent is NOT compiled for ModShot, even if you have `--platform=steam` during compilation. That flag only enables steam related ModShot features and compiles steamshim_child into the executable. The parent should be compiled in a separate repo, for easier license compliance. Contact rkevin for how to do this.
+
+# EVERYTHING BELOW IS KEPT FOR HISTORICAL REFERENCE ONLY.
+
 # Steamshim parent
 OneShot uses [steamshim](https://hg.icculus.org/icculus/steamshim/) for GNU GPL v3 and Steam interoperability. There are five components that OneShot uses to communicate with Steam, in order:
 1. Steamworks SDK (that can be obtained from [here](https://partner.steamgames.com)) that is used for directly communicating with Steam. It is closed-source, and because of license compatibility issues steamshim must be used as a layer between OneShot and Steamworks SDK to communicate with Steam.

@@ -6,8 +6,10 @@ conan_basic_setup(TARGETS)
 
 ## Setup options ##
 
+# Note this option only adds steamshim_child into oneshot.
+# It's outside this repo's responsibility to compile the parent.
+# Contact rkevin for details.
 option(STEAM "Build for Steam" OFF)
-set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" OFF)
 
 ## Misc setup ##
@@ -308,17 +310,7 @@ IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
 ENDIF()
 
-if(STEAM)
-	add_subdirectory(steamshim_parent)
-
-	# steam_appid.txt
-	configure_file(
-		"${CMAKE_SOURCE_DIR}/steam_appid.txt"
-		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/steam_appid.txt"
-		COPYONLY)
-endif()
-
-if(WIN32)
+if(WIN32 AND NOT STEAM)
 	add_executable("oneshot-shim" WIN32
 	"${CMAKE_SOURCE_DIR}/windows/shim.c"
 	"${CMAKE_SOURCE_DIR}/assets/resources.rc")
