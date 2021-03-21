@@ -251,6 +251,9 @@ struct RGSSThreadData
 	/* True if accepting text input */
 	AtomicFlag acceptingTextInput;
 
+	/* True if allow force quit */
+	AtomicFlag allowForceQuit;
+
 	EventThread *ethread;
 	UnidirMessage<Vec2i> windowSizeMsg;
 	UnidirMessage<BDescVec> bindingUpdateMsg;

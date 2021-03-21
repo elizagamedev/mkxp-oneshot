@@ -31,9 +31,10 @@
 		const char *filename; \
 		int volume = 100; \
 		int pitch = 100; \
-		double pos = 0.0; \
-		rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
-		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos); ) \
+		double pos = -1.0; \
+		bool fadeInOnOffset = true; \
+		rb_get_args(argc, argv, "z|iifb", &filename, &volume, &pitch, &pos, &fadeInOnOffset RB_ARG_END); \
+		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos, fadeInOnOffset); ) \
 		return Qnil; \
 	} \
 	RB_METHOD(audio_##entity##Stop) \
@@ -76,6 +77,20 @@ RB_METHOD(audio_##entity##Fade) \
 	return Qnil; \
 }
 
+#define DEF_CROSSFADE(entity) \
+RB_METHOD(audio_##entity##Crossfade) \
+{ \
+	RB_UNUSED_PARAM; \
+	const char *filename; \
+	double time = 2; \
+	int volume = 100; \
+	int pitch = 100; \
+	double pos = -1.0; \
+	rb_get_args(argc, argv, "z|fiif", &filename, &time, &volume, &pitch, &pos RB_ARG_END); \
+	GUARD_EXC(shState->audio().entity##Crossfade(filename, time, volume, pitch, pos);) \
+	return Qnil; \
+}
+
 #define DEF_POS(entity) \
 	RB_METHOD(audio_##entity##Pos) \
 	{ \
@@ -105,6 +120,47 @@ RB_METHOD(audio_##entity##Fade) \
 		return rb_fix_new(value); \
 	}
 
+AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
+	int type;
+	double gain, gainlf, gainhf;
+	rb_get_args(argc, argv, "i|", &type RB_ARG_END);
+	switch(type) {
+		case 0: // lowpass
+			rb_get_args(argc, argv, "iff", &type, &gain, &gainhf RB_ARG_END);
+			return AL::Filter::createLowpassFilter(gain, gainhf);
+		case 1: // highpass
+			rb_get_args(argc, argv, "iff", &type, &gain, &gainlf RB_ARG_END);
+			return AL::Filter::createHighpassFilter(gain, gainlf);
+		case 2: // bandpass
+			rb_get_args(argc, argv, "ifff", &type, &gain, &gainlf, &gainhf RB_ARG_END);
+			return AL::Filter::createBandpassFilter(gain, gainlf, gainhf);
+		default:
+			rb_raise(rb_eArgError, "Unrecognized AL filter type");
+	}
+}
+
+#define DEF_AUD_ALFILTER(entity) \
+	RB_METHOD(audio_##entity##SetALFilter) { \
+		AL::Filter::ID filter = constructALFilter(argc, argv); \
+		shState->audio().entity##SetALFilter(filter); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##ClearALFilter) { \
+		shState->audio().entity##ClearALFilter(); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##SetALEffect) { \
+		VALUE effect_obj; \
+		rb_get_args(argc, argv, "o", &effect_obj RB_ARG_END); \
+		ALuint effect = NUM2INT(rb_funcall(effect_obj, rb_intern("create_underlying_effect"), 0)); \
+		shState->audio().entity##SetALEffect(effect); \
+		return Qnil; \
+	} \
+	RB_METHOD(audio_##entity##ClearALEffect) { \
+		shState->audio().entity##ClearALEffect(); \
+		return Qnil; \
+	} \
+
 DEF_PLAY_STOP_POS( bgm )
 DEF_PLAY_STOP_POS( bgs )
 
@@ -114,6 +170,10 @@ DEF_FADE( bgm )
 DEF_FADE( bgs )
 DEF_FADE( me )
 
+DEF_CROSSFADE( bgm )
+DEF_CROSSFADE( bgs )
+DEF_CROSSFADE( me )
+
 DEF_ISPLAYING( bgm )
 DEF_ISPLAYING( bgs )
 DEF_ISPLAYING( me )
@@ -122,6 +182,11 @@ DEF_PLAY_STOP( se )
 
 DEF_AUD_PROP_I(BGM_Volume)
 DEF_AUD_PROP_I(SFX_Volume)
+
+DEF_AUD_ALFILTER(bgm)
+DEF_AUD_ALFILTER(bgs)
+DEF_AUD_ALFILTER(me)
+DEF_AUD_ALFILTER(se)
 
 RB_METHOD(audioReset)
 {
@@ -140,9 +205,13 @@ RB_METHOD(audioReset)
 #define BIND_FADE(entity) \
 	_rb_define_module_function(module, #entity "_fade", audio_##entity##Fade);
 
-#define BIND_PLAY_STOP_FADE(entity) \
+#define BIND_CROSSFADE(entity) \
+	_rb_define_module_function(module, #entity "_crossfade", audio_##entity##Crossfade);
+
+#define BIND_PLAY_STOP_FADE_CROSS(entity) \
 	BIND_PLAY_STOP(entity) \
-	BIND_FADE(entity)
+	BIND_FADE(entity) \
+	BIND_CROSSFADE(entity)
 
 #define BIND_POS(entity) \
 	_rb_define_module_function(module, #entity "_pos", audio_##entity##Pos);
@@ -156,14 +225,20 @@ RB_METHOD(audioReset)
 	_rb_define_module_function(module, prop_name_s "=", audio##Set##PropName); \
 }
 
+#define BIND_AUDIO_ALFILTER(entity) \
+	_rb_define_module_function(module, #entity "_set_al_filter", audio_##entity##SetALFilter); \
+	_rb_define_module_function(module, #entity "_clear_al_filter", audio_##entity##ClearALFilter); \
+	_rb_define_module_function(module, #entity "_set_al_effect", audio_##entity##SetALEffect); \
+	_rb_define_module_function(module, #entity "_clear_al_effect", audio_##entity##ClearALEffect); \
+
 void
 audioBindingInit()
 {
 	VALUE module = rb_define_module("Audio");
 
-	BIND_PLAY_STOP_FADE( bgm );
-	BIND_PLAY_STOP_FADE( bgs );
-	BIND_PLAY_STOP_FADE( me  );
+	BIND_PLAY_STOP_FADE_CROSS( bgm );
+	BIND_PLAY_STOP_FADE_CROSS( bgs );
+	BIND_PLAY_STOP_FADE_CROSS( me  );
 
 	BIND_POS( bgm );
 	BIND_POS( bgs );
@@ -173,6 +248,11 @@ audioBindingInit()
 	BIND_IS_PLAYING( bgm );
 	BIND_IS_PLAYING( bgs );
 	BIND_IS_PLAYING( me );
+
+	BIND_AUDIO_ALFILTER(bgm);
+	BIND_AUDIO_ALFILTER(bgs);
+	BIND_AUDIO_ALFILTER(me);
+	BIND_AUDIO_ALFILTER(se);
 
 	_rb_define_module_function(module, "__reset__", audioReset);
 
