@@ -52,8 +52,6 @@ class MkxpConan(ConanFile):
             # self.build_requires("cygwin_installer/2.9.0@bincrafters/stable")
 
     def requirements(self):
-        if self.options.platform == "steam":
-            self.requires("steamworks/1.42@eliza/stable")
         if tools.os_info.is_linux:
             # Overrides
             self.requires("sqlite3/3.29.0")
