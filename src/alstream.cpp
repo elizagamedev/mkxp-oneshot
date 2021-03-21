@@ -200,18 +200,6 @@ float ALStream::queryOffset()
 	return procOffset + AL::Source::getSecOffset(alSrc);
 }
 
-void ALStream::addFilter(AudioFilter* filter) {
-	if (state == Closed)
-		return;
-	source->addFilter(filter);
-}
-
-void ALStream::clearFilters() {
-	if (state == Closed)
-		return;
-	source->clearFilters();
-}
-
 void ALStream::setALFilter(AL::Filter::ID filter) {
 	AL::Source::setFilter(alSrc, filter);
 }

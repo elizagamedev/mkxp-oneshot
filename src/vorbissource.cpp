@@ -27,8 +27,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "audiofilter.h"
-
 static size_t vfRead(void *ptr, size_t size, size_t nmemb, void *ops)
 {
 	return SDL_RWread(static_cast<SDL_RWops*>(ops), ptr, size, nmemb);
@@ -145,16 +143,12 @@ struct VorbisSource : ALDataSource
 
 		loop.end = loop.start + loop.length;
 		loop.valid = (loop.start && loop.length);
-
-		filterMut = SDL_CreateMutex();
 	}
 
 	~VorbisSource()
 	{
 		ov_clear(&vf);
 		SDL_RWclose(&src);
-		clearFilters();
-		SDL_DestroyMutex(filterMut);
 	}
 
 	int sampleRate()
@@ -267,11 +261,9 @@ struct VorbisSource : ALDataSource
 			canRead -= res;
 		}
 
-		if (retStatus != ALDataSource::Error) {
-			applyFilters(info.alFormat, sampleBuf.data(), bufUsed*sizeof(int16_t), info.rate);
+		if (retStatus != ALDataSource::Error)
 			AL::Buffer::uploadData(alBuffer, info.alFormat, sampleBuf.data(),
 			                       bufUsed*sizeof(int16_t), info.rate);
-		}
 
 		return retStatus;
 	}

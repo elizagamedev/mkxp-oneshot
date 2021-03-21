@@ -23,7 +23,7 @@
 #define AUDIO_H
 
 #include "util.h"
-#include "audiofilter.h"
+#include "al-util.h"
 
 /* Concerning the 'pos' parameter:
  *   RGSS3 actually doesn't specify a format for this,
@@ -97,14 +97,9 @@ public:
 	void entity##SetALEffect(ALuint effect); \
 	void entity##ClearALEffect();
 
-#define AUDIO_H_DECL_FILTER_FUNCS(entity) \
-	void entity##AddFilter(AudioFilter* filter); \
-	void entity##ClearFilters(); \
-	AUDIO_H_DECL_ALFILTER_FUNCS(entity)
-
-	AUDIO_H_DECL_FILTER_FUNCS(bgm)
-	AUDIO_H_DECL_FILTER_FUNCS(bgs)
-	AUDIO_H_DECL_FILTER_FUNCS(me)
+	AUDIO_H_DECL_ALFILTER_FUNCS(bgm)
+	AUDIO_H_DECL_ALFILTER_FUNCS(bgs)
+	AUDIO_H_DECL_ALFILTER_FUNCS(me)
 	AUDIO_H_DECL_ALFILTER_FUNCS(se)
 
 	void reset();

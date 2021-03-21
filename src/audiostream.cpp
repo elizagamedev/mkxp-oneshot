@@ -371,18 +371,6 @@ ALStream::State AudioStream::queryState()
 	return result;
 }
 
-void AudioStream::addFilter(AudioFilter* filter) {
-	lockStream();
-	streams[0].addFilter(filter);
-	unlockStream();
-}
-
-void AudioStream::clearFilters() {
-	lockStream();
-	streams[0].clearFilters();
-	unlockStream();
-}
-
 void AudioStream::setALFilter(AL::Filter::ID filter) {
 	lockStream();
 	for(ALStream& stream : streams) {
