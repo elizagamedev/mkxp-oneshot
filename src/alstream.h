@@ -24,6 +24,7 @@
 
 #include "al-util.h"
 #include "sdl-util.h"
+#include "aldatasource.h"
 
 #include <string>
 #include <SDL_rwops.h>
@@ -76,6 +77,10 @@ struct ALStream
 
 	SDL_RWops srcOps;
 
+	/* only used for the crossfader in audiostream.c */
+	float crossfadeVolume;
+	float crossfadeSpeed; //units: vol / 10ms
+
 	struct
 	{
 		ALenum format;
@@ -89,6 +94,7 @@ struct ALStream
 	};
 
 	ALStream(LoopMode loopMode,
+			 AL::AuxiliaryEffectSlot::ID effectSlot,
 	         const std::string &threadId);
 	~ALStream();
 
@@ -103,6 +109,10 @@ struct ALStream
 	State queryState();
 	float queryOffset();
 	bool queryNativePitch();
+
+	void addFilter(AudioFilter* filter);
+	void clearFilters();
+	void setALFilter(AL::Filter::ID filter);
 
 private:
 	void closeSource();

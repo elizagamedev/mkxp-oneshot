@@ -22,6 +22,8 @@
 #include "aldatasource.h"
 #include "exception.h"
 
+#include "audiofilter.h"
+
 #include <SDL_sound.h>
 
 struct SDLSoundSource : ALDataSource
@@ -53,12 +55,16 @@ struct SDLSoundSource : ALDataSource
 
 		alFormat = chooseALFormat(sampleSize, sample->actual.channels);
 		alFreq = sample->actual.rate;
+
+		filterMut = SDL_CreateMutex();
 	}
 
 	~SDLSoundSource()
 	{
 		/* This also closes 'srcOps' */
 		Sound_FreeSample(sample);
+		clearFilters();
+		SDL_DestroyMutex(filterMut);
 	}
 
 	Status fillBuffer(AL::Buffer::ID alBuffer)
@@ -77,6 +83,8 @@ struct SDLSoundSource : ALDataSource
 
 		if (sample->flags & SOUND_SAMPLEFLAG_ERROR)
 			return ALDataSource::Error;
+
+		applyFilters(alFormat, sample->buffer, decoded, alFreq);
 
 		AL::Buffer::uploadData(alBuffer, alFormat, sample->buffer, decoded, alFreq);
 

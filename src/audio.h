@@ -23,6 +23,7 @@
 #define AUDIO_H
 
 #include "util.h"
+#include "audiofilter.h"
 
 /* Concerning the 'pos' parameter:
  *   RGSS3 actually doesn't specify a format for this,
@@ -43,14 +44,16 @@ public:
 	void bgmPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0);
+	             float pos = -1,
+				 bool fadeInOnOffset = true);
 	void bgmStop();
 	void bgmFade(int time);
 
 	void bgsPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0);
+	             float pos = -1,
+				 bool fadeInOnOffset = true);
 	void bgsStop();
 	void bgsFade(int time);
 
@@ -65,12 +68,44 @@ public:
 	            int pitch = 100);
 	void seStop();
 
+	void bgmCrossfade(const char *filename,
+				 	  float time = 2,
+			     	  int volume = 100,
+				 	  int pitch = 100,
+					  float offset = -1);
+	void bgsCrossfade(const char *filename,
+				 	  float time = 2,
+			     	  int volume = 100,
+				 	  int pitch = 100,
+					  float offset = -1);
+	void meCrossfade(const char *filename,
+					 float time = 2,
+			    	 int volume = 100,
+					 int pitch = 100,
+					 float offset = -1);
+
 	float bgmPos();
 	float bgsPos();
 
 	bool bgmIsPlaying();
 	bool bgsIsPlaying();
 	bool meIsPlaying();
+
+#define AUDIO_H_DECL_ALFILTER_FUNCS(entity) \
+	void entity##SetALFilter(AL::Filter::ID filter); \
+	void entity##ClearALFilter(); \
+	void entity##SetALEffect(ALuint effect); \
+	void entity##ClearALEffect();
+
+#define AUDIO_H_DECL_FILTER_FUNCS(entity) \
+	void entity##AddFilter(AudioFilter* filter); \
+	void entity##ClearFilters(); \
+	AUDIO_H_DECL_ALFILTER_FUNCS(entity)
+
+	AUDIO_H_DECL_FILTER_FUNCS(bgm)
+	AUDIO_H_DECL_FILTER_FUNCS(bgs)
+	AUDIO_H_DECL_FILTER_FUNCS(me)
+	AUDIO_H_DECL_ALFILTER_FUNCS(se)
 
 	void reset();
 

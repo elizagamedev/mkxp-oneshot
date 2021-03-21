@@ -68,6 +68,7 @@ set(MAIN_HEADERS
 	src/aldatasource.h
 	src/alstream.h
 	src/audiostream.h
+	src/audiofilter.h
 	src/rgssad.h
 	src/sdl-util.h
 	src/oneshot.h
@@ -112,8 +113,10 @@ set(MAIN_SOURCE
 	src/vertex.cpp
 	src/soundemitter.cpp
 	src/sdlsoundsource.cpp
+	src/aldatasource.cpp
 	src/alstream.cpp
 	src/audiostream.cpp
+	src/audiofilter.cpp
 	src/rgssad.cpp
 	src/vorbissource.cpp
 	src/oneshot.cpp
@@ -272,6 +275,7 @@ set(BINDING_SOURCE
 	binding-mri/chroma-binding.cpp
 	binding-mri/niko-binding.cpp
 	binding-mri/modshot-window-binding.cpp
+	binding-mri/aleffect-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
