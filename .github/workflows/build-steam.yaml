@@ -26,7 +26,7 @@ jobs:
           path: C:\.conan
           key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}-steam
       - name: Build dependencies using conan
-        run: conan install ${{ github.workspace }} --build=missing --platform=steam
+        run: conan install ${{ github.workspace }} --build=missing -o platform=steam
         working-directory: ${{ runner.temp }}\build
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
@@ -68,7 +68,7 @@ jobs:
           path: ~/.conan
           key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}-steam
       - name: Build dependencies using conan
-        run: conan install ${{ github.workspace }} --build=missing --platform=steam
+        run: conan install ${{ github.workspace }} --build=missing -o platform=steam
         working-directory: ${{ runner.temp }}/build
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
