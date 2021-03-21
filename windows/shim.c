@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     HMODULE hModule = GetModuleHandle(NULL);
     if (hModule != NULL) {
-        wchar_t *oneshotDir[MAX_PATH];
+        wchar_t oneshotDir[MAX_PATH];
         GetModuleFileNameW(hModule, oneshotDir, sizeof(oneshotDir));
         wchar_t *pathend = wcsrchr(oneshotDir, L'\\');
         if(pathend != NULL) {
