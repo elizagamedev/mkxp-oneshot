@@ -36,7 +36,6 @@ jobs:
           mkdir ${{ runner.temp }}\built_artifact;
           move ${{ runner.temp }}\build\bin\lib ${{ runner.temp }}\built_artifact\lib;
           move ${{ runner.temp }}\build\bin\* ${{ runner.temp }}\built_artifact\lib;
-          move ${{ runner.temp }}\built_artifact\lib\oneshot-shim.exe ${{ runner.temp }}\built_artifact\oneshot.exe
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -78,6 +77,7 @@ jobs:
           mkdir ${{ runner.temp }}/dist &&
           ${{ github.workspace }}/make-linux-dist.sh ${{ runner.temp }}/build ${{ runner.temp }}/dist &&
           cd ${{ runner.temp }}/dist &&
+          rm oneshot &&
           tar czf ${{ runner.temp }}/modshot_${{ github.sha }}.tar.gz .
       - name: Upload artifact
         uses: actions/upload-artifact@v2
