@@ -85,6 +85,7 @@ EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
 SDL_mutex *EventThread::inputMut;
+bool EventThread::forceTerminate;
 
 /* User event codes */
 enum
@@ -350,7 +351,9 @@ void EventThread::process(RGSSThreadData &rtData)
 
 			if (event.key.keysym.scancode == SDL_SCANCODE_F3 && rtData.allowForceQuit) {
 				// ModShot addition: force quit the game, no prompting or saving
+				Debug() << "Force terminating ModShot";
 				terminate = true;
+				EventThread::forceTerminate = true;
 				break;
 			}
 

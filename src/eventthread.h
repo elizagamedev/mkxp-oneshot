@@ -84,6 +84,7 @@ public:
 	static JoyState joyState;
 	static MouseState mouseState;
 	static TouchState touchState;
+	static bool forceTerminate;
 
 	static bool allocUserEvents();
 
