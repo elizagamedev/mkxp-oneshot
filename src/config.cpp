@@ -177,7 +177,7 @@ void Config::read(int argc, char *argv[])
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 
-	commonDataPath = prefPath(".", "Oneshot");
+	commonDataPath = prefPath(".", "OSFM");
 
 	//Hardcode some ini/version settings
 	rgssVersion = 1;

@@ -50,6 +50,8 @@ public:
 
 		F5 = 25, F6 = 26, F7 = 27, F8 = 28, F9 = 29,
 
+		Settings = 21, Pause = 22,
+
 		/* Non-standard extensions */
 		MouseLeft = 38, MouseMiddle = 39, MouseRight = 40,
 
