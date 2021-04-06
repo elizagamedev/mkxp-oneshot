@@ -60,6 +60,6 @@ Example: `./oneshot --gameFolder="oneshot" --vsync=true`
 
 Modshot builds come pre-packaged with the ruby standard library in `/lib/ruby/`. You can require gems from this folder at any point by using `require '<gem>'`.
 
-You can ship your own gems by finding the gem install location (Typically `C:\Ruby27-x64\lib\ruby\gems\2.7.0\gems`), going inside the gem, and copying over all the fils inside lib. 
+You can ship your own gems by finding the gem install location (Typically `C:\Ruby27-x64\lib\ruby\gems\2.7.0\gems`), going inside the gem, and copying over all the files inside lib. 
 
-Some gems may ship with external dlls/sos, those are a little buggy at the moment, and may through a loaderror when trying to use them. You may have some success putting the dlls/sos found in `/<gem>/ext/` in `/lib/`.
+Some gems may ship with external dlls/sos, those are a little buggy at the moment, and may throw a loaderror when trying to use them. You may have some success putting the dlls/sos found in `/<gem>/ext/` in `/lib/`.
