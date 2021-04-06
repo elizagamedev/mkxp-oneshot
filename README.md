@@ -10,16 +10,15 @@ Thanks to [rkevin-arch](https://github.com/rkevin-arch) for the docker build!
 >
 > It is licensed under the GNU General Public License v2+.
 
-*OneShot* also makes use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
+*ModShot* also makes use of [steamshim](https://hg.icculus.org/icculus/steamshim/) for GPL compliance while making use of Steamworks features. See LICENSE.steamshim.txt for details.
+You can compile ModShot with steam without compiling steamshim, but you will need to source the steamshim binary yourself.
 
 # Purpose
 
-> Modshot makes full use of all of these and is designed to add features not added in vanilla OneShot. It adds a number of new features and aims to make modding easier, whilst adding general purpose and specialized features, such as custom window titles, discord rich presence, chroma support, and much more. With this, oneshot now reads Scripts.rxdata instead of xScripts.rxdata, meaning modders won't have to delete and rename files constantly. Feel free to make pull requests of features you would like to see.
+> Modshot makes full use of all of these and is designed to add features not added in vanilla ModShot. It adds a number of new features and aims to make modding easier, whilst adding general purpose and specialized features, such as custom window titles, discord rich presence, chroma support, and much more. With this, oneshot now reads Scripts.rxdata instead of xScripts.rxdata, meaning modders won't have to delete and rename files constantly. Feel free to make pull requests of features you would like to see.
 
 # Usage
 Please credit the project in some wayy, either by a direct title card, or some other means.
-
-<There are a large multitude of additional features modshot adds and it is iddifuclt to explain them all. Please refer to the wiki for in-depth usage.>
   
  Main features currently:
  
@@ -41,13 +40,15 @@ Please credit the project in some wayy, either by a direct title card, or some o
 > A wiki is in progress and will be made when more features are added.
 
 ### Supported image/audio formats
-These depend on the SDL auxiliary libraries. *OneShot* only makes use of bmp/png for images and oggvorbis/wav for audio.
+These depend on the SDL auxiliary libraries. *ModShot* only makes use of bmp/png for images and oggvorbis/wav for audio.
 
-To run *OneShot*, you should have a graphics card capable of at least **OpenGL (ES) 2.0** with an up-to-date driver installed.
+To run *ModShot*, you should have a graphics card capable of at least **OpenGL (ES) 2.0** with an up-to-date driver installed.
+
+To run *ModShot*, you must also have a x64 system. Currently, compiling for x86 is unsupported.
 
 ## Configuration
 
-*OneShot* reads configuration data from the file "oneshot.conf". The format is ini-style. Do *not* use quotes around file paths (spaces won't break). Lines starting with '#' are comments. See 'oneshot.conf.sample' for a list of accepted entries.
+*ModShot* reads configuration data from the file "oneshot.conf". The format is ini-style. Do *not* use quotes around file paths (spaces won't break). Lines starting with '#' are comments. See 'oneshot.conf.sample' for a list of accepted entries. Note that this feature appears to be brpken for the moment until we get around to fixing it. Using command line options does work, however.
 
 All option entries can alternatively be specified as command line options. Any options that are not arrays (eg. preloaded scripts) specified as command line options will override entries in oneshot.conf. Note that you will have to wrap values containing spaces in quotes (unlike in oneshot.conf).
 
@@ -55,3 +56,10 @@ The syntax is: `--<option>=<value>`
 
 Example: `./oneshot --gameFolder="oneshot" --vsync=true`
 
+### External gems
+
+Modshot builds come pre-packaged with the ruby standard library in `/lib/ruby/`. You can require gems from this folder at any point by using `require '<gem>'`.
+
+You can ship your own gems by finding the gem install location (Typically `C:\Ruby27-x64\lib\ruby\gems\2.7.0\gems`), going inside the gem, and copying over all the fils inside lib. 
+
+Some gems may ship with external dlls/sos, those are a little buggy at the moment, and may through a loaderror when trying to use them. You may have some success putting the dlls/sos found in `/<gem>/ext/` in `/lib/`.
