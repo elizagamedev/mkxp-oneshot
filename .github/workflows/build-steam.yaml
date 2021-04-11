@@ -1,8 +1,8 @@
-name: Build Modshot
+name: Build Modshot with Steam support
 on: push
 jobs:
   build-windows:
-    name: Build ModShot for Windows
+    name: Build ModShot for Windows (Steam support)
     runs-on: windows-2019
     env:
       CONAN_USER_HOME: C:\.conan
@@ -24,20 +24,25 @@ jobs:
         uses: actions/cache@v2
         with:
           path: C:\.conan
-          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
+          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}-steam
       - name: Build dependencies using conan
-        run: conan install ${{ github.workspace }} --build=missing
+        run: conan install ${{ github.workspace }} --build=missing -o platform=steam
         working-directory: ${{ runner.temp }}\build
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
         working-directory: ${{ runner.temp }}\build
+      - name: Create dist folder
+        run: |
+          mkdir ${{ runner.temp }}\built_artifact;
+          move ${{ runner.temp }}\build\bin\lib ${{ runner.temp }}\built_artifact\lib;
+          move ${{ runner.temp }}\build\bin\* ${{ runner.temp }}\built_artifact\lib;
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: modshot_build_windows_${{ github.sha }}
-          path: ${{ runner.temp }}\build\bin
+          name: modshot_build_steam_windows_${{ github.sha }}
+          path: ${{ runner.temp }}\built_artifact
   build-linux:
-    name: Build ModShot for Linux
+    name: Build ModShot for Linux (Steam support)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -45,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt install -y \
-          libgtk2.0-dev libxfconf-0-dev libwmf0.2-7-gtk libegl1-mesa-dev libgbm-dev libasound2-dev libjack-dev libpulse-dev libaudio-dev &&
+          libgtk2.0-dev libxfconf-0-dev libwmf0.2-7-gtk libegl1-mesa-dev libgbm-dev libasound2-dev libjack-dev libpulse-dev libaudio-dev patchelf &&
           sudo curl -Lo /usr/local/bin/linuxdeploy-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage &&
           sudo chmod +x /usr/local/bin/linuxdeploy-x86_64.AppImage
       - name: Setup Python
@@ -60,21 +65,22 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.conan
-          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
+          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}-steam
       - name: Build dependencies using conan
-        run: conan install ${{ github.workspace }} --build=missing
+        run: conan install ${{ github.workspace }} --build=missing -o platform=steam
         working-directory: ${{ runner.temp }}/build
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
         working-directory: ${{ runner.temp }}/build
-      - name: Create AppDir
+      - name: Create dist folder
         run: |
           mkdir ${{ runner.temp }}/dist &&
-          ${{ github.workspace }}/make-linux-appdir.sh ${{ github.workspace }} ${{ runner.temp }}/build ${{ runner.temp }}/dist &&
+          ${{ github.workspace }}/make-linux-dist.sh ${{ runner.temp }}/build ${{ runner.temp }}/dist &&
           cd ${{ runner.temp }}/dist &&
+          rm oneshot &&
           tar czf ${{ runner.temp }}/modshot_${{ github.sha }}.tar.gz .
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: modshot_build_linux_${{ github.sha }}
+          name: modshot_build_steam_linux_${{ github.sha }}
           path: ${{ runner.temp }}/modshot_${{ github.sha }}.tar.gz
