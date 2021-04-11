@@ -47,6 +47,8 @@
 
 #include <iostream>
 
+#define KEYCODE_TO_SCUFFEDCODE(keycode) (((keycode & 0xff) | ((keycode & 0x180) == 0x100 ? 0x180 : 0)) + SDL_NUM_SCANCODES)
+
 typedef void (ALC_APIENTRY *LPALCDEVICEPAUSESOFT) (ALCdevice *device);
 typedef void (ALC_APIENTRY *LPALCDEVICERESUMESOFT) (ALCdevice *device);
 
@@ -77,10 +79,13 @@ initALCFunctions(ALCdevice *alcDev)
 #define HAVE_ALC_DEVICE_PAUSE alc.DevicePause
 
 uint8_t EventThread::keyStates[];
+Uint16 EventThread::modkeys;
 EventThread::ControllerState EventThread::gcState;
 EventThread::JoyState EventThread::joyState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
+SDL_mutex *EventThread::inputMut;
+bool EventThread::forceTerminate;
 
 /* User event codes */
 enum
@@ -294,10 +299,16 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_TEXTINPUT:
-			if (rtData.inputText.length() < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
+			SDL_LockMutex(inputMut);
+			if (rtData.acceptingTextInput && rtData.inputText.length() + strlen(event.text.text) < (size_t)(rtData.inputTextLimit)) rtData.inputText += event.text.text;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_KEYDOWN :
+			SDL_LockMutex(inputMut);
+			keyStates[KEYCODE_TO_SCUFFEDCODE(event.key.keysym.sym)] = true;
+			SDL_UnlockMutex(inputMut);
+			modkeys = event.key.keysym.mod;
 			if (event.key.keysym.scancode == SDL_SCANCODE_F1)
 			{
 				if (!sMenu)
@@ -338,6 +349,14 @@ void EventThread::process(RGSSThreadData &rtData)
 				break;
 			}
 
+			if (event.key.keysym.scancode == SDL_SCANCODE_F3 && rtData.allowForceQuit) {
+				// ModShot addition: force quit the game, no prompting or saving
+				Debug() << "Force terminating ModShot";
+				terminate = true;
+				EventThread::forceTerminate = true;
+				break;
+			}
+
 			if (event.key.keysym.scancode == SDL_SCANCODE_F12)
 			{
 				if (!rtData.config.debugMode)
@@ -352,19 +371,27 @@ void EventThread::process(RGSSThreadData &rtData)
 				break;
 			}
 
-			if (rtData.acceptingTextInput) {
-				if (event.key.keysym.sym == SDLK_BACKSPACE && rtData.inputText.length() > 0)
+			if (rtData.acceptingTextInput && event.key.keysym.sym == SDLK_BACKSPACE) {
+				// remove one unicode character
+				SDL_LockMutex(inputMut);
+				while (rtData.inputText.length() != 0 && rtData.inputText.back() & 0xc0 == 0x80) {
 					rtData.inputText.pop_back();
-				else if (event.key.keysym.sym == SDLK_RETURN)
-					rtData.acceptingTextInput.clear();
-
-				break;
+				}
+				if (rtData.inputText.length() != 0) {
+					rtData.inputText.pop_back();
+				}
+				SDL_UnlockMutex(inputMut);
 			}
-
+			SDL_LockMutex(inputMut);
 			keyStates[event.key.keysym.scancode] = true;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_KEYUP :
+			SDL_LockMutex(inputMut);
+			keyStates[KEYCODE_TO_SCUFFEDCODE(event.key.keysym.sym)] = false;
+			SDL_UnlockMutex(inputMut);
+			modkeys = event.key.keysym.mod;
 			if (event.key.keysym.scancode == SDL_SCANCODE_F12)
 			{
 				if (!rtData.config.debugMode)
@@ -375,97 +402,133 @@ void EventThread::process(RGSSThreadData &rtData)
 				break;
 			}
 
+			SDL_LockMutex(inputMut);
 			keyStates[event.key.keysym.scancode] = false;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
+			SDL_LockMutex(inputMut);
 			gcState.buttons[event.cbutton.button] = true;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_CONTROLLERBUTTONUP:
+			SDL_LockMutex(inputMut);
 			gcState.buttons[event.cbutton.button] = false;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_CONTROLLERAXISMOTION:
+			SDL_LockMutex(inputMut);
 			gcState.axes[event.caxis.axis] = event.caxis.value;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_CONTROLLERDEVICEADDED:
 			gc = SDL_GameControllerOpen(event.jdevice.which);
 			id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gc));
+			SDL_LockMutex(inputMut);
 			controllers[id] = gc;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_CONTROLLERDEVICEREMOVED:
 			gcit = controllers.find(event.jdevice.which);
-			SDL_GameControllerClose(gcit->second);
+			SDL_LockMutex(inputMut);
 			controllers.erase(gcit);
+			SDL_UnlockMutex(inputMut);
+			SDL_GameControllerClose(gcit->second);
 			break;
 
 		case SDL_JOYBUTTONDOWN :
 			if (joysticks.find(event.jbutton.which) != joysticks.end())
+				SDL_LockMutex(inputMut);
 				joyState.buttons[event.jbutton.button] = true;
+				SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_JOYBUTTONUP :
 			if (joysticks.find(event.jbutton.which) != joysticks.end())
+				SDL_LockMutex(inputMut);
 				joyState.buttons[event.jbutton.button] = false;
+				SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_JOYHATMOTION :
 			if (joysticks.find(event.jbutton.which) != joysticks.end())
+				SDL_LockMutex(inputMut);
 				joyState.hats[event.jhat.hat] = event.jhat.value;
+				SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_JOYAXISMOTION :
 			if (joysticks.find(event.jbutton.which) != joysticks.end())
+				SDL_LockMutex(inputMut);
 				joyState.axes[event.jaxis.axis] = event.jaxis.value;
+				SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_JOYDEVICEADDED :
 			if (SDL_IsGameController(event.jdevice.which))
 				break;
 			js = SDL_JoystickOpen(event.jdevice.which);
+			SDL_LockMutex(inputMut);
 			joysticks[SDL_JoystickInstanceID(js)] = js;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_JOYDEVICEREMOVED :
 			jsit = joysticks.find(event.jdevice.which);
 			if (jsit != joysticks.end()) {
+				SDL_LockMutex(inputMut);
 				SDL_JoystickClose(jsit->second);
-				joysticks.erase(jsit);
 				resetInputStates();
+				SDL_UnlockMutex(inputMut);
+				joysticks.erase(jsit);
 			}
 			break;
 
 		case SDL_MOUSEBUTTONDOWN :
+			SDL_LockMutex(inputMut);
 			mouseState.buttons[event.button.button] = true;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_MOUSEBUTTONUP :
+			SDL_LockMutex(inputMut);
 			mouseState.buttons[event.button.button] = false;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_MOUSEMOTION :
+			SDL_LockMutex(inputMut);
 			mouseState.x = event.motion.x;
 			mouseState.y = event.motion.y;
+			SDL_UnlockMutex(inputMut);
 			updateCursorState(cursorInWindow, gameScreen);
 			break;
 
 		case SDL_FINGERDOWN :
 			i = event.tfinger.fingerId;
+			SDL_LockMutex(inputMut);
 			touchState.fingers[i].down = true;
+			SDL_UnlockMutex(inputMut);
 			/* falls through */
 
 		case SDL_FINGERMOTION :
 			i = event.tfinger.fingerId;
+			SDL_LockMutex(inputMut);
 			touchState.fingers[i].x = event.tfinger.x * winW;
 			touchState.fingers[i].y = event.tfinger.y * winH;
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		case SDL_FINGERUP :
 			i = event.tfinger.fingerId;
+			SDL_LockMutex(inputMut);
 			memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
+			SDL_UnlockMutex(inputMut);
 			break;
 
 		default :
@@ -611,6 +674,7 @@ void EventThread::cleanup()
 void EventThread::resetInputStates()
 {
 	memset(&keyStates, 0, sizeof(keyStates));
+	memset(&modkeys, 0, sizeof(modkeys));
 	memset(&gcState, 0, sizeof(gcState));
 	memset(&joyState, 0, sizeof(joyState));
 	memset(&mouseState.buttons, 0, sizeof(mouseState.buttons));

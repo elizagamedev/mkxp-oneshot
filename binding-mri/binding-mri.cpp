@@ -30,6 +30,7 @@
 #include "graphics.h"
 #include "audio.h"
 #include "boost-hash.h"
+#include "version.h"
 
 #include <ruby.h>
 #include <ruby/encoding.h>
@@ -84,13 +85,14 @@ void oneshotBindingInit();
 void steamBindingInit();
 void chromaBindingInit();
 void modshotwindowBindingInit();
-void modshotFiberBindingInit();
+void aleffectBindingInit();
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
 RB_METHOD(mkxpPuts);
 RB_METHOD(mkxpRawKeyStates);
 RB_METHOD(mkxpMouseInWindow);
+RB_METHOD(mkxpAllowForceQuit);
 
 RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
@@ -121,7 +123,8 @@ static void mriBindingInit()
 	steamBindingInit();
 	chromaBindingInit();
 	modshotwindowBindingInit();
-	modshotFiberBindingInit();
+	aleffectBindingInit();
+	rb_define_global_const("MODSHOT_VERSION", rb_str_new_cstr(MODSHOT_VERSION));
 	if (rgssVer >= 3)
 	{
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
@@ -148,6 +151,7 @@ static void mriBindingInit()
 	_rb_define_module_function(mod, "puts", mkxpPuts);
 	_rb_define_module_function(mod, "raw_key_states", mkxpRawKeyStates);
 	_rb_define_module_function(mod, "mouse_in_window", mkxpMouseInWindow);
+	_rb_define_module_function(mod, "allow_force_quit", mkxpAllowForceQuit);
 
 	/* Load global constants */
 	rb_gv_set("MKXP", Qtrue);
@@ -164,7 +168,7 @@ static void mriBindingInit()
 
 	rb_eval_string(
 		"if ENV['SSL_CERT_FILE'].nil?\n"
-		"    ENV['SSL_CERT_FILE'] = './ssl/cacert.pem'\n"
+		"    ENV['SSL_CERT_FILE'] = './lib/cacert.pem'\n"
 		"end\n"
 	);
 }
@@ -252,6 +256,12 @@ RB_METHOD(mkxpMouseInWindow)
 	RB_UNUSED_PARAM;
 
 	return rb_bool_new(EventThread::mouseState.inWindow);
+}
+
+RB_METHOD(mkxpAllowForceQuit) {
+	RB_UNUSED_PARAM;
+	shState->rtData().allowForceQuit.set();
+	return Qnil;
 }
 
 static VALUE rgssMainCb(VALUE block)
@@ -605,12 +615,13 @@ static void mriBindingExecute()
 	);
 
 	// we probably should only be calling this if we are a ruby executable
-        // but we need to initialize things like the prelude (provides important library functions like IO#read_nonblock
-        // Init_prelude is not exposed anywhere else
+	// but we need to initialize things like the prelude (provides important library functions like IO#read_nonblock
+	// Init_prelude is not exposed anywhere else
 
-        // the three arguments are the executable name, and the '-e ""' is to tell ruby to run an empty file
-        // otherwise (since this parses options for the ruby executable) it's gonna wait on stdin for code
-        char* options_argv[] = {"oneshot", "-e", "", NULL};
+	// the three arguments are the executable name, and the '-e ""' is to tell ruby to run an empty file
+	// otherwise (since this parses options for the ruby executable) it's gonna wait on stdin for code
+	char options_argv1[] = "oneshot", options_argv2[] = "-e", options_argv3[] = "";
+	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
 	ruby_options(3, options_argv);
 
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
