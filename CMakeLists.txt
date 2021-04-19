@@ -70,6 +70,7 @@ set(MAIN_HEADERS
 	src/aldatasource.h
 	src/alstream.h
 	src/audiostream.h
+	src/audiochannels.h
 	src/rgssad.h
 	src/sdl-util.h
 	src/oneshot.h
@@ -116,6 +117,7 @@ set(MAIN_SOURCE
 	src/sdlsoundsource.cpp
 	src/alstream.cpp
 	src/audiostream.cpp
+	src/audiochannels.cpp
 	src/rgssad.cpp
 	src/vorbissource.cpp
 	src/oneshot.cpp

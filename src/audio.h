@@ -68,6 +68,24 @@ public:
 	            int pitch = 100);
 	void seStop();
 
+	void lchPlay(unsigned int id,
+				 const char *filename,
+	             int volume = 100,
+	             int pitch = 100,
+	             float pos = -1,
+				 bool fadeInOnOffset = true);
+	void lchStop(unsigned int id);
+	void lchFade(unsigned int id, int time);
+
+	void chPlay(unsigned int id,
+				 const char *filename,
+	             int volume = 100,
+	             int pitch = 100,
+	             float pos = -1,
+				 bool fadeInOnOffset = true);
+	void chStop(unsigned int id);
+	void chFade(unsigned int id, int time);
+
 	void bgmCrossfade(const char *filename,
 				 	  float time = 2,
 			     	  int volume = 100,
@@ -83,13 +101,29 @@ public:
 			    	 int volume = 100,
 					 int pitch = 100,
 					 float offset = -1);
+	void lchCrossfade(unsigned int id,
+					  const char *filename,
+					  float time = 2,
+			    	  int volume = 100,
+					  int pitch = 100,
+					  float offset = -1);
+	void chCrossfade(unsigned int id,
+					  const char *filename,
+					  float time = 2,
+			    	  int volume = 100,
+					  int pitch = 100,
+					  float offset = -1);
 
 	float bgmPos();
 	float bgsPos();
+	float lchPos(unsigned int id);
+	float chPos(unsigned int id);
 
 	bool bgmIsPlaying();
 	bool bgsIsPlaying();
 	bool meIsPlaying();
+	bool lchIsPlaying(unsigned int id);
+	bool chIsPlaying(unsigned int id);
 
 #define AUDIO_H_DECL_ALFILTER_FUNCS(entity) \
 	void entity##SetALFilter(AL::Filter::ID filter); \
@@ -102,11 +136,31 @@ public:
 	AUDIO_H_DECL_ALFILTER_FUNCS(me)
 	AUDIO_H_DECL_ALFILTER_FUNCS(se)
 
+#define AUDIO_H_DECL_CH_ALFILER_FUNCS(entity) \
+	void entity##SetALFilter(unsigned int id, AL::Filter::ID filter); \
+	void entity##ClearALFilter(unsigned int id); \
+	void entity##SetALEffect(unsigned int id, ALuint effect); \
+	void entity##ClearALEffect(unsigned int id);
+
+	AUDIO_H_DECL_CH_ALFILER_FUNCS(lch)
+	AUDIO_H_DECL_CH_ALFILER_FUNCS(ch)
+
 	void reset();
 
-        /* Non-standard extension */
-	DECL_ATTR( BGM_Volume, int)
-        DECL_ATTR( SFX_Volume, int)
+    /* Non-standard extension */
+	DECL_ATTR(BGM_Volume, int)
+    DECL_ATTR(SFX_Volume, int)
+
+#define AUDIO_H_DECL_CH_SPECIAL_FUNCS(entity) \
+	float get##entity##Volume(unsigned int id); \
+	void set##entity##Volume(unsigned int id, float volume); \
+	float get##entity##GlobalVolume(); \
+	void set##entity##GlobalVolume(float volume); \
+	unsigned int entity##Size(); \
+	void entity##Resize(unsigned int size);
+
+	AUDIO_H_DECL_CH_SPECIAL_FUNCS(lch)
+	AUDIO_H_DECL_CH_SPECIAL_FUNCS(ch)
 
 private:
 	Audio(RGSSThreadData &rtData);

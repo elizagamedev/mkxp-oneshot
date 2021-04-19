@@ -23,6 +23,7 @@
 
 #include "audiostream.h"
 #include "soundemitter.h"
+#include "audiochannels.h"
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "sdl-util.h"
@@ -46,6 +47,8 @@ struct AudioPrivate
 	int current_me_volume;
 
 	SoundEmitter se;
+
+	AudioChannels lch,ch;
 
 	SyncPoint &syncPoint;
 
@@ -74,6 +77,8 @@ struct AudioPrivate
 	      bgs(ALStream::Looped, "bgs"),
 	      me(ALStream::NotLooped, "me"),
 	      se(rtData.config),
+		  lch(ALStream::Looped, "lch", rtData.config.audioChannels),
+		  ch(ALStream::NotLooped, "ch", rtData.config.audioChannels),
 	      syncPoint(rtData.syncPoint)
 	{
 		bgm_volume = 100;
@@ -384,6 +389,8 @@ void Audio::reset()
 	p->bgs.stop();
 	p->me.stop();
 	p->se.stop();
+	p->lch.stopall();
+	p->ch.stopall();
 }
 
 int Audio::getBGM_Volume() const
@@ -447,5 +454,81 @@ AUDIO_CPP_DEF_ALFILTER_FUNCS(bgm)
 AUDIO_CPP_DEF_ALFILTER_FUNCS(bgs)
 AUDIO_CPP_DEF_ALFILTER_FUNCS(me)
 AUDIO_CPP_DEF_ALFILTER_FUNCS(se)
+
+#define AUDIO_CPP_DEF_ALL_CH_FUNCS(entity) \
+	void Audio::entity##Play(unsigned int id, \
+							 const char *filename, \
+							 int volume, \
+							 int pitch, \
+							 float pos, \
+							 bool fadeInOnOffset) { \
+		p->entity.play(id, filename, volume, pitch, pos, fadeInOnOffset); \
+	} \
+	\
+	void Audio::entity##Stop(unsigned int id) { \
+		p->entity.stop(id); \
+	} \
+	\
+	void Audio::entity##Fade(unsigned int id, int time) { \
+		p->entity.fadeOut(id, time); \
+	} \
+	\
+	void Audio::entity##Crossfade(unsigned int id, \
+								  const char *filename, \
+								  float time, \
+								  int volume, \
+								  int pitch, \
+								  float offset) { \
+		p->entity.crossfade(id, filename, time, volume,pitch, offset); \
+	} \
+	\
+	float Audio::entity##Pos(unsigned int id) { \
+		return p->entity.playingOffset(id); \
+	} \
+	\
+	bool Audio::entity##IsPlaying(unsigned int id) { \
+		return p->entity.queryState(id) == ALStream::Playing; \
+	} \
+	\
+	void Audio::entity##SetALFilter(unsigned int id, AL::Filter::ID filter) { \
+		p->entity.setALFilter(id, filter); \
+	} \
+	\
+    void Audio::entity##ClearALFilter(unsigned int id) { \
+		p->entity.setALFilter(id, AL::Filter::nullFilter()); \
+	} \
+	\
+    void Audio::entity##SetALEffect(unsigned int id, ALuint effect) { \
+		p->entity.setALEffect(id, effect); \
+	} \
+	\
+    void Audio::entity##ClearALEffect(unsigned int id) { \
+		p->entity.setALEffect(id, AL_EFFECT_NULL); \
+	} \
+	\
+	float Audio::get##entity##Volume(unsigned int id) { \
+		return p->entity.getVolume(id, AudioStream::Base) * 100; \
+	} \
+	\
+	void Audio::set##entity##Volume(unsigned int id, float vol) { \
+		p->entity.setVolume(id, AudioStream::Base, vol / 100); \
+	} \
+	float Audio::get##entity##GlobalVolume() { \
+		return p->entity.getGlobalVolume() * 100; \
+	} \
+	\
+	void Audio::set##entity##GlobalVolume(float vol) { \
+		p->entity.setGlobalVolume(vol / 100); \
+	} \
+	unsigned int Audio::entity##Size() { \
+		return p->entity.size(); \
+	} \
+	\
+	void Audio::entity##Resize(unsigned int size) { \
+		p->entity.resize(size); \
+	} \
+
+AUDIO_CPP_DEF_ALL_CH_FUNCS(lch)
+AUDIO_CPP_DEF_ALL_CH_FUNCS(ch)
 
 Audio::~Audio() { delete p; }

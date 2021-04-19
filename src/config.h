@@ -64,6 +64,8 @@ struct Config
 		int sourceCount;
 	} SE;
 
+	int audioChannels;
+
 	bool useScriptNames;
 
 	std::string customScript;
