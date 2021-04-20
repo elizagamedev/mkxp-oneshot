@@ -11,8 +11,10 @@ AudioChannels::AudioChannels(ALStream::LoopMode loopMode,
                              loopMode(loopMode),
                              threadId(threadId),
                              globalVolume(1.0f) {
-    for (int i=0; i<count; i++)
-        streams.emplace_back(loopMode, threadId + "_" + std::to_string(i));
+    for (int i=0; i<count; i++) {
+        AudioStream *s = new AudioStream(loopMode, threadId + "_" + std::to_string(i));
+        streams.push_back(s);
+    }
 }
 
 unsigned int AudioChannels::size() {
@@ -20,11 +22,17 @@ unsigned int AudioChannels::size() {
 }
 
 void AudioChannels::resize(unsigned int size) {
-    if (size < streams.size())
+    if (size < streams.size()) {
+        for (std::vector<AudioStream*>::iterator i = streams.begin() + size; i != streams.end(); i++)
+            delete *i;
         streams.erase(streams.begin() + size, streams.end());
-    else
-        for(int i = streams.size(); i < size; i++)
-            streams.emplace_back(loopMode, threadId + "_" + std::to_string(i));
+    }
+    else {
+        for(int i = streams.size(); i < size; i++) {
+            AudioStream *s = new AudioStream(loopMode, threadId + "_" + std::to_string(i));
+            streams.push_back(s);
+        }
+    }
 }
 
 float AudioChannels::getGlobalVolume() {
@@ -32,8 +40,8 @@ float AudioChannels::getGlobalVolume() {
 }
 
 void AudioChannels::setGlobalVolume(float volume) {
-    for (AudioStream& stream : streams)
-        stream.setVolume(AudioStream::Base, stream.getVolume(AudioStream::Base) * volume / globalVolume);
+    for (AudioStream*& stream : streams)
+        stream->setVolume(AudioStream::Base, stream->getVolume(AudioStream::Base) * volume / globalVolume);
     globalVolume = volume;
 }
 
@@ -46,7 +54,7 @@ void AudioChannels::play(unsigned int id,
     if (id >= streams.size()) {
         return;
     }
-    streams[id].play(filename, volume, pitch, offset, fadeInOnOffset);
+    streams[id]->play(filename, volume, pitch, offset, fadeInOnOffset);
 }
 
 void AudioChannels::crossfade(unsigned int id,
@@ -58,73 +66,73 @@ void AudioChannels::crossfade(unsigned int id,
     if (id >= streams.size()) {
         return;
     }
-    streams[id].crossfade(filename, time, volume, pitch, offset);
+    streams[id]->crossfade(filename, time, volume, pitch, offset);
 }
 
 void AudioChannels::pause(unsigned int id) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].pause();
+    streams[id]->pause();
 }
 
 void AudioChannels::stop(unsigned int id) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].stop();
+    streams[id]->stop();
 }
 
 void AudioChannels::stopall() {
-    for (AudioStream& stream : streams)
-        stream.stop();
+    for (AudioStream*& stream : streams)
+        stream->stop();
 }
 
 void AudioChannels::fadeOut(unsigned int id, int duration) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].fadeOut(duration);
+    streams[id]->fadeOut(duration);
 }
 
 void AudioChannels::setVolume(unsigned int id, AudioStream::VolumeType type, float value) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].setVolume(type, value);
+    streams[id]->setVolume(type, value);
 }
 
 float AudioChannels::getVolume(unsigned int id, AudioStream::VolumeType type) {
     if (id >= streams.size()) {
         return 0;
     }
-    return streams[id].getVolume(type);
+    return streams[id]->getVolume(type);
 }
 
 float AudioChannels::playingOffset(unsigned int id) {
     if (id >= streams.size()) {
         return 0;
     }
-    return streams[id].playingOffset();
+    return streams[id]->playingOffset();
 }
 
 ALStream::State AudioChannels::queryState(unsigned int id) {
     if (id >= streams.size()) {
         return ALStream::State::Closed;
     }
-    return streams[id].queryState();
+    return streams[id]->queryState();
 }
 
 void AudioChannels::setALFilter(unsigned int id, AL::Filter::ID filter) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].setALFilter(filter);
+    streams[id]->setALFilter(filter);
 }
 
 void AudioChannels::setALEffect(unsigned int id, ALuint effect) {
     if (id >= streams.size()) {
         return;
     }
-    streams[id].setALEffect(effect);
+    streams[id]->setALEffect(effect);
 }

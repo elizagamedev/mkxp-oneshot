@@ -45,7 +45,7 @@ class AudioChannels {
 	void setALEffect(unsigned int id, ALuint effect);
 
     private:
-    std::vector<AudioStream> streams;
+    std::vector<AudioStream*> streams;
     ALStream::LoopMode loopMode;
     const std::string threadId;
     float globalVolume;
