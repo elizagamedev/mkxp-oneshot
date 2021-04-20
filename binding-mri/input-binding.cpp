@@ -156,6 +156,16 @@ RB_METHOD(inputTextInput) {
 	return retval;
 }
 
+RB_METHOD(inputSetTextInput) {
+	RB_UNUSED_PARAM;
+	const char *newinput;
+	rb_get_args(argc, argv, "z", &newinput RB_ARG_END);
+	SDL_LockMutex(EventThread::inputMut);
+	shState->rtData().inputText = newinput;
+	SDL_UnlockMutex(EventThread::inputMut);
+	return Qnil;
+}
+
 struct
 {
 	const char *str;
@@ -457,6 +467,7 @@ inputBindingInit()
 	_rb_define_module_function(module, "start_text_input", inputStartTextInput);
 	_rb_define_module_function(module, "stop_text_input", inputStopTextInput);
 	_rb_define_module_function(module, "text_input", inputTextInput);
+	_rb_define_module_function(module, "set_text_input", inputSetTextInput);
 
 	if (rgssVer >= 3)
 	{

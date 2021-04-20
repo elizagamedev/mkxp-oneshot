@@ -65,4 +65,4 @@ src/version.h
 !build-entrypoint-linux.sh
 !build-entrypoint-windows.bat
 
-conan.lock
+.vscode
