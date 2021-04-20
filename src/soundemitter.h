@@ -58,8 +58,14 @@ struct SoundEmitter
 
 	void stop();
 
+	void setALFilter(AL::Filter::ID filter);
+	void setALEffect(ALuint effect);
+	
 private:
 	SoundBuffer *allocateBuffer(const std::string &filename);
+	AL::AuxiliaryEffectSlot::ID effectSlot;
+	AL::Filter::ID curfilter = AL::Filter::ID(AL_FILTER_NULL);
+	ALuint cureffect = AL_EFFECT_NULL;
 };
 
 #endif // SOUNDEMITTER_H

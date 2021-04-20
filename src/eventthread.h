@@ -78,11 +78,13 @@ public:
 		FingerState fingers[MAX_FINGERS];
 	};
 
-	static uint8_t keyStates[SDL_NUM_SCANCODES];
+	static uint8_t keyStates[SDL_NUM_SCANCODES + BUTTONCODE_SDLK_COUNT];
+	static Uint16 modkeys;
 	static ControllerState gcState;
 	static JoyState joyState;
 	static MouseState mouseState;
 	static TouchState touchState;
+	static bool forceTerminate;
 
 	static bool allocUserEvents();
 
@@ -108,6 +110,8 @@ public:
 
 	/* Called on game screen (size / offset) changes */
 	void notifyGameScreenChange(const SDL_Rect &screen);
+
+	static SDL_mutex *inputMut;
 
 private:
 	static int eventFilter(void *, SDL_Event*);
@@ -247,6 +251,9 @@ struct RGSSThreadData
 
 	/* True if accepting text input */
 	AtomicFlag acceptingTextInput;
+
+	/* True if allow force quit */
+	AtomicFlag allowForceQuit;
 
 	EventThread *ethread;
 	UnidirMessage<Vec2i> windowSizeMsg;

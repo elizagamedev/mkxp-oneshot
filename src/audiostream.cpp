@@ -32,7 +32,7 @@ AudioStream::AudioStream(ALStream::LoopMode loopMode,
                          const std::string &threadId)
 	: extPaused(false),
 	  noResumeStop(false),
-	  stream(loopMode, threadId)
+	  alStreamThreadID(0)
 {
 	current.volume = 1.0f;
 	current.pitch = 1.0f;
@@ -46,7 +46,18 @@ AudioStream::AudioStream(ALStream::LoopMode loopMode,
 	fadeIn.thread = 0;
 	fadeIn.threadName = std::string("audio_fadein (") + threadId + ")";
 
+	effectSlot = AL::AuxiliaryEffectSlot::gen();
+
+	alStreamThreadIDPrefix = threadId + "_";
+	streams.emplace_front(loopMode, effectSlot, alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
+	alStreamThreadID++;
+
+
 	streamMut = SDL_CreateMutex();
+
+	crossfademgr.threadName = std::string("audio_crossfade_mgr (") + threadId + ")";
+	crossfademgr.thread = createSDLThread
+		<AudioStream, &AudioStream::crossfadeThread>(this, crossfademgr.threadName);
 }
 
 AudioStream::~AudioStream()
@@ -63,20 +74,38 @@ AudioStream::~AudioStream()
 		SDL_WaitThread(fadeIn.thread, 0);
 	}
 
+	crossfademgr.reqTerm.set();
+	SDL_WaitThread(crossfademgr.thread, 0);
+
 	lockStream();
 
-	stream.stop();
-	stream.close();
+	for(ALStream& stream : streams) {
+		stream.stop();
+		stream.close();
+	}
+
+	// no need to reset the list, we're destroying the entire audiostream after all
 
 	unlockStream();
 
 	SDL_DestroyMutex(streamMut);
 }
 
+void AudioStream::destroyCrossfades() {
+	// if we have crossfades, destroy them all
+	while (streams.size() > 1) {
+		ALStream& stream = streams.back();
+		stream.stop();
+		stream.close();
+		streams.pop_back();
+	}
+}
+
 void AudioStream::play(const std::string &filename,
                        int volume,
                        int pitch,
-                       float offset)
+                       float offset,
+					   bool fadeInOnOffset)
 {
 	finiFadeOutInt();
 
@@ -85,31 +114,34 @@ void AudioStream::play(const std::string &filename,
 	float _volume = clamp<int>(volume, 0, 100) / 100.0f;
 	float _pitch  = clamp<int>(pitch, 50, 150) / 100.0f;
 
-	ALStream::State sState = stream.queryState();
+	ALStream::State sState = streams[0].queryState();
 
 	/* If all parameters match the current ones and we're
 	 * still playing, there's nothing to do */
 	if (filename == current.filename
 	&&  _volume  == current.volume
 	&&  _pitch   == current.pitch
+	&& offset < 0
 	&&  (sState == ALStream::Playing || sState == ALStream::Paused))
 	{
 		unlockStream();
 		return;
 	}
 
-	/* If the filenames are equal,
+	/* If the filenames are equal, and we aren't changing the offset
 	 * we update the volume and pitch and continue streaming */
-	if (filename == current.filename
+	if (filename == current.filename && offset < 0
 	&&  (sState == ALStream::Playing || sState == ALStream::Paused))
 	{
 		setVolume(Base, _volume);
-		stream.setPitch(_pitch);
+		streams[0].setPitch(_pitch);
 		current.volume = _volume;
 		current.pitch = _pitch;
 		unlockStream();
 		return;
 	}
+
+	destroyCrossfades();
 
 	/* Requested audio file is different from current one */
 	bool diffFile = (filename != current.filename);
@@ -118,11 +150,11 @@ void AudioStream::play(const std::string &filename,
 	{
 	case ALStream::Paused :
 	case ALStream::Playing :
-		stream.stop();
+		streams[0].stop();
 		/* falls through */
 	case ALStream::Stopped :
 		if (diffFile)
-			stream.close();
+			streams[0].close();
 		/* falls through */
 	case ALStream::Closed :
 		if (diffFile)
@@ -131,7 +163,7 @@ void AudioStream::play(const std::string &filename,
 			{
 				/* This will throw on errors while
 				 * opening the data source */
-				stream.open(filename);
+				streams[0].open(filename);
 			}
 			catch (const Exception &e)
 			{
@@ -144,9 +176,9 @@ void AudioStream::play(const std::string &filename,
 	}
 
 	setVolume(Base, _volume);
-	stream.setPitch(_pitch);
+	streams[0].setPitch(_pitch);
 
-	if (offset > 0)
+	if (offset > 0 && fadeInOnOffset == true)
 	{
 		setVolume(FadeIn, 0);
 		startFadeIn();
@@ -157,10 +189,85 @@ void AudioStream::play(const std::string &filename,
 	current.pitch = _pitch;
 
 	if (!extPaused)
-		stream.play(offset);
+		streams[0].play(offset);
 	else
 		noResumeStop = false;
 
+	unlockStream();
+}
+
+void AudioStream::crossfade(const std::string &filename,
+							float time,
+			       			int volume,
+				   			int pitch,
+				   			float offset)
+{
+	finiFadeOutInt();
+	lockStream();
+
+	float _volume = clamp<int>(volume, 0, 100) / 100.0f;
+	float _pitch  = clamp<int>(pitch, 50, 150) / 100.0f;
+	time = time <= 0 ? 1 : time;
+	float fadespeed = 1.0f / (time * 1000 / AUDIO_SLEEP);
+
+	ALStream::State sState = streams[0].queryState();
+
+	if (sState != ALStream::Playing) {
+		// just fade in current music, destroy crossfades
+		play(filename, volume, pitch, offset, false);
+		// but still use our crossfader for the fade in part, because the time is not hardcoded
+		streams[0].crossfadeVolume = 0;
+		streams[0].crossfadeSpeed = fadespeed;
+		unlockStream();
+		return;
+	}
+
+	// construct new stream for crossfading
+
+	streams.emplace_front(
+		streams[0].looped ? ALStream::LoopMode::Looped : ALStream::LoopMode::NotLooped,
+		effectSlot,
+		alStreamThreadIDPrefix + std::to_string(alStreamThreadID));
+	alStreamThreadID++;
+
+	try {
+		streams[0].open(filename);
+	}
+	catch (const Exception &e) {
+		// crap, bail ship
+		// (and actually destroy new stream, keep old stream)
+		streams.erase(streams.begin());
+		unlockStream();
+		throw e;
+	}
+
+	// set first stream to fade in
+	streams[0].crossfadeVolume = 0;
+	streams[0].crossfadeSpeed = fadespeed;
+	// set second stream to fade out
+	streams[1].crossfadeSpeed = fadespeed;
+	// ignore further streams
+
+	setVolume(Base, _volume);
+	streams[0].setPitch(_pitch);
+
+	current.filename = filename;
+	current.volume = _volume;
+	current.pitch = _pitch;
+
+	if (!extPaused)
+		streams[0].play(offset);
+	else
+		noResumeStop = false;
+
+	unlockStream();
+}
+
+void AudioStream::pause()
+{
+	lockStream();
+	streams[0].pause();
+	destroyCrossfades();
 	unlockStream();
 }
 
@@ -172,7 +279,9 @@ void AudioStream::stop()
 
 	noResumeStop = true;
 
-	stream.stop();
+	destroyCrossfades();
+
+	streams[0].stop();
 
 	unlockStream();
 }
@@ -181,7 +290,7 @@ void AudioStream::fadeOut(int duration)
 {
 	lockStream();
 
-	ALStream::State sState = stream.queryState();
+	ALStream::State sState = streams[0].queryState();
 	noResumeStop = true;
 
 	if (fade.active)
@@ -193,7 +302,7 @@ void AudioStream::fadeOut(int duration)
 
 	if (sState == ALStream::Paused)
 	{
-		stream.stop();
+		streams[0].stop();
 		unlockStream();
 
 		return;
@@ -251,7 +360,37 @@ float AudioStream::getVolume(VolumeType type)
 
 float AudioStream::playingOffset()
 {
-	return stream.queryOffset();
+	return streams[0].queryOffset();
+}
+
+ALStream::State AudioStream::queryState()
+{
+	lockStream();
+	ALStream::State result = streams[0].queryState();
+	unlockStream();
+	return result;
+}
+
+void AudioStream::setALFilter(AL::Filter::ID filter) {
+	lockStream();
+	for(ALStream& stream : streams) {
+		stream.setALFilter(filter);
+	}
+	if(!(curfilter == filter) && !AL::Filter::isNullFilter(curfilter)) {
+		AL::Filter::del(curfilter);
+	}
+	curfilter = filter;
+	unlockStream();
+}
+
+void AudioStream::setALEffect(ALuint effect) {
+	lockStream();
+	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, effect);
+	if(cureffect != effect && cureffect != AL_EFFECT_NULL) {
+		alDeleteEffects(1, &cureffect);
+	}
+	cureffect = effect;
+	unlockStream();
 }
 
 void AudioStream::updateVolume()
@@ -260,8 +399,8 @@ void AudioStream::updateVolume()
 
 	for (size_t i = 0; i < VolumeTypeCount; ++i)
 		vol *= volumes[i];
-
-	stream.setVolume(vol);
+	for(ALStream& stream : streams)
+		stream.setVolume(vol);
 }
 
 void AudioStream::finiFadeOutInt()
@@ -307,14 +446,16 @@ void AudioStream::fadeOutThread()
 		uint32_t curDur = SDL_GetTicks() - fade.startTicks;
 		float resVol = 1.0f - (curDur*fade.msStep);
 
-		ALStream::State state = stream.queryState();
+		ALStream::State state = streams[0].queryState();
 
 		if (state != ALStream::Playing
 		|| resVol < 0
 		|| fade.reqFini)
 		{
-			if (state != ALStream::Paused)
-				stream.stop();
+			if (state != ALStream::Paused) {
+				streams[0].stop();
+				destroyCrossfades();
+			}
 
 			setVolume(FadeOut, 1.0f);
 			unlockStream();
@@ -345,7 +486,7 @@ void AudioStream::fadeInThread()
 		uint32_t cur = SDL_GetTicks() - fadeIn.startTicks;
 		float prog = cur / 1000.0f;
 
-		ALStream::State state = stream.queryState();
+		ALStream::State state = streams[0].queryState();
 
 		if (state != ALStream::Playing
 		||  prog >= 1.0f
@@ -363,6 +504,39 @@ void AudioStream::fadeInThread()
 
 		unlockStream();
 
+		SDL_Delay(AUDIO_SLEEP);
+	}
+}
+
+void AudioStream::crossfadeThread()
+{
+	while (true) {
+		if (crossfademgr.reqTerm)
+			break;
+		lockStream();
+		if (streams.size() > 1 || streams[0].crossfadeVolume != 1) {
+			// fade out streams 1~n
+			for (std::deque<ALStream>::iterator i=streams.begin() + 1; i!=streams.end();) {
+				i->crossfadeVolume -= i->crossfadeSpeed;
+				if (i->crossfadeVolume<0) {
+					i->stop();
+					i->close();
+					i = streams.erase(i);
+					continue;
+				} else {
+					i++;
+				}
+			}
+			// fade in stream 0
+			if(streams[0].crossfadeVolume < 1) {
+				streams[0].crossfadeVolume += streams[0].crossfadeSpeed;
+				if (streams[0].crossfadeVolume >= 1) {
+					streams[0].crossfadeVolume = 1;
+				}
+			}
+			updateVolume();
+		}
+		unlockStream();
 		SDL_Delay(AUDIO_SLEEP);
 	}
 }

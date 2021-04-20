@@ -95,11 +95,14 @@ SoundEmitter::SoundEmitter(const Config &conf)
       atchBufs(srcCount),
       srcPrio(srcCount)
 {
+	effectSlot = AL::AuxiliaryEffectSlot::gen();
 	for (size_t i = 0; i < srcCount; ++i)
 	{
 		alSrcs[i] = AL::Source::gen();
+		AL::Source::setAuxEffectSlot(alSrcs[i], effectSlot);
 		atchBufs[i] = 0;
 		srcPrio[i] = i;
+
 	}
 }
 
@@ -182,6 +185,26 @@ void SoundEmitter::stop()
 {
 	for (size_t i = 0; i < srcCount; i++)
 		AL::Source::stop(alSrcs[i]);
+}
+
+void SoundEmitter::setALFilter(AL::Filter::ID filter) {
+	for (size_t i = 0; i < srcCount; ++i)
+	{
+		AL::Source::setFilter(alSrcs[i], filter);
+	}
+	if(!(curfilter == filter) && !AL::Filter::isNullFilter(curfilter)) {
+		AL::Filter::del(curfilter);
+	}
+	curfilter = filter;
+	
+}
+
+void SoundEmitter::setALEffect(ALuint effect) {
+	AL::AuxiliaryEffectSlot::attachEffect(effectSlot, effect);
+	if(cureffect != effect && cureffect != AL_EFFECT_NULL) {
+		alDeleteEffects(1, &cureffect);
+	}
+	cureffect = effect;
 }
 
 struct SoundOpenHandler : FileSystem::OpenHandler

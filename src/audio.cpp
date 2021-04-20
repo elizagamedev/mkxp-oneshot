@@ -110,7 +110,7 @@ struct AudioPrivate
 			{
 				me.lockStream();
 
-				if (me.stream.queryState() == ALStream::Playing)
+				if (me.queryState() == ALStream::Playing)
 				{
 					/* ME playing detected. -> FadeOutBGM */
 					bgm.extPaused = true;
@@ -126,7 +126,7 @@ struct AudioPrivate
 			{
 				me.lockStream();
 
-				if (me.stream.queryState() != ALStream::Playing)
+				if (me.queryState() != ALStream::Playing)
 				{
 					/* ME has ended while fading OUT BGM. -> FadeInBGM */
 					me.unlockStream();
@@ -140,11 +140,11 @@ struct AudioPrivate
 				float vol = bgm.getVolume(AudioStream::External);
 				vol -= fadeOutStep;
 
-				if (vol < 0 || bgm.stream.queryState() != ALStream::Playing)
+				if (vol < 0 || bgm.queryState() != ALStream::Playing)
 				{
 					/* Either BGM has fully faded out, or stopped midway. -> MePlaying */
 					bgm.setVolume(AudioStream::External, 0);
-					bgm.stream.pause();
+					bgm.pause();
 					meWatch.state = MePlaying;
 					bgm.unlockStream();
 					me.unlockStream();
@@ -163,19 +163,19 @@ struct AudioPrivate
 			{
 				me.lockStream();
 
-				if (me.stream.queryState() != ALStream::Playing)
+				if (me.queryState() != ALStream::Playing)
 				{
 					/* ME has ended */
 					bgm.lockStream();
 
 					bgm.extPaused = false;
 
-					ALStream::State sState = bgm.stream.queryState();
+					ALStream::State sState = bgm.queryState();
 
 					if (sState == ALStream::Paused)
 					{
 						/* BGM is paused. -> FadeInBGM */
-						bgm.stream.play();
+						bgm.streams[0].play();
 						meWatch.state = BgmFadingIn;
 					}
 					else
@@ -184,7 +184,7 @@ struct AudioPrivate
 						bgm.setVolume(AudioStream::External, 1.0f);
 
 						if (!bgm.noResumeStop)
-							bgm.stream.play();
+							bgm.streams[0].play();
 
 						meWatch.state = MeNotPlaying;
 					}
@@ -201,7 +201,7 @@ struct AudioPrivate
 			{
 				bgm.lockStream();
 
-				if (bgm.stream.queryState() == ALStream::Stopped)
+				if (bgm.queryState() == ALStream::Stopped)
 				{
 					/* BGM stopped midway fade in. -> MeNotPlaying */
 					bgm.setVolume(AudioStream::External, 1.0f);
@@ -213,7 +213,7 @@ struct AudioPrivate
 
 				me.lockStream();
 
-				if (me.stream.queryState() == ALStream::Playing)
+				if (me.queryState() == ALStream::Playing)
 				{
 					/* ME started playing midway BGM fade in. -> FadeOutBGM */
 					bgm.extPaused = true;
@@ -256,10 +256,11 @@ Audio::Audio(RGSSThreadData &rtData)
 void Audio::bgmPlay(const char *filename,
                     int volume,
                     int pitch,
-                    float pos)
+                    float pos,
+					bool fadeInOnOffset)
 {
 	p->current_bgm_volume = volume;
-	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos);
+	p->bgm.play(filename, (volume*p->bgm_volume)/100, pitch, pos, fadeInOnOffset);
 }
 
 void Audio::bgmStop()
@@ -276,10 +277,11 @@ void Audio::bgmFade(int time)
 void Audio::bgsPlay(const char *filename,
                     int volume,
                     int pitch,
-                    float pos)
+                    float pos,
+					bool fadeInOnOffset)
 {
 	p->current_bgs_volume = volume;
-	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos);
+	p->bgs.play(filename, (volume*p->sfx_volume)/100, pitch, pos, fadeInOnOffset);
 }
 
 void Audio::bgsStop()
@@ -324,6 +326,33 @@ void Audio::seStop()
 	p->se.stop();
 }
 
+void Audio::bgmCrossfade(const char *filename,
+						 float time,
+			       		 int volume,
+				   		 int pitch,
+				   		 float offset)
+{
+	p->bgm.crossfade(filename, time, volume, pitch, offset);
+}
+
+void Audio::bgsCrossfade(const char *filename,
+						 float time,
+			       		 int volume,
+				   		 int pitch,
+				   		 float offset)
+{
+	p->bgs.crossfade(filename, time, volume, pitch, offset);
+}
+
+void Audio::meCrossfade(const char *filename,
+						float time,
+			       		int volume,
+				   		int pitch,
+				   		float offset)
+{
+	p->me.crossfade(filename, time, volume, pitch, offset);
+}
+
 float Audio::bgmPos()
 {
 	return p->bgm.playingOffset();
@@ -336,17 +365,17 @@ float Audio::bgsPos()
 
 bool Audio::bgmIsPlaying()
 {
-	return p->bgm.stream.queryState() == ALStream::Playing;
+	return p->bgm.queryState() == ALStream::Playing;
 }
 
 bool Audio::bgsIsPlaying()
 {
-	return p->bgs.stream.queryState() == ALStream::Playing;
+	return p->bgs.queryState() == ALStream::Playing;
 }
 
 bool Audio::meIsPlaying()
 {
-	return p->me.stream.queryState() == ALStream::Playing;
+	return p->me.queryState() == ALStream::Playing;
 }
 
 void Audio::reset()
@@ -396,5 +425,27 @@ void Audio::setSFX_Volume(int value)
 	p->bgs.unlockStream();
 	
 }
+
+#define AUDIO_CPP_DEF_ALFILTER_FUNCS(entity) \
+	void Audio::entity##SetALFilter(AL::Filter::ID filter) { \
+		p->entity.setALFilter(filter); \
+	} \
+	\
+	void Audio::entity##ClearALFilter() { \
+		p->entity.setALFilter(AL::Filter::nullFilter()); \
+	} \
+	\
+	void Audio::entity##SetALEffect(ALuint effect) { \
+		p->entity.setALEffect(effect); \
+	} \
+	\
+	void Audio::entity##ClearALEffect() { \
+		p->entity.setALEffect(AL_EFFECT_NULL); \
+	}
+
+AUDIO_CPP_DEF_ALFILTER_FUNCS(bgm)
+AUDIO_CPP_DEF_ALFILTER_FUNCS(bgs)
+AUDIO_CPP_DEF_ALFILTER_FUNCS(me)
+AUDIO_CPP_DEF_ALFILTER_FUNCS(se)
 
 Audio::~Audio() { delete p; }
