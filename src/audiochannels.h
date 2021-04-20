@@ -39,6 +39,8 @@ class AudioChannels {
 	void fadeOut(unsigned int id, int duration);
 	void setVolume(unsigned int id, AudioStream::VolumeType type, float value);
 	float getVolume(unsigned int id, AudioStream::VolumeType type);
+	void setPitch(unsigned int id, float value);
+	float getPitch(unsigned int id);
 	float playingOffset(unsigned int id);
 	ALStream::State queryState(unsigned int id);
 	void setALFilter(unsigned int id, AL::Filter::ID filter);

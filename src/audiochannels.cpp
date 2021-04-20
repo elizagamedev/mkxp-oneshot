@@ -109,6 +109,20 @@ float AudioChannels::getVolume(unsigned int id, AudioStream::VolumeType type) {
     return streams[id]->getVolume(type);
 }
 
+void AudioChannels::setPitch(unsigned int id, float value) {
+    if (id >= streams.size()) {
+        return;
+    }
+    streams[id]->setPitch(value);
+}
+
+float AudioChannels::getPitch(unsigned int id) {
+    if (id >= streams.size()) {
+        return 0;
+    }
+    return streams[id]->getPitch();
+}
+
 float AudioChannels::playingOffset(unsigned int id) {
     if (id >= streams.size()) {
         return 0;

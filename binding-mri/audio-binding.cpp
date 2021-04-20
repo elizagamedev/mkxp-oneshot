@@ -239,6 +239,20 @@ AL::Filter::ID constructALFilter(int argc, VALUE *argv) {
 		shState->audio().set##entity##GlobalVolume(vol); \
 		return Qnil; \
 	} \
+	RB_METHOD(audio_##entity##getPitch) \
+	{ \
+		unsigned int id; \
+		rb_get_args(argc, argv, "i", &id RB_ARG_END); \
+		return rb_float_new(shState->audio().get##entity##Pitch(id)); \
+	} \
+	RB_METHOD(audio_##entity##setPitch) \
+	{ \
+		unsigned int id; \
+		double pitch; \
+		rb_get_args(argc, argv, "if", &id, &pitch RB_ARG_END); \
+		shState->audio().set##entity##Pitch(id, pitch); \
+		return Qnil; \
+	} \
 	RB_METHOD(audio_##entity##SetALFilter) { \
 		unsigned int id; \
 		rb_get_args(argc, argv, "i|", &id RB_ARG_END); \
@@ -363,6 +377,8 @@ RB_METHOD(audioReset)
 	_rb_define_module_function(module, #entity "_set_volume", audio_##entity##setVolume); \
 	_rb_define_module_function(module, #entity "_get_global_volume", audio_##entity##getGlobalVolume); \
 	_rb_define_module_function(module, #entity "_set_global_volume", audio_##entity##setGlobalVolume); \
+	_rb_define_module_function(module, #entity "_get_pitch", audio_##entity##getPitch); \
+	_rb_define_module_function(module, #entity "_set_pitch", audio_##entity##setPitch); \
 	_rb_define_module_function(module, #entity "_set_al_filter", audio_##entity##SetALFilter); \
 	_rb_define_module_function(module, #entity "_clear_al_filter", audio_##entity##ClearALFilter); \
 	_rb_define_module_function(module, #entity "_set_al_effect", audio_##entity##SetALEffect); \

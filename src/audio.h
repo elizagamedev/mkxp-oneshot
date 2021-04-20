@@ -156,6 +156,8 @@ public:
 	void set##entity##Volume(unsigned int id, float volume); \
 	float get##entity##GlobalVolume(); \
 	void set##entity##GlobalVolume(float volume); \
+	float get##entity##Pitch(unsigned int id); \
+	void set##entity##Pitch(unsigned int id, float pitch); \
 	unsigned int entity##Size(); \
 	void entity##Resize(unsigned int size);
 

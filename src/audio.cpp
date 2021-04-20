@@ -517,8 +517,15 @@ AUDIO_CPP_DEF_ALFILTER_FUNCS(se)
 		return p->entity.getGlobalVolume() * 100; \
 	} \
 	\
-	void Audio::set##entity##GlobalVolume(float vol) { \
-		p->entity.setGlobalVolume(vol / 100); \
+	void Audio::set##entity##GlobalVolume(float volume) { \
+		p->entity.setGlobalVolume(volume / 100); \
+	} \
+	float Audio::get##entity##Pitch(unsigned int id) { \
+		return p->entity.getPitch(id) * 100; \
+	} \
+	\
+	void Audio::set##entity##Pitch(unsigned int id, float pitch) { \
+		p->entity.setPitch(id, pitch / 100); \
 	} \
 	unsigned int Audio::entity##Size() { \
 		return p->entity.size(); \
