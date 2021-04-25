@@ -34,19 +34,23 @@
 #include <SDL_timer.h>
 
 ALStream::ALStream(LoopMode loopMode,
+				   AL::AuxiliaryEffectSlot::ID effectSlot,
 		           const std::string &threadId)
 	: looped(loopMode == Looped),
 	  state(Closed),
 	  source(0),
 	  thread(0),
 	  preemptPause(false),
-      pitch(1.0f)
+      pitch(1.0f),
+	  crossfadeVolume(1.0f)
 {
 	alSrc = AL::Source::gen();
 
 	AL::Source::setVolume(alSrc, 1.0f);
 	AL::Source::setPitch(alSrc, 1.0f);
 	AL::Source::detachBuffer(alSrc);
+
+	AL::Source::setAuxEffectSlot(alSrc, effectSlot);
 
 	for (int i = 0; i < STREAM_BUFS; ++i)
 		alBuf[i] = AL::Buffer::gen();
@@ -166,7 +170,7 @@ void ALStream::pause()
 
 void ALStream::setVolume(float value)
 {
-	AL::Source::setVolume(alSrc, value);
+	AL::Source::setVolume(alSrc, value * crossfadeVolume);
 }
 
 void ALStream::setPitch(float value)
@@ -194,6 +198,10 @@ float ALStream::queryOffset()
 	float procOffset = static_cast<float>(procFrames) / source->sampleRate();
 
 	return procOffset + AL::Source::getSecOffset(alSrc);
+}
+
+void ALStream::setALFilter(AL::Filter::ID filter) {
+	AL::Source::setFilter(alSrc, filter);
 }
 
 void ALStream::closeSource()
@@ -290,7 +298,7 @@ void ALStream::startStream(float offset)
 	sourceExhausted.clear();
 	threadTermReq.clear();
 
-	startOffset = offset;
+	startOffset = offset<0 ? 0 : offset;
 	procFrames = offset * source->sampleRate();
 
 	needsRewind = true;

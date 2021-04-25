@@ -323,6 +323,10 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	if(alcIsExtensionPresent(alcDev, "ALC_EXT_EFX") != ALC_TRUE) {
+		showInitError("OpenAL device does not support Effects extension.");
+	}
+
 	SDL_DisplayMode mode;
 	SDL_GetDisplayMode(0, 0, &mode);
 
@@ -348,6 +352,8 @@ int main(int argc, char *argv[])
 	/* Load and post key bindings */
 	rtData.bindingUpdateMsg.post(loadBindings(conf));
 
+	EventThread::inputMut = SDL_CreateMutex();
+
 	/* Start RGSS thread */
 	SDL_Thread *rgssThread =
 	        SDL_CreateThread(rgssThreadFun, "rgss", &rtData);
@@ -355,36 +361,38 @@ int main(int argc, char *argv[])
 	/* Start event processing */
 	eventThread.process(rtData);
 
-	/* Request RGSS thread to stop */
-	rtData.rqTerm.set();
+	if(!EventThread::forceTerminate) {
+		/* Request RGSS thread to stop */
+		rtData.rqTerm.set();
 
-	/* Wait for RGSS thread response */
-	for (int i = 0; i < 1000; ++i)
-	{
-		/* We can stop waiting when the request was ack'd */
-		if (rtData.rqTermAck)
+		/* Wait for RGSS thread response */
+		for (int i = 0; i < 1000; ++i)
 		{
-			Debug() << "RGSS thread ack'd request after" << i*10 << "ms";
-			break;
+			/* We can stop waiting when the request was ack'd */
+			if (rtData.rqTermAck)
+			{
+				Debug() << "RGSS thread ack'd request after" << i*10 << "ms";
+				break;
+			}
+
+			/* Give RGSS thread some time to respond */
+			SDL_Delay(10);
 		}
 
-		/* Give RGSS thread some time to respond */
-		SDL_Delay(10);
-	}
+		/* If RGSS thread ack'd request, wait for it to shutdown,
+		* otherwise abandon hope and just end the process as is. */
+		if (rtData.rqTermAck)
+			SDL_WaitThread(rgssThread, 0);
+		else
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
+									"The RGSS script seems to be stuck and OneShot will now force quit", win);
 
-	/* If RGSS thread ack'd request, wait for it to shutdown,
-	 * otherwise abandon hope and just end the process as is. */
-	if (rtData.rqTermAck)
-		SDL_WaitThread(rgssThread, 0);
-	else
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
-		                         "The RGSS script seems to be stuck and OneShot will now force quit", win);
-
-	if (!rtData.rgssErrorMsg.empty())
-	{
-		Debug() << rtData.rgssErrorMsg;
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
-		                         rtData.rgssErrorMsg.c_str(), win);
+		if (!rtData.rgssErrorMsg.empty())
+		{
+			Debug() << rtData.rgssErrorMsg;
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
+									rtData.rgssErrorMsg.c_str(), win);
+		}
 	}
 
 	/* Clean up any remainin events */
