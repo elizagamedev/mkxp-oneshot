@@ -155,6 +155,9 @@ struct AudioStream
 	void setVolume(VolumeType type, float value);
 	float getVolume(VolumeType type);
 
+	void setPitch(float value);
+	float getPitch();
+
 	float playingOffset();
 	ALStream::State queryState();
 
