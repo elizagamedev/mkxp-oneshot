@@ -179,6 +179,7 @@ set(EMBEDDED_INPUT
 	shader/simpleAlphaUni.frag
 	shader/flashMap.frag
 	shader/obscured.frag
+	shader/glitch.frag
 	shader/minimal.vert
 	shader/simple.vert
 	shader/simpleColor.vert

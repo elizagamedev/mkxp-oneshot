@@ -433,6 +433,16 @@ RB_METHOD(bitmapInitializeCopy)
 	return self;
 }
 
+RB_METHOD(bitmapGlitch)
+{
+	RB_UNUSED_PARAM;
+
+	Bitmap *b = getPrivateData<Bitmap>(self);
+
+	b->glitch();
+
+	return Qnil;
+}
 
 void
 bitmapBindingInit()
@@ -457,6 +467,7 @@ bitmapBindingInit()
 	_rb_define_method(klass, "hue_change",  bitmapHueChange);
 	_rb_define_method(klass, "draw_text",   bitmapDrawText);
 	_rb_define_method(klass, "text_size",   bitmapTextSize);
+	_rb_define_method(klass, "glitch_effect",   bitmapGlitch);
 
 	if (rgssVer >= 2)
 	{

@@ -315,6 +315,13 @@ private:
 	GLint u_obscured;
 };
 
+/* Obscured graphic */
+class GlitchShader : public ShaderBase
+{
+public:
+	GlitchShader();
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {

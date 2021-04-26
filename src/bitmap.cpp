@@ -654,6 +654,51 @@ void Bitmap::blur()
 	p->onModified();
 }
 
+void Bitmap::glitch()
+{
+	guardDisposed();
+
+	GUARD_MEGA;
+
+	Quad &quad = shState->gpQuad();
+	FloatRect rect(0, 0, width(), height());
+	quad.setTexPosRect(rect, rect);
+
+	TEXFBO auxTex = shState->texPool().request(width(), height());
+
+	GlitchShader &shader = shState->shaders().blur;
+	GlitchShader::HPass &pass1 = shader.pass1;
+	GlitchShader::VPass &pass2 = shader.pass2;
+
+	glState.blend.pushSet(false);
+	glState.viewport.pushSet(IntRect(0, 0, width(), height()));
+
+	TEX::bind(p->gl.tex);
+	FBO::bind(auxTex.fbo);
+
+	pass1.bind();
+	pass1.setTexSize(Vec2i(width(), height()));
+	pass1.applyViewportProj();
+
+	quad.draw();
+
+	TEX::bind(auxTex.tex);
+	p->bindFBO();
+
+	pass2.bind();
+	pass2.setTexSize(Vec2i(width(), height()));
+	pass2.applyViewportProj();
+
+	quad.draw();
+
+	glState.viewport.pop();
+	glState.blend.pop();
+
+	shState->texPool().release(auxTex);
+
+	p->onModified();
+}
+
 void Bitmap::radialBlur(int angle, int divisions)
 {
 	guardDisposed();
