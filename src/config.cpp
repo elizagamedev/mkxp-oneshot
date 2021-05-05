@@ -178,11 +178,11 @@ void Config::read(int argc, char *argv[])
 
 	SE.sourceCount = clamp(SE.sourceCount, 1, 64);
 
-	commonDataPath = prefPath(".", "Oneshot");
+	commonDataPath = prefPath(".", "Aftermath");
 
 	//Hardcode some ini/version settings
 	rgssVersion = 1;
-	game.title = "OneShot";
+	game.title = "Aftermath";
 	game.scripts = "Data/xScripts.rxdata";
 	gameFolder = "..";
 	
