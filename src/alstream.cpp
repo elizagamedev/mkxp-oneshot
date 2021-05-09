@@ -299,7 +299,7 @@ void ALStream::startStream(float offset)
 	threadTermReq.clear();
 
 	startOffset = offset<0 ? 0 : offset;
-	procFrames = offset * source->sampleRate();
+	procFrames = startOffset * source->sampleRate();
 
 	needsRewind = true;
 

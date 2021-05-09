@@ -59,7 +59,7 @@
 	}
 
 #define ALEFFECT_CREATE_CLASS(type) \
-	VALUE rb_c##type = rb_define_class_under(module, #type, rb_cObject); \
+	VALUE rb_c##type = rb_define_class_under(module, #type, rb_cAlEffect); \
 	_rb_define_method(rb_c##type, "initialize", rb_aleffect_##type##_init); \
 	_rb_define_method(rb_c##type, "create_underlying_effect", rb_aleffect_##type##_createUnderlyingEffect);
 
@@ -569,6 +569,7 @@ ALEFFECT_DEFINE_PRESET(EFX_REVERB_PRESET_SMALLWATERROOM, smallwaterroom)
 void aleffectBindingInit()
 {
 	VALUE module = rb_define_module("ALEffect");
+	VALUE rb_cAlEffect = rb_define_class_under(module, "ALEffect", rb_cObject);
 
 	ALEFFECT_CREATE_CLASS(EAXReverb)
 	ALEFFECT_EXPOSE_ATTRIBUTE(EAXReverb, density)
