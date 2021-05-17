@@ -1,7 +1,8 @@
 # gcc10 doesn't like me, and it seems the official appimage is build using gcc 5.4.0-6ubuntu1~16.04.12
 FROM conanio/gcc5
-RUN conan remote add eliza "https://api.bintray.com/conan/eliza/conan" && \
-conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
+RUN conan remote add eliza "https://rkevin.jfrog.io/artifactory/api/conan/eliza" && \
+conan remote add bincrafters "https://bincrafters.jfrog.io/artifactory/api/conan/public-conan" && \
+conan config set general.revisions_enabled=1
 
 RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y \
 xorg-dev libx11-xcb-dev libxcb-render0-dev libxcb-render-util0-dev libgtk2.0-dev libxfconf-0-dev vim libwmf0.2-7-gtk librsvg2-common rsync patchelf dos2unix && \
