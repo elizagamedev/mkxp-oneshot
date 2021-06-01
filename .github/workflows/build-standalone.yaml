@@ -16,8 +16,9 @@ jobs:
         run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\vim\vim82", "Machine")'
       - name: Configure conan
         run: |
-          conan remote add eliza https://api.bintray.com/conan/eliza/conan;
-          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan;
+          conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza;
+          conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan;
+          conan config set general.revisions_enabled=1;
           setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
           mkdir ${{ runner.temp }}\build
       - name: Cache conan dependencies
@@ -59,8 +60,9 @@ jobs:
       - name: Install and configure conan
         run: |
           pip3 install conan
-          conan remote add eliza https://api.bintray.com/conan/eliza/conan;
-          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan;
+          conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza;
+          conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan;
+          conan config set general.revisions_enabled=1;
           mkdir ${{ runner.temp }}/build
       - name: Cache conan dependencies
         uses: actions/cache@v2
