@@ -191,6 +191,9 @@ static buttonCodes[] =
 	{ "L",          Input::L          },
 	{ "R",          Input::R          },
 
+	{ "SETTINGS", 	Input::Settings   },
+	{ "PAUSE", 		Input::Pause	  },
+	
 	{ "F5",         Input::F5         },
 	{ "F6",         Input::F6         },
 	{ "F7",         Input::F7         },
