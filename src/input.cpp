@@ -33,7 +33,9 @@
 #include <string.h>
 #include <assert.h>
 
+
 #define BUTTON_CODE_COUNT 261
+
 // SDLK can range from 0x00 to 0x7f for ones with character representation
 // and 0x40000039 to 0x4000011a for ones without character representation
 // we squash 0x40000039 - 0x4000007f to 0x139 - 0x17f

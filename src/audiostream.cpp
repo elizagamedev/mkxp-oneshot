@@ -358,9 +358,25 @@ float AudioStream::getVolume(VolumeType type)
 	return volumes[type];
 }
 
+void AudioStream::setPitch(float value)
+{
+	lockStream();
+	streams[0].setPitch(value);
+	current.pitch = value;
+	unlockStream();
+}
+
+float AudioStream::getPitch()
+{
+	return current.pitch;
+}
+
 float AudioStream::playingOffset()
 {
-	return streams[0].queryOffset();
+	lockStream();
+	float result = streams[0].queryOffset();
+	unlockStream();
+	return result;
 }
 
 ALStream::State AudioStream::queryState()
