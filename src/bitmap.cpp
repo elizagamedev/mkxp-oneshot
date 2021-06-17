@@ -654,6 +654,7 @@ void Bitmap::blur()
 	p->onModified();
 }
 
+/*
 void Bitmap::glitch()
 {
 	guardDisposed();
@@ -698,6 +699,7 @@ void Bitmap::glitch()
 
 	p->onModified();
 }
+*/
 
 void Bitmap::radialBlur(int angle, int divisions)
 {

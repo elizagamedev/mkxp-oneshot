@@ -635,6 +635,7 @@ void ObscuredShader::setObscured(const TEX::ID value)
 	setTexUniform(u_obscured, 1, value);
 }
 
+/*
 GlitchShader::GlitchShader()
 {
 
@@ -646,6 +647,7 @@ ShaderBase::init();
 //GET_U(end);
 
 }
+*/
 
 //void ObscuredShader::setTime(const TEXT::ID value)
 //{
