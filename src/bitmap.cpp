@@ -666,7 +666,7 @@ void Bitmap::glitch()
 
 	TEXFBO auxTex = shState->texPool().request(width(), height());
 
-	GlitchShader &shader = shState->shaders().blur;
+	GlitchShader &shader = shState->shaders().glitch;
 	GlitchShader::HPass &pass1 = shader.pass1;
 	GlitchShader::VPass &pass2 = shader.pass2;
 
