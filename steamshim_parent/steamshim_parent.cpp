@@ -1,5 +1,5 @@
 #ifndef GAME_LAUNCH_NAME
-#define GAME_LAUNCH_NAME "aftermath"
+#define GAME_LAUNCH_NAME "oneshot"
 #endif
 
 #ifdef _WIN32
