@@ -24,12 +24,12 @@ void main () {
     // Previously, you'd have rendered your complete scene into a texture
     // bound to "fullScreenTexture."
 
-    vec4 rValue = texture2D(texture, v_blurCoord[2] - 3);  
-    vec4 gValue = texture2D(texture, v_blurCoord[2] - 2);
-    vec4 bValue = texture2D(texture, v_blurCoord[2] - 1);  
+    vec4 rValue = texture2D(texture, v_blurCoord[0] - 3);  
+    vec4 gValue = texture2D(texture, v_blurCoord[0] - 2);
+    vec4 bValue = texture2D(texture, v_blurCoord[0] - 1);  
 
     // Combine the offset colors.
-    gl_FragColor = vec4(rValue.r, gValue.g, bValue.b, 1.0);
+    gl_FragColor = vec4(rValue.r, gValue.g, bValue.b, 0.5);
 
 }
 
