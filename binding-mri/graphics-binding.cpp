@@ -238,7 +238,6 @@ void graphicsBindingInit()
 	_rb_define_module_function(module, "fadeout", graphicsFadeout);
 	_rb_define_module_function(module, "fadein", graphicsFadein);
 	_rb_define_module_function(module, "snap_to_bitmap", graphicsSnapToBitmap);
-	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
 
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 	}
@@ -248,6 +247,7 @@ void graphicsBindingInit()
 	_rb_define_module_function(module, "play_movie", graphicsPlayMovie);
 	}
 
+	_rb_define_module_function(module, "resize_screen", graphicsResizeScreen);
 	INIT_GRA_PROP_BIND( Fullscreen, "fullscreen"  );
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
