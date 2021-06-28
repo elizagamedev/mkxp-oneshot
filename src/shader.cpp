@@ -296,6 +296,15 @@ SimpleShader::SimpleShader()
 	GET_U(texOffsetX);
 }
 
+SimpleShader::SimpleShader()
+{
+	INIT_SHADER(simple, simple, SimpleShader);
+
+	ShaderBase::init();
+
+	GET_U(texOffsetX);
+}
+
 void SimpleShader::setTexOffsetX(int value)
 {
 	gl.Uniform1f(u_texOffsetX, value);
@@ -633,6 +642,15 @@ ObscuredShader::ObscuredShader()
 void ObscuredShader::setObscured(const TEX::ID value)
 {
 	setTexUniform(u_obscured, 1, value);
+}
+
+ChromaticAbberation::ChronosShader()
+{
+	INIT_SHADER(simple, chronos, ChromaticAbberation);
+
+	ShaderBase::init();
+
+	GET_U(texOffsetX);
 }
 
 /*

@@ -343,6 +343,7 @@ struct ShaderSet
 	BltShader blt;
 	SimpleMatrixShader simpleMatrix;
 	BlurShader blur;
+	ChromaticAbberation chronos;
 	ObscuredShader obscured;
 };
 

@@ -433,18 +433,18 @@ RB_METHOD(bitmapInitializeCopy)
 	return self;
 }
 
-/*
-RB_METHOD(bitmapGlitch)
+
+RB_METHOD(bitmapChronos)
 {
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
-	b->glitch();
+	b->chromaticAbberation();
 
 	return Qnil;
 }
-*/
+
 
 void
 bitmapBindingInit()
@@ -469,7 +469,7 @@ bitmapBindingInit()
 	_rb_define_method(klass, "hue_change",  bitmapHueChange);
 	_rb_define_method(klass, "draw_text",   bitmapDrawText);
 	_rb_define_method(klass, "text_size",   bitmapTextSize);
-	/* _rb_define_method(klass, "glitch_effect",   bitmapGlitch); */
+	 _rb_define_method(klass, "chronos",   bitmapChronos);
 	_rb_define_method(klass, "blur",               bitmapBlur);
 	_rb_define_method(klass, "radial_blur",        bitmapRadialBlur);
 	

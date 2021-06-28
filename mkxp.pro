@@ -231,7 +231,7 @@ EMBED = \
 	shader/sprite.vert \
 	shader/tilemap.vert \
 	shader/blur.frag \
-	# shader/glitch.frag \
+	shader/chronos.frag \
 	shader/blurH.vert \
 	shader/blurV.vert \
 	shader/simpleMatrix.vert \
