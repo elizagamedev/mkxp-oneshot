@@ -13,7 +13,7 @@ sudo chown `id -u` /work
 [ ! -d /work/build ] && mkdir /work/build
 cd /work/build
 
-conan install /work/src --build=missing
+conan install /work/src --build=missing -o platform=steam
 conan build /work/src
 
 dos2unix /work/src/make-linux-dist.sh
