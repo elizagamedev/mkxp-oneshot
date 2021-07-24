@@ -468,7 +468,7 @@ RB_METHOD(inputGetAllPressed)
 	VALUE res = rb_ary_new();
     for (size_t i = 0; i < buttonCodesN; i++) {
 		if (shState->input().isPressed(buttonCodes[i].val)) {
-            rb_ary_push(res, buttonCodes[i].val);
+            rb_ary_push(res, INT2FIX(buttonCodes[i].val));
 		}
 	}
 	return res;
