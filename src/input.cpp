@@ -809,6 +809,8 @@ void Input::setKey(int button) {
 	ButtonState& state = p->getStateCheck(button);
 	state.pressed = true;
 	state.triggered = true;
+	updateDir4();
+	updateDir8();
 }
 
 void Input::unsetKey(int button) {
@@ -816,6 +818,8 @@ void Input::unsetKey(int button) {
 	state.pressed = false;
 	state.triggered = false;
 	state.repeated = false;
+	updateDir4();
+	updateDir8();
 }
 
 Input::~Input()
