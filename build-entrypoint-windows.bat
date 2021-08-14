@@ -7,7 +7,7 @@
 if not exist C:\work\build mkdir C:\work\build
 cd \work\build
 
-conan install \work\src --build=missing -o platform=steam || (echo CONAN INSTALL FAILED! && exit 1)
+conan install \work\src --build=missing || (echo CONAN INSTALL FAILED! && exit 1)
 :startbuild
 conan build \work\src || (echo CONAN BUILD FAILED! && goto end)
 :: TODO: compile the journal?

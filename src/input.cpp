@@ -806,6 +806,42 @@ bool Input::hasQuit()
 	return p->triedExit;
 }
 
+void Input::setKey(int button) {
+	ButtonState& state = p->getStateCheck(button);
+	if (!state.pressed) {
+		state.triggered = true;
+	}
+	state.pressed = true;
+	p->updateDir4();
+	p->updateDir8();
+}
+void Input::setPressed(int button) {
+	ButtonState& state = p->getStateCheck(button);
+	state.pressed = true;
+	p->updateDir4();
+	p->updateDir8();
+}
+void Input::setTriggered(int button) {
+	ButtonState& state = p->getStateCheck(button);
+	state.triggered = true;
+	p->updateDir4();
+	p->updateDir8();
+}
+void Input::setRepeated(int button) {
+	ButtonState& state = p->getStateCheck(button);
+	state.repeated = true;
+	p->updateDir4();
+	p->updateDir8();
+}
+void Input::unsetKey(int button) {
+	ButtonState& state = p->getStateCheck(button);
+	state.pressed = false;
+	state.triggered = false;
+	state.repeated = false;
+	p->updateDir4();
+	p->updateDir8();
+}
+
 Input::~Input()
 {
 	delete p;

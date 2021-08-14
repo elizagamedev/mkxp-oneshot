@@ -321,6 +321,12 @@ public:
 
 	Uint16 modkeys;
 
+	void setKey(int button);
+	void unsetKey(int button);
+	void setPressed(int button);
+	void setTriggered(int button);
+	void setRepeated(int button);
+
 private:
 	Input(const RGSSThreadData &rtData);
 	~Input();
