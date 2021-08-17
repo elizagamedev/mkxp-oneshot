@@ -187,6 +187,7 @@ set(EMBEDDED_INPUT
 	shader/blur.frag
 	shader/blurH.vert
 	shader/blurV.vert
+	shader/mask.frag
 	shader/simpleMatrix.vert
 	assets/icon.png
 	assets/gamecontrollerdb.txt

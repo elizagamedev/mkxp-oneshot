@@ -315,6 +315,17 @@ private:
 	GLint u_obscured;
 };
 
+class MaskShader : public ShaderBase
+{
+public:
+	MaskShader();
+
+	void setMask(const TEX::ID value);
+
+private:
+	GLint u_maskTex;
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -336,6 +347,7 @@ struct ShaderSet
 	SimpleMatrixShader simpleMatrix;
 	BlurShader blur;
 	ObscuredShader obscured;
+	MaskShader mask;
 };
 
 #endif // SHADER_H

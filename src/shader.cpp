@@ -52,6 +52,7 @@
 #include "blurH.vert.xxd"
 #include "blurV.vert.xxd"
 #include "obscured.frag.xxd"
+#include "mask.frag.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -633,4 +634,18 @@ ObscuredShader::ObscuredShader()
 void ObscuredShader::setObscured(const TEX::ID value)
 {
 	setTexUniform(u_obscured, 1, value);
+}
+
+MaskShader::MaskShader()
+{
+	INIT_SHADER(simple, mask, MaskShader);
+
+	ShaderBase::init();
+
+	GET_U(maskTex);
+}
+
+void MaskShader::setMask(const TEX::ID value)
+{
+	setTexUniform(u_maskTex, 1, value);
 }

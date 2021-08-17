@@ -609,6 +609,47 @@ void Bitmap::clearRect(const IntRect &rect)
 	p->onModified();
 }
 
+void Bitmap::mask(Bitmap *mask)
+{
+	guardDisposed();
+
+	GUARD_MEGA;
+
+	Quad &quad = shState->gpQuad();
+	FloatRect rect(0, 0, width(), height());
+	quad.setTexPosRect(rect, rect);
+
+	TEXFBO auxTex = shState->texPool().request(width(), height());
+
+	MaskShader &shader = shState->shaders().mask;
+
+	glState.blend.pushSet(false);
+	glState.viewport.pushSet(IntRect(0, 0, width(), height()));
+
+	TEX::bind(p->gl.tex);
+	FBO::bind(auxTex.fbo);
+
+	shader.bind();
+	shader.setTexSize(Vec2i(width(), height()));
+	shader.setMask(mask->p->gl.tex);
+	shader.applyViewportProj();
+
+	quad.draw();
+
+	TEX::bind(auxTex.tex);
+	p->bindFBO();
+
+	quad.draw();
+
+	glState.viewport.pop();
+	glState.blend.pop();
+
+	shState->texPool().release(auxTex);
+
+	p->onModified();
+}
+
+
 void Bitmap::blur()
 {
 	guardDisposed();

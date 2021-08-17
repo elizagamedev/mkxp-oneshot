@@ -247,6 +247,7 @@ struct TEXFBO
 		obj.fbo = FBO::ID(0);
 		obj.width = obj.height = 0;
 	}
+
 };
 
 #endif // GLUTIL_H
