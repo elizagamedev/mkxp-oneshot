@@ -406,12 +406,14 @@ RB_METHOD(bitmapMask)
 	VALUE bitmapObj;
 	Bitmap *bitmap;
 
-	rb_get_args(argc, argv, "o", &bitmapObj RB_ARG_END);
+	int x = 0;
+	int y = 0;
+	rb_get_args(argc, argv, "o|ii", &bitmapObj, &x, &y RB_ARG_END);
 	bitmap = getPrivateDataCheck<Bitmap>(bitmapObj, BitmapType);
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
-	b->mask(bitmap);
+	b->mask(bitmap, x, y);
 
 	return Qnil;
 }

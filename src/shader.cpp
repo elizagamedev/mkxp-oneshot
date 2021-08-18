@@ -650,6 +650,7 @@ MaskShader::MaskShader()
 
 	GET_U(maskTex);
 	GET_U(maskTexCoords);
+	GET_U(maskTranslation);
 }
 
 void MaskShader::setMask(const TEX::ID value)
@@ -660,4 +661,9 @@ void MaskShader::setMask(const TEX::ID value)
 void MaskShader::setMaskCoords(const Vec2i value)
 {
 	setVec2Uniform(u_maskTexCoords, value);
+}
+
+void MaskShader::setMaskTranslation(const Vec2i value)
+{
+	setVec2Uniform(u_maskTranslation, value);
 }

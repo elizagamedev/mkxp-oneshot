@@ -323,10 +323,12 @@ public:
 
 	void setMask(const TEX::ID value);
 	void setMaskCoords(const Vec2i value);
+	void setMaskTranslation(const Vec2i value);
 
 private:
 	GLint u_maskTex;
 	GLint u_maskTexCoords;
+	GLint u_maskTranslation;
 };
 
 /* Global object containing all available shaders */

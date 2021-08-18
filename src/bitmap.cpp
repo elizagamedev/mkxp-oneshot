@@ -609,7 +609,7 @@ void Bitmap::clearRect(const IntRect &rect)
 	p->onModified();
 }
 
-void Bitmap::mask(Bitmap *mask)
+void Bitmap::mask(Bitmap *mask, int x, int y)
 {
 	guardDisposed();
 
@@ -631,6 +631,7 @@ void Bitmap::mask(Bitmap *mask)
 
 	shader.bind();
 	shader.setTexSize(Vec2i(width(), height()));
+	shader.setMaskTranslation(Vec2i(x, y));
 	shader.setMaskCoords(Vec2i(mask->width(), mask->height()));
 	shader.setMask(mask->p->gl.tex);
 	shader.applyViewportProj();

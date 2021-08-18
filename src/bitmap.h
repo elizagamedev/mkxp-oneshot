@@ -73,7 +73,7 @@ public:
 	               int width, int height);
 	void clearRect(const IntRect &rect);
 
-	void mask(Bitmap *mask);
+	void mask(Bitmap *mask, int x, int y);
 
 	void blur();
 	void radialBlur(int angle, int divisions);
