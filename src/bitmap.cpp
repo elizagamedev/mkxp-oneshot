@@ -631,6 +631,7 @@ void Bitmap::mask(Bitmap *mask)
 
 	shader.bind();
 	shader.setTexSize(Vec2i(width(), height()));
+	shader.setMaskCoords(Vec2i(mask->width(), mask->height()));
 	shader.setMask(mask->p->gl.tex);
 	shader.applyViewportProj();
 

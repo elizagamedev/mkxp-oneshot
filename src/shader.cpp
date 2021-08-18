@@ -53,6 +53,7 @@
 #include "blurV.vert.xxd"
 #include "obscured.frag.xxd"
 #include "mask.frag.xxd"
+#include "mask.vert.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -218,6 +219,11 @@ void Shader::initFromFile(const char *_vertFile, const char *_fragFile,
 void Shader::setVec4Uniform(GLint location, const Vec4 &vec)
 {
 	gl.Uniform4f(location, vec.x, vec.y, vec.z, vec.w);
+}
+
+void Shader::setVec2Uniform(GLint location, const Vec2i &vec)
+{
+	gl.Uniform2f(location, 1.f / vec.x, 1.f / vec.y);
 }
 
 void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture)
@@ -638,14 +644,20 @@ void ObscuredShader::setObscured(const TEX::ID value)
 
 MaskShader::MaskShader()
 {
-	INIT_SHADER(simple, mask, MaskShader);
+	INIT_SHADER(mask, mask, MaskShader);
 
 	ShaderBase::init();
 
 	GET_U(maskTex);
+	GET_U(maskTexCoords);
 }
 
 void MaskShader::setMask(const TEX::ID value)
 {
 	setTexUniform(u_maskTex, 1, value);
+}
+
+void MaskShader::setMaskCoords(const Vec2i value)
+{
+	setVec2Uniform(u_maskTexCoords, value);
 }

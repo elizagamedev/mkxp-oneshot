@@ -51,6 +51,7 @@ protected:
 	                  const char *programName);
 
 	static void setVec4Uniform(GLint location, const Vec4 &vec);
+	static void setVec2Uniform(GLint location, const Vec2i &vec);
 	static void setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture);
 
 	GLuint vertShader, fragShader;
@@ -321,9 +322,11 @@ public:
 	MaskShader();
 
 	void setMask(const TEX::ID value);
+	void setMaskCoords(const Vec2i value);
 
 private:
 	GLint u_maskTex;
+	GLint u_maskTexCoords;
 };
 
 /* Global object containing all available shaders */
