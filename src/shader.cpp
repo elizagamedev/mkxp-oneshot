@@ -671,7 +671,14 @@ void MaskShader::setMaskTranslation(const Vec2i value)
 
 ScannedShader::ScannedShader()
 {
-	INIT_SHADER(simple, crt, ScannedShader);
+	INIT_SHADER(sprite, crt, ScannedShader);
 
 	ShaderBase::init();
+
+	GET_U(spriteMat);
+}
+
+void ScannedShader::setSpriteMat(const float value[16])
+{
+	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }

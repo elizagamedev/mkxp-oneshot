@@ -1,67 +1,46 @@
-// Loosely based on postprocessing shader by inigo quilez, License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-vec2 curve(vec2 uv)
-{
-	uv = (uv - 0.5) * 2.0;
-	uv *= 1.1;	
-	uv.x *= 1.0 + pow((abs(uv.y) / 5.0), 2.0);
-	uv.y *= 1.0 + pow((abs(uv.x) / 4.0), 2.0);
-	uv  = (uv / 2.0) + 0.5;
-	uv =  uv *0.92 + 0.04;
-	return uv;
-}
-
 uniform sampler2D texture;
 
 varying vec2 v_texCoord;
-
-void main()
-{
-    vec2 iResolution = vec2(640, 480);
-    vec4 fragColor;
-
-    float iTime = 0.0;
-
-    vec2 q =  v_texCoord.xy / iResolution.xy;
-    vec2 uv = q;
-    uv = curve( uv );
-    vec3 oricol = texture2D( texture, vec2(q.x,q.y) ).xyz;
-    vec3 col;
-	float x =  sin(0.3*iTime+uv.y*21.0)*sin(0.7*iTime+uv.y*29.0)*sin(0.3+0.33*iTime+uv.y*31.0)*0.0017;
-
-    col.r = texture2D(texture,vec2(x+uv.x+0.001,uv.y+0.001)).x+0.05;
-    col.g = texture2D(texture,vec2(x+uv.x+0.000,uv.y-0.002)).y+0.05;
-    col.b = texture2D(texture,vec2(x+uv.x-0.002,uv.y+0.000)).z+0.05;
-    col.r += 0.08*texture2D(texture,0.75*vec2(x+0.025, -0.027)+vec2(uv.x+0.001,uv.y+0.001)).x;
-    col.g += 0.05*texture2D(texture,0.75*vec2(x+-0.022, -0.02)+vec2(uv.x+0.000,uv.y-0.002)).y;
-    col.b += 0.08*texture2D(texture,0.75*vec2(x+-0.02, -0.018)+vec2(uv.x-0.002,uv.y+0.000)).z;
-
-    col = clamp(col*0.6+0.4*col*col*1.0,0.0,1.0);
-
-    float vig = (0.0 + 1.0*16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y));
-	col *= vec3(pow(vig,0.3));
-
-    col *= vec3(0.95,1.05,0.95);
-	col *= 2.8;
-
-	float scans = clamp( 0.35+0.35*sin(3.5*iTime+uv.y*iResolution.y*1.5), 0.0, 1.0);
-	
-	float s = pow(scans,1.7);
-	col = col*vec3( 0.4+0.7*s) ;
-
-    col *= 1.0+0.01*sin(110.0*iTime);
-	if (uv.x < 0.0 || uv.x > 1.0)
-		col *= 0.0;
-	if (uv.y < 0.0 || uv.y > 1.0)
-		col *= 0.0;
-	
-	col*=1.0-0.65*vec3(clamp((mod(v_texCoord.x, 2.0)-1.0)*2.0,0.0,1.0));
-	
-    float comp = smoothstep( 0.1, 0.9, sin(iTime) );
  
-	// Remove the next line to stop cross-fade between original and postprocess
-    //	col = mix( col, oricol, comp );
+vec2 curvature = vec2(3.0, 3.0);
+vec2 screenResolution = vec2(640, 480);
+vec2 scanLineOpacity = vec2(1, 1);
+float vignetteOpacity = 1.0;
+float brightness = 4.0;
+float vignetteRoundness = 2.0;
 
-    fragColor = vec4(col,1.0);
-    gl_FragColor = fragColor;
+
+vec2 curveRemapUV(vec2 uv)
+{
+    // as we near the edge of our screen apply greater distortion using a sinusoid.
+    uv = uv * 2.0 - 1.0;
+	vec2 offset = abs(uv.yx) / vec2(curvature.x, curvature.y);
+	uv = uv + uv * offset * offset;
+	uv = uv * 0.5 + 0.5;
+    return uv;
+}
+vec4 scanLineIntensity(float uv, float resolution, float opacity)
+{
+    float intensity = sin(uv * resolution * 3.14 * 2.0);
+    intensity = ((0.5 * intensity) + 0.5) * 0.9 + 0.1;
+    return vec4(vec3(pow(intensity, opacity)), 1.0);
+}
+vec4 vignetteIntensity(vec2 uv, vec2 resolution, float opacity, float roundness)
+{
+    float intensity = uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y);
+    return vec4(vec3(clamp(pow((resolution.x / roundness) * intensity, opacity), 0.0, 1.0)), 1.0);
+}
+void main() 
+{
+    vec2 remappedUV = curveRemapUV(vec2(v_texCoord.x, v_texCoord.y));
+    vec4 baseColor = texture2D(texture, remappedUV);
+    baseColor *= vignetteIntensity(remappedUV, screenResolution, vignetteOpacity, vignetteRoundness);
+    baseColor *= scanLineIntensity(remappedUV.x, screenResolution.y, scanLineOpacity.x);
+    baseColor *= scanLineIntensity(remappedUV.y, screenResolution.x, scanLineOpacity.y);
+    baseColor *= vec4(vec3(brightness), 1.0);
+    if (remappedUV.x < 0.0 || remappedUV.y < 0.0 || remappedUV.x > 1.0 || remappedUV.y > 1.0){
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    } else {
+        gl_FragColor = baseColor;
+    }
 }
