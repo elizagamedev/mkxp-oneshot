@@ -72,6 +72,8 @@ DEF_PROP_B(Sprite, Mirror)
 DEF_PROP_B(Sprite, VMirror)
 DEF_PROP_B(Sprite, Obscured)
 
+DEF_PROP_B(Sprite, Scanned)
+
 RB_METHOD(spriteWidth)
 {
 	RB_UNUSED_PARAM;
@@ -125,6 +127,7 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, Color,     "color"      );
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
+	INIT_PROP_BIND( Sprite, Scanned,  "scanned"   );
 	INIT_PROP_BIND( Sprite, BushOpacity, "bush_opacity" );
 	INIT_PROP_BIND( Sprite, WaveAmp,    "wave_amp"    );
 	INIT_PROP_BIND( Sprite, WaveLength, "wave_length" );

@@ -54,6 +54,7 @@
 #include "obscured.frag.xxd"
 #include "mask.frag.xxd"
 #include "mask.vert.xxd"
+#include "crt.frag.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -666,4 +667,11 @@ void MaskShader::setMaskCoords(const Vec2i value)
 void MaskShader::setMaskTranslation(const Vec2i value)
 {
 	setVec2Uniform(u_maskTranslation, value);
+}
+
+ScannedShader::ScannedShader()
+{
+	INIT_SHADER(simple, crt, ScannedShader);
+
+	ShaderBase::init();
 }

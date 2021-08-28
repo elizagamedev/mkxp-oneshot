@@ -331,6 +331,12 @@ private:
 	GLint u_maskTranslation;
 };
 
+class ScannedShader : public ShaderBase
+{
+public: 
+	ScannedShader();
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -353,6 +359,7 @@ struct ShaderSet
 	BlurShader blur;
 	ObscuredShader obscured;
 	MaskShader mask;
+	ScannedShader scanned;
 };
 
 #endif // SHADER_H

@@ -68,6 +68,7 @@ public:
 	DECL_ATTR( WaveSpeed,   int     )
 	DECL_ATTR( WavePhase,   float   )
 	DECL_ATTR( Obscured,    bool    )
+	DECL_ATTR( Scanned,    bool    )
 
 	void initDynAttribs();
 
