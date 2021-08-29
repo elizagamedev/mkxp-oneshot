@@ -571,9 +571,10 @@ void Sprite::draw()
 	}
 	else if (p->scanned)
 	{
-		ScannedShader &shader = shState->shaders().scanned;
+		ScannedShaderSprite &shader = shState->shaders().scanned_sprite;
 		shader.bind();
 		shader.applyViewportProj();
+		shader.setSpriteMat(p->trans.getMatrix());
 
 		base = &shader;
 	}

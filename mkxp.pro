@@ -236,6 +236,7 @@ EMBED = \
 	shader/mask.frag \
 	shader/mask.vert \
 	shader/crt.frag \
+	shader/crt_sprite.frag \
 	shader/simpleMatrix.vert \
 	assets/icon.png \
 	assets/gamecontrollerdb.txt

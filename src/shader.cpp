@@ -55,6 +55,7 @@
 #include "mask.frag.xxd"
 #include "mask.vert.xxd"
 #include "crt.frag.xxd"
+#include "crt_sprite.frag.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -674,4 +675,18 @@ ScannedShader::ScannedShader()
 	INIT_SHADER(simple, crt, ScannedShader);
 
 	ShaderBase::init();
+}
+
+ScannedShaderSprite::ScannedShaderSprite()
+{
+	INIT_SHADER(sprite, crt_sprite, ScannedShaderSprite);
+
+	ShaderBase::init();
+
+	GET_U(spriteMat);
+}
+
+void ScannedShaderSprite::setSpriteMat(const float value[16])
+{
+	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }

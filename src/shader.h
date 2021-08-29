@@ -337,6 +337,17 @@ public:
 	ScannedShader();
 };
 
+class ScannedShaderSprite : public ShaderBase
+{
+public: 
+	ScannedShaderSprite();
+
+	void setSpriteMat(const float value[16]);
+
+private:
+	GLint u_spriteMat;
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -360,6 +371,7 @@ struct ShaderSet
 	ObscuredShader obscured;
 	MaskShader mask;
 	ScannedShader scanned;
+	ScannedShaderSprite scanned_sprite;
 };
 
 #endif // SHADER_H
