@@ -335,10 +335,6 @@ class ScannedShader : public ShaderBase
 {
 public: 
 	ScannedShader();
-
-	void setSpriteMat(const float value[16]);
-private:
-	GLint u_spriteMat;
 };
 
 /* Global object containing all available shaders */
