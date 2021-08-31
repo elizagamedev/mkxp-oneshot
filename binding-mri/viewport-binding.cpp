@@ -76,6 +76,18 @@ RB_METHOD(viewportInitialize)
 	return self;
 }
 
+RB_METHOD(setRGBOffset)
+{
+	double x, y, z;
+	rb_get_args(argc, argv, "fff", &x, &y, &z);
+
+	Viewport *v = getPrivateData<Viewport>(self);
+
+	v->setRGBOffset(Vec4(x, y, z, 0));
+
+	return Qnil;
+}
+
 DEF_PROP_OBJ_VAL(Viewport, Rect,  Rect,  "rect")
 DEF_PROP_OBJ_VAL(Viewport, Color, Color, "color")
 DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
@@ -95,6 +107,7 @@ viewportBindingInit()
 	sceneElementBindingInit<Viewport>(klass);
 
 	_rb_define_method(klass, "initialize", viewportInitialize);
+	_rb_define_method(klass, "setRGBOffset", setRGBOffset);
 
 	INIT_PROP_BIND( Viewport, Rect,  "rect"  );
 	INIT_PROP_BIND( Viewport, OX,    "ox"    );

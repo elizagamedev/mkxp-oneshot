@@ -58,7 +58,8 @@ public:
 	virtual void requestViewportRender(const Vec4& /* color */,
 	                                   const Vec4& /* flash */,
 	                                   const Vec4& /* tone */,
-									   const bool  /* scanned */) {}
+									   const bool  /* scanned */,
+									   const Vec4 /*  rbg  */) {}
 
 	const Geometry &getGeometry() const { return geometry; }
 

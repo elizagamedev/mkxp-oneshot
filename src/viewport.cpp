@@ -48,6 +48,8 @@ struct ViewportPrivate
 
 	bool scanned;
 
+	Vec4 rgbOffset;
+
 	EtcTemps tmp;
 
 	ViewportPrivate(int x, int y, int width, int height, Viewport *self)
@@ -56,7 +58,8 @@ struct ViewportPrivate
 	      color(&tmp.color),
 	      tone(&tmp.tone),
 	      isOnScreen(false),
-		  scanned(false)
+		  scanned(false),
+		  rgbOffset(Vec4(0, 0, 0, 0))
 	{
 		rect->set(x, y, width, height);
 		updateRectCon();
@@ -96,7 +99,7 @@ struct ViewportPrivate
 	bool needsEffectRender(bool flashing)
 	{
 		bool rectEffective = !rect->isEmpty();
-		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing || scanned;
+		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing || scanned || rgbOffset.xyzNotNull();
 
 		return (rectEffective && colorToneEffective && isOnScreen);
 	}
@@ -154,6 +157,7 @@ DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
 DEF_ATTR_SIMPLE(Viewport, Tone,  Tone&,  *p->tone)
 DEF_ATTR_SIMPLE(Viewport, Scanned, bool, p->scanned)
+DEF_ATTR_SIMPLE(Viewport, RGBOffset, Vec4, p->rgbOffset)
 
 void Viewport::setOX(int value)
 {
@@ -207,7 +211,7 @@ void Viewport::composite()
 	 * render them. */
 	if (renderEffect)
 		scene->requestViewportRender
-		        (p->color->norm, flashColor, p->tone->norm, p->scanned);
+		        (p->color->norm, flashColor, p->tone->norm, p->scanned, p->rgbOffset);
 
 	glState.scissorBox.pop();
 	glState.scissorTest.pop();

@@ -348,6 +348,17 @@ private:
 	GLint u_spriteMat;
 };
 
+class ChronosShader : public ShaderBase
+{
+public:
+	ChronosShader();
+
+	void setrgbOffset(const Vec4 value);
+
+private:
+	GLint u_rgbOffset;
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -372,6 +383,7 @@ struct ShaderSet
 	MaskShader mask;
 	ScannedShader scanned;
 	ScannedShaderSprite scanned_sprite;
+	ChronosShader chronos;
 };
 
 #endif // SHADER_H

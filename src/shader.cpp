@@ -56,6 +56,7 @@
 #include "mask.vert.xxd"
 #include "crt.frag.xxd"
 #include "crt_sprite.frag.xxd"
+#include "chronos.frag.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -689,4 +690,18 @@ ScannedShaderSprite::ScannedShaderSprite()
 void ScannedShaderSprite::setSpriteMat(const float value[16])
 {
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
+}
+
+ChronosShader::ChronosShader()
+{
+	INIT_SHADER(simple, chronos, ChronosShader);
+
+	ShaderBase::init();
+
+	GET_U(rgbOffset);
+}
+
+void ChronosShader::setrgbOffset(const Vec4 value)
+{
+	gl.Uniform4f(u_rgbOffset, value.x, value.y, value.z, 0);
 }
