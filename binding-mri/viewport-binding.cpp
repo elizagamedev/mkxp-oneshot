@@ -82,7 +82,7 @@ DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
 
 DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
-
+DEF_PROP_B(Viewport, Scanned)
 
 void
 viewportBindingInit()
@@ -101,5 +101,6 @@ viewportBindingInit()
 	INIT_PROP_BIND( Viewport, OY,    "oy"    );
 	INIT_PROP_BIND( Viewport, Color, "color" );
 	INIT_PROP_BIND( Viewport, Tone,  "tone"  );
+	INIT_PROP_BIND( Viewport, Scanned, "scanned");
 }
 

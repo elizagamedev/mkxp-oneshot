@@ -42,6 +42,7 @@ public:
 	DECL_ATTR( Rect,  Rect&  )
 	DECL_ATTR( OX,    int    )
 	DECL_ATTR( OY,    int    )
+	DECL_ATTR( Scanned, bool )
 	DECL_ATTR( Color, Color& )
 	DECL_ATTR( Tone,  Tone&  )
 

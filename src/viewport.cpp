@@ -27,6 +27,7 @@
 #include "quad.h"
 #include "glstate.h"
 #include "graphics.h"
+#include "debugwriter.h"
 
 #include <SDL_rect.h>
 
@@ -46,6 +47,8 @@ struct ViewportPrivate
 	IntRect screenRect;
 	int isOnScreen;
 
+	bool scanned;
+
 	EtcTemps tmp;
 
 	ViewportPrivate(int x, int y, int width, int height, Viewport *self)
@@ -53,7 +56,8 @@ struct ViewportPrivate
 	      rect(&tmp.rect),
 	      color(&tmp.color),
 	      tone(&tmp.tone),
-	      isOnScreen(false)
+	      isOnScreen(false),
+		  scanned(false)
 	{
 		rect->set(x, y, width, height);
 		updateRectCon();
@@ -93,7 +97,7 @@ struct ViewportPrivate
 	bool needsEffectRender(bool flashing)
 	{
 		bool rectEffective = !rect->isEmpty();
-		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing;
+		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing || scanned;
 
 		return (rectEffective && colorToneEffective && isOnScreen);
 	}
@@ -150,6 +154,7 @@ DEF_ATTR_RD_SIMPLE(Viewport, OY,   int,   geometry.orig.y)
 DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
 DEF_ATTR_SIMPLE(Viewport, Tone,  Tone&,  *p->tone)
+DEF_ATTR_SIMPLE(Viewport, Scanned, bool, p->scanned)
 
 void Viewport::setOX(int value)
 {
@@ -201,6 +206,7 @@ void Viewport::composite()
 
 	/* If any effects are visible, request parent Scene to
 	 * render them. */
+	Debug() << p->scanned;
 	if (renderEffect)
 		scene->requestViewportRender
 		        (p->color->norm, flashColor, p->tone->norm);
