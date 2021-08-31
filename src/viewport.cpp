@@ -27,7 +27,6 @@
 #include "quad.h"
 #include "glstate.h"
 #include "graphics.h"
-#include "debugwriter.h"
 
 #include <SDL_rect.h>
 
@@ -206,10 +205,9 @@ void Viewport::composite()
 
 	/* If any effects are visible, request parent Scene to
 	 * render them. */
-	Debug() << p->scanned;
 	if (renderEffect)
 		scene->requestViewportRender
-		        (p->color->norm, flashColor, p->tone->norm);
+		        (p->color->norm, flashColor, p->tone->norm, p->scanned);
 
 	glState.scissorBox.pop();
 	glState.scissorTest.pop();
