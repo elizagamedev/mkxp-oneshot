@@ -1,7 +1,7 @@
 uniform sampler2D texture;
 uniform vec4 rgbOffset;
 
-varying vec4 v_texCoord;
+varying vec2 v_texCoord;
 
 void main () {
     // Previously, you'd have rendered your complete scene into a texture
