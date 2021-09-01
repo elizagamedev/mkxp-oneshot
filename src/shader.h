@@ -353,10 +353,11 @@ class ChronosShader : public ShaderBase
 public:
 	ChronosShader();
 
-	void setrgbOffset(const Vec4 value);
+	void setrgbOffset(const Vec4 rx, const Vec4 ry);
 
 private:
-	GLint u_rgbOffset;
+	GLint u_rgbOffsetx;
+	GLint u_rgbOffsety;
 };
 
 /* Global object containing all available shaders */

@@ -59,7 +59,8 @@ public:
 	                                   const Vec4& /* flash */,
 	                                   const Vec4& /* tone */,
 									   const bool  /* scanned */,
-									   const Vec4 /*  rbg  */) {}
+									   const Vec4 /*  rbg  */,
+									   const Vec4) {}
 
 	const Geometry &getGeometry() const { return geometry; }
 

@@ -79,11 +79,13 @@ RB_METHOD(viewportInitialize)
 RB_METHOD(setRGBOffset)
 {
 	double x, y, z;
-	rb_get_args(argc, argv, "fff", &x, &y, &z);
+	double x2, y2, z2;
+	rb_get_args(argc, argv, "ffffff", &x, &y, &z, &x2, &y2, &z2);
 
 	Viewport *v = getPrivateData<Viewport>(self);
 
-	v->setRGBOffset(Vec4(x, y, z, 0));
+	v->setRGBOffsetx(Vec4(x, y, z, 0));
+	v->setRGBOffsety(Vec4(x2, y2, z2, 0));
 
 	return Qnil;
 }

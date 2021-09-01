@@ -178,7 +178,7 @@ public:
 		}
 	}
 
-	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 r)
+	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 rx, const Vec4 ry)
 	{
 		const IntRect &viewpRect = glState.scissorBox.get();
 		const IntRect &screenRect = geometry.rect;
@@ -187,7 +187,7 @@ public:
 		const bool toneGrayEffect = t.w != 0 && !s;
 		const bool colorEffect    = c.w > 0;
 		const bool flashEffect    = f.w > 0;
-		const bool rgbOffset = r.xyzNotNull() && !toneGrayEffect && !s;
+		const bool rgbOffset = rx.xyzNotNull() || ry.xyzNotNull() && !toneGrayEffect && !s;
 		const bool scannedEffect = s && !t.w != 0 && !rgbOffset;
 		
 		if (toneGrayEffect)
@@ -274,7 +274,7 @@ public:
 
 			ChronosShader &shader = shState->shaders().chronos;
 			shader.bind();
-			shader.setrgbOffset(r);
+			shader.setrgbOffset(rx, ry);
 			shader.applyViewportProj();
 			shader.setTexSize(screenRect.size());
 

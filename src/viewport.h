@@ -45,7 +45,8 @@ public:
 	DECL_ATTR( Scanned, bool )
 	DECL_ATTR( Color, Color& )
 	DECL_ATTR( Tone,  Tone&  )
-	DECL_ATTR( RGBOffset, Vec4 )
+	DECL_ATTR( RGBOffsetx, Vec4 )
+	DECL_ATTR( RGBOffsety, Vec4 )
 
 	void initDynAttribs();
 

@@ -698,10 +698,12 @@ ChronosShader::ChronosShader()
 
 	ShaderBase::init();
 
-	GET_U(rgbOffset);
+	GET_U(rgbOffsetx);
+	GET_U(rgbOffsety);
 }
 
-void ChronosShader::setrgbOffset(const Vec4 value)
+void ChronosShader::setrgbOffset(const Vec4 ox, const Vec4 oy)
 {
-	gl.Uniform4f(u_rgbOffset, value.x, value.y, value.z, 0);
+	gl.Uniform4f(u_rgbOffsetx, ox.x, ox.y, ox.z, 0);
+	gl.Uniform4f(u_rgbOffsety, oy.x, oy.y, oy.z, 0);
 }
