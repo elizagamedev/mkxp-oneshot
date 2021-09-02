@@ -57,6 +57,7 @@
 #include "crt.frag.xxd"
 #include "crt_sprite.frag.xxd"
 #include "chronos.frag.xxd"
+#include "zoom.vert.xxd"
 
 
 #define INIT_SHADER(vert, frag, name) \
@@ -706,4 +707,18 @@ void ChronosShader::setrgbOffset(const Vec4 ox, const Vec4 oy)
 {
 	gl.Uniform4f(u_rgbOffsetx, ox.x, ox.y, ox.z, 0);
 	gl.Uniform4f(u_rgbOffsety, oy.x, oy.y, oy.z, 0);
+}
+
+ZoomShader::ZoomShader()
+{
+	INIT_SHADER(zoom, simple, ZoomShader);
+
+	ShaderBase::init();
+
+	GET_U(zoom);
+}
+
+void ZoomShader::setZoom(const Vec2 zoom)
+{
+	gl.Uniform2f(u_zoom, zoom.x, zoom.y);
 }

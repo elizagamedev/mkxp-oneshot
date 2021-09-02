@@ -4,10 +4,10 @@ varying vec2 v_texCoord;
  
 vec2 curvature = vec2(3.0, 3.0);
 vec2 screenResolution = vec2(640, 480);
-vec2 scanLineOpacity = vec2(1, 1);
+vec2 scanLineOpacity = vec2(0.75, 0.75);
 float vignetteOpacity = 1.0;
-float brightness = 4.0;
-float vignetteRoundness = 2.0;
+float brightness = 2.5;
+float vignetteRoundness = 1.0;
 
 
 vec2 curveRemapUV(vec2 uv)
@@ -21,7 +21,7 @@ vec2 curveRemapUV(vec2 uv)
 }
 vec4 scanLineIntensity(float uv, float resolution, float opacity)
 {
-    float intensity = sin(uv * resolution * 3.14 * 2.0);
+    float intensity = sin(uv * resolution * 3.1415926538 * 2.0);
     intensity = ((0.5 * intensity) + 0.5) * 0.9 + 0.1;
     return vec4(vec3(pow(intensity, opacity)), 1.0);
 }

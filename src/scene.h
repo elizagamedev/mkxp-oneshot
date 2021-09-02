@@ -60,7 +60,8 @@ public:
 	                                   const Vec4& /* tone */,
 									   const bool  /* scanned */,
 									   const Vec4 /*  rbg  */,
-									   const Vec4) {}
+									   const Vec4 /*  rbg  */,
+									   const Vec2 /* zoom */) {}
 
 	const Geometry &getGeometry() const { return geometry; }
 

@@ -178,7 +178,7 @@ public:
 		}
 	}
 
-	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 rx, const Vec4 ry)
+	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 rx, const Vec4 ry, const Vec2 z)
 	{
 		const IntRect &viewpRect = glState.scissorBox.get();
 		const IntRect &screenRect = geometry.rect;
@@ -187,8 +187,9 @@ public:
 		const bool toneGrayEffect = t.w != 0 && !s;
 		const bool colorEffect    = c.w > 0;
 		const bool flashEffect    = f.w > 0;
-		const bool rgbOffset = rx.xyzNotNull() || ry.xyzNotNull() && !toneGrayEffect && !s;
-		const bool scannedEffect = s && !t.w != 0 && !rgbOffset;
+		const bool rgbOffset = rx.xyzNotNull() || ry.xyzNotNull() && !toneGrayEffect && !s && !(z.x != 1 || z.y != 1);
+		const bool scannedEffect = s && !t.w != 0 && !rgbOffset && !(z.x != 1 || z.y != 1);
+		const bool zoomEffect = (z.x != 1 || z.y != 1) && !scannedEffect && !rgbOffset;
 		
 		if (toneGrayEffect)
 		{
@@ -275,6 +276,38 @@ public:
 			ChronosShader &shader = shState->shaders().chronos;
 			shader.bind();
 			shader.setrgbOffset(rx, ry);
+			shader.applyViewportProj();
+			shader.setTexSize(screenRect.size());
+
+			TEX::bind(pp.backBuffer().tex);
+
+			glState.blend.pushSet(false);
+			screenQuad.draw();
+			glState.blend.pop();
+		}
+
+		if (zoomEffect)
+		{
+			pp.swapRender();
+
+			if (!viewpRect.encloses(screenRect))
+			{
+				/* Scissor test _does_ affect FBO blit operations,
+				 * and since we're inside the draw cycle, it will
+				 * be turned on, so turn it off temporarily */
+				glState.scissorTest.pushSet(false);
+
+				GLMeta::blitBegin(pp.frontBuffer());
+				GLMeta::blitSource(pp.backBuffer());
+				GLMeta::blitRectangle(geometry.rect, Vec2i());
+				GLMeta::blitEnd();
+
+				glState.scissorTest.pop();
+			}
+
+			ZoomShader &shader = shState->shaders().zoom;
+			shader.bind();
+			shader.setZoom(z);
 			shader.applyViewportProj();
 			shader.setTexSize(screenRect.size());
 

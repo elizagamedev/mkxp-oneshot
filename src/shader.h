@@ -360,6 +360,17 @@ private:
 	GLint u_rgbOffsety;
 };
 
+class ZoomShader : public ShaderBase
+{
+public:
+	ZoomShader();
+
+	void setZoom(const Vec2 zoom);
+
+private:
+	GLint u_zoom;
+};
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -385,6 +396,7 @@ struct ShaderSet
 	ScannedShader scanned;
 	ScannedShaderSprite scanned_sprite;
 	ChronosShader chronos;
+	ZoomShader zoom;
 };
 
 #endif // SHADER_H

@@ -90,6 +90,18 @@ RB_METHOD(setRGBOffset)
 	return Qnil;
 }
 
+RB_METHOD(setZoom)
+{
+	double x, y;
+	rb_get_args(argc, argv, "ff", &x, &y);
+
+	Viewport *v = getPrivateData<Viewport>(self);
+
+	v->setZoom(Vec2(x, y));
+
+	return Qnil;
+}
+
 DEF_PROP_OBJ_VAL(Viewport, Rect,  Rect,  "rect")
 DEF_PROP_OBJ_VAL(Viewport, Color, Color, "color")
 DEF_PROP_OBJ_VAL(Viewport, Tone,  Tone,  "tone")
@@ -110,6 +122,7 @@ viewportBindingInit()
 
 	_rb_define_method(klass, "initialize", viewportInitialize);
 	_rb_define_method(klass, "setRGBOffset", setRGBOffset);
+	_rb_define_method(klass, "setZoom", setZoom);
 
 	INIT_PROP_BIND( Viewport, Rect,  "rect"  );
 	INIT_PROP_BIND( Viewport, OX,    "ox"    );

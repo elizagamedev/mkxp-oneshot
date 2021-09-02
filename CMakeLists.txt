@@ -193,6 +193,7 @@ set(EMBEDDED_INPUT
 	shader/crt_sprite.frag
 	shader/simpleMatrix.vert
 	shader/chronos.frag
+	shader/zoom.vert
 	assets/icon.png
 	assets/gamecontrollerdb.txt
 )
