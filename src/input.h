@@ -319,6 +319,9 @@ public:
 
 	Uint16 modkeys;
 
+	void setKey(int button);
+	void unsetKey(int button);
+
 private:
 	Input(const RGSSThreadData &rtData);
 	~Input();

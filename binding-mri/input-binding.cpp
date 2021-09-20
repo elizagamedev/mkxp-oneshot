@@ -166,6 +166,22 @@ RB_METHOD(inputSetTextInput) {
 	return Qnil;
 }
 
+RB_METHOD(inputSetKey)
+{
+	RB_UNUSED_PARAM;
+	int num = getButtonArg(argc, argv);
+	shState->input().setKey(num);
+	return Qnil;
+}
+
+RB_METHOD(inputUnsetKey)
+{
+	RB_UNUSED_PARAM;
+	int num = getButtonArg(argc, argv);
+	shState->input().unsetKey(num);
+	return Qnil;
+}
+
 struct
 {
 	const char *str;
@@ -446,6 +462,18 @@ static elementsN(buttonCodes);
 #define INPUT_EXPOSE_KMOD(name) \
 	rb_const_set(module, rb_intern(#name), INT2FIX(name));
 
+RB_METHOD(inputGetAllPressed)
+{
+	RB_UNUSED_PARAM;
+	VALUE res = rb_ary_new();
+    for (size_t i = 0; i < buttonCodesN; i++) {
+		if (shState->input().isPressed(buttonCodes[i].val)) {
+            rb_ary_push(res, INT2FIX(buttonCodes[i].val));
+		}
+	}
+	return res;
+}
+
 void
 inputBindingInit()
 {
@@ -468,6 +496,10 @@ inputBindingInit()
 	_rb_define_module_function(module, "stop_text_input", inputStopTextInput);
 	_rb_define_module_function(module, "text_input", inputTextInput);
 	_rb_define_module_function(module, "set_text_input", inputSetTextInput);
+
+	_rb_define_module_function(module, "get_all_pressed", inputGetAllPressed);
+	_rb_define_module_function(module, "set_key", inputSetKey);
+	_rb_define_module_function(module, "unset_key", inputUnsetKey);
 
 	if (rgssVer >= 3)
 	{
