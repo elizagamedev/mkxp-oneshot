@@ -16,6 +16,7 @@ choco install -y cmake git conan vim
 RUN [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\Program Files\CMake\bin;C:\tools\vim\vim82', 'Machine'); `
 conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza; `
 conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan; `
+conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit; `
 conan config set general.revisions_enabled=1; `
 setx CONAN_USE_ALWAYS_SHORT_PATHS 1
 

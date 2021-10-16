@@ -24,7 +24,6 @@ class MkxpConan(ConanFile):
         "physfs/3.0.1@bincrafters/stable",
         "pixman/0.34.0@bincrafters/stable",
         "ruby/3.0.2@astrabit/testing",
-        "sdl2/2.0.14@bincrafters/stable",
         "sdl2_image/2.0.5@bincrafters/stable",
         "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
@@ -60,6 +59,9 @@ class MkxpConan(ConanFile):
             self.requires("ogg/1.3.4")
             self.requires("vorbis/1.3.6")
             self.requires("libalsa/1.1.9")
+            self.requires("sdl2/2.0.9@bincrafters/stable")
+        if tools.os_info.is_windows:
+            self.requires("sdl2/2.0.14@bincrafters/stable")
 
     def configure(self):
         if tools.os_info.is_windows:
