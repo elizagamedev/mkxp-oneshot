@@ -8,7 +8,7 @@ set -e
 # /work/data: game data, mount the folder containing all the game files like Data, Graphics, etc here
 # /work/dist: folder used for distribution, mount the folder you want to contain the output appimage here
 # /work/build: will be automatically made, contains intermediate build files, you can mount something here if you want partial compilation
-
+conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit
 sudo chown `id -u` /work
 [ ! -d /work/build ] && mkdir /work/build
 cd /work/build
