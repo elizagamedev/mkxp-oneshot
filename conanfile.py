@@ -29,6 +29,7 @@ class MkxpConan(ConanFile):
         "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
         "sigc++/2.10.0@bincrafters/stable",
+        "openssl/1.1.1k",
         # Overrides
         "libpng/1.6.37",
         "zlib/1.2.11",
