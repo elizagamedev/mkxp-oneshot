@@ -8,17 +8,17 @@ ADD https://aka.ms/vs/16/release/vs_community.exe /vs_community.exe
 RUN C:\vs_community.exe --quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended
 
 # install chocolatey and use it to install cmake, git, conan, vim (vim for xxd only, since installing cygwin breaks docker)
-RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); `
-choco install -y cmake git conan vim
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+RUN choco install -y cmake git conan vim
 
 # configure path (add xxd and cmake), conan remotes, and fix windows path size limits for conan
-RUN [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\Program Files\CMake\bin;C:\tools\vim\vim82', 'Machine'); `
-conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza; `
-conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan; `
-conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit; `
-conan config set general.revisions_enabled=1; `
-setx CONAN_USE_ALWAYS_SHORT_PATHS 1
+RUN [Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\Program Files\CMake\bin;C:\tools\vim\vim82', 'Machine')
+RUN conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza
+RUN conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
+RUN conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit
+RUN conan config set general.revisions_enabled=1
+RUN setx CONAN_USE_ALWAYS_SHORT_PATHS 1
 
 # prebuild all dependencies using the conanfile in this commit
 COPY conanfile.py C:/Temp/install_deps/

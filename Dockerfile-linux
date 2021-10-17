@@ -2,6 +2,7 @@
 FROM conanio/gcc5
 RUN conan remote add eliza "https://rkevin.jfrog.io/artifactory/api/conan/eliza" && \
 conan remote add bincrafters "https://bincrafters.jfrog.io/artifactory/api/conan/public-conan" && \
+conan remote add astrabit "https://rkevin.jfrog.io/artifactory/api/conan/astrabit" && \
 conan config set general.revisions_enabled=1
 
 RUN sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y \
