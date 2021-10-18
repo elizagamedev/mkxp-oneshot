@@ -44,7 +44,7 @@ class MkxpConan(ConanFile):
         "cygwin_installer:packages=xxd",
         # Avoid dead url bitrot in cygwin_installer
         "cygwin_installer:with_pear=False",
-        #"ruby:with_openssl=True",
+        "ruby:with_openssl=True",
     )
 
     #def build_requirements(self):
