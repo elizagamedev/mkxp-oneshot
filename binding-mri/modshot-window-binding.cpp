@@ -37,6 +37,7 @@ RB_METHOD(SetIcon) {
 		rb_raise(rb_eRuntimeError, "Loading icon from path failed");
 	}
 	SDL_SetWindowIcon(shState->rtData().window, icon);
+	return Qnil;
 }
 
 void modshotwindowBindingInit()
