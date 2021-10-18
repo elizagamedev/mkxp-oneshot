@@ -59,10 +59,10 @@ class MkxpConan(ConanFile):
             self.requires("vorbis/1.3.6")
             self.requires("libalsa/1.1.9")
             self.requires("sdl2/2.0.9@bincrafters/stable")
-	    self.requires("openssl/1.1.1l")
+            self.requires("openssl/1.1.1l")
         if tools.os_info.is_windows:
             self.requires("sdl2/2.0.14@bincrafters/stable")
-	    self.requires("openssl/3.0.0")
+            self.requires("openssl/3.0.0")
 
     def configure(self):
         if tools.os_info.is_windows:
