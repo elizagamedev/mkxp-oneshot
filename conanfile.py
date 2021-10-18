@@ -28,7 +28,6 @@ class MkxpConan(ConanFile):
         "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
         "sigc++/2.10.0@bincrafters/stable",
-        "openssl/1.1.1l",
         # Overrides
         "libpng/1.6.37",
         "zlib/1.2.11",
@@ -60,9 +59,10 @@ class MkxpConan(ConanFile):
             self.requires("vorbis/1.3.6")
             self.requires("libalsa/1.1.9")
             self.requires("sdl2/2.0.9@bincrafters/stable")
+	    self.requires("openssl/1.1.1l")
         if tools.os_info.is_windows:
             self.requires("sdl2/2.0.14@bincrafters/stable")
-            #self.requires("msys2_installer/20210725@astrabit/testing")
+	    self.requires("openssl/3.0.0")
 
     def configure(self):
         if tools.os_info.is_windows:
