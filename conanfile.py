@@ -62,7 +62,7 @@ class MkxpConan(ConanFile):
             self.requires("openssl/1.1.1l")
         if tools.os_info.is_windows:
             self.requires("sdl2/2.0.14@bincrafters/stable")
-            self.requires("openssl/3.0.0")
+            self.requires("openssl/1.1.1k")
 
     def configure(self):
         if tools.os_info.is_windows:
