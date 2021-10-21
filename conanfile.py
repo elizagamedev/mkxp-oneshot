@@ -70,6 +70,7 @@ class MkxpConan(ConanFile):
             self.options["openal"].shared = True
             # Fix linker error in SDL_sound fork with SDL2
             self.options["sdl2"].shared = True
+            self.options["openssl"].shared = True
 
     def generate_version_number(self):
         try:
