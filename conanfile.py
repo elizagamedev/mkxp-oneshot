@@ -124,7 +124,8 @@ class MkxpConan(ConanFile):
 
     def package(self):
         self.copy("*", dst="bin", src="bin")
-    def package_info(self)
+
+    def package_info(self):
         if self.options.msys2:
             self.conf_info["tools.microsoft.bash:subsystem"] = "msys2"
             self.conf_info["tools.microsoft.bash:path"] =  "C:\\msys64\\usr\\bin\\bash.exe"
