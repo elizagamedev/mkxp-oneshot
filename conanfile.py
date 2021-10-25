@@ -1,7 +1,7 @@
 import os.path
 import datetime
 
-from conans import CMake, ConanFile, tools
+from conans import CMake, ConanFile, tools, AutoToolsBuildEnvironment
 from conans.client.tools import win
 from conans.errors import ConanException
 
@@ -71,7 +71,6 @@ class MkxpConan(ConanFile):
         if self.options.msys2:
             self.build_requires("msys2/cci.latest")
             self.build_requires("mingw-w64/8.1")
-
     def configure(self):
         if tools.os_info.is_windows:
             # ???
@@ -99,11 +98,17 @@ class MkxpConan(ConanFile):
     def build_configure(self):
         self.generate_version_number()
 
-        cmake = CMake(self, msbuild_verbosity='minimal')
-        if self.options.platform == "steam":
-            cmake.definitions["STEAM"] = "ON"
-        cmake.configure()
-        cmake.build()
+        #cmake = CMake(self, msbuild_verbosity='minimal')
+        #if self.options.platform == "steam":
+        #    cmake.definitions["STEAM"] = "ON"
+        #cmake.configure()
+        #cmake.build()
+	
+        autotools = AutoToolsBuildEnvironment(self, win_bash=win_bash)
+	if self.options.platform == "steam":
+		autotoools.defines.append("STEAM=ON")
+        autotools.configure()
+        autotools.make()
 
     def build(self):
         #if tools.os_info.is_windows:
