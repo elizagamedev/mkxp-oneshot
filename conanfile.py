@@ -72,7 +72,7 @@ class MkxpConan(ConanFile):
             self.build_requires("msys2/cci.latest")
             self.build_requires("mingw-w64/8.1")
             self.conf_info["tools.microsoft.bash:subsystem"] = "msys2";
-            self.conf_info["tools.microsoft.bash:path"] =  "C:\msys64\usr\bin\bash.exe";
+            self.conf_info["tools.microsoft.bash:path"] =  "C:\\msys64\\usr\\bin\\bash.exe";
 
     def configure(self):
         if tools.os_info.is_windows:
