@@ -12,6 +12,8 @@ conan_basic_setup(TARGETS)
 option(STEAM "Build for Steam" OFF)
 option(DEBUG "Debug mode" OFF)
 
+set(CONAN_DISABLE_CHECK_COMPILER TRUE) 
+
 ## Misc setup ##
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
