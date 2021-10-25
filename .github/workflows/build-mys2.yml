@@ -1,4 +1,4 @@
-name: Build Modshot
+name: Build Modshot with MSYS2
 on: push
 jobs:
   build-windows:
