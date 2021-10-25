@@ -36,6 +36,7 @@ class MkxpConan(ConanFile):
     build_requires = ("ruby_installer/3.0.2@astrabit/testing")
     options = {
         "platform": ["standalone", "steam"],
+        "msys2": [True, False],
     }
     default_options = (
         "platform=standalone",
@@ -44,6 +45,7 @@ class MkxpConan(ConanFile):
         # Avoid dead url bitrot in cygwin_installer
         "cygwin_installer:with_pear=False",
         "ruby:with_openssl=True",
+        "msys2=False",
     )
 
     #def build_requirements(self):
@@ -63,6 +65,8 @@ class MkxpConan(ConanFile):
         if tools.os_info.is_windows:
             self.requires("sdl2/2.0.14@bincrafters/stable")
             self.requires("openssl/1.1.1k")
+            if self.options.msys2:
+                self.requires("msys2/cci.latest")
 
     def configure(self):
         if tools.os_info.is_windows:
