@@ -20,10 +20,6 @@ jobs:
           conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan;
           conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit;
           conan config set general.revisions_enabled=1;
-          conan config rm tools.microsoft.bash:subsystem;
-          conan config rm tools.microsoft.bash:path;
-          conan config set tools.microsoft.bash:subsystem=msys2;
-          conan config set tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe;
           setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
           mkdir ${{ runner.temp }}\build
       - name: Configure profile
@@ -73,10 +69,6 @@ jobs:
           conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan;
           conan remote add astrabit https://rkevin.jfrog.io/artifactory/api/conan/astrabit;
           conan config set general.revisions_enabled=1;
-          conan config rm tools.microsoft.bash:subsystem;
-          conan config rm tools.microsoft.bash:path;
-          conan config set tools.microsoft.bash:subsystem=msys2;
-          conan config set tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe;
           setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
           mkdir ${{ runner.temp }}\build
       - name: Configure profile
