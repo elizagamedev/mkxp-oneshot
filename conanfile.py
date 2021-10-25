@@ -65,9 +65,6 @@ class MkxpConan(ConanFile):
         if tools.os_info.is_windows:
             self.requires("sdl2/2.0.14@bincrafters/stable")
             self.requires("openssl/1.1.1k")
-            if self.options.msys2:
-                self.build_requires("msys2/cci.latest")
-                self.build_requires("mingw-w64/8.1")
     
     def build_requirements(self):
         if self.options.msys2:
