@@ -31,10 +31,10 @@ jobs:
           conan profile update settings.compiler.libcxx=libstdc++11 default  
       - name: Setup global.conf
         run: |
-          echo '' > C:\.conan\.conan\global.conf;
-          echo tools.microsoft.bash:subsystem=msys2 > C:\.conan\.conan\global.conf;
-          echo tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe > C:\.conan\.conan\global.conf;
-          type C:\.conan\.conan\global.conf
+          echo tools.microsoft.bash:subsystem=msys2 > C:\.conan\global.conf;
+          echo tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe > C:\.conan\global.conf;
+          ls C:\.conan;
+          type C:\.conan\global.conf
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
