@@ -2,6 +2,7 @@ import os.path
 import datetime
 
 from conans import CMake, ConanFile, tools
+from conans.client.tools import win
 from conans.errors import ConanException
 
 MODSHOT_VERSION_H='''#ifndef MODSHOT_VERSION
@@ -78,6 +79,9 @@ class MkxpConan(ConanFile):
             # Fix linker error in SDL_sound fork with SDL2
             self.options["sdl2"].shared = True
             self.options["openssl"].shared = True
+            win_bash = self.settings.compiler != "Visual Studio"
+            if win_bash:
+                self.win_bash = win_bash
 
     def generate_version_number(self):
         try:
