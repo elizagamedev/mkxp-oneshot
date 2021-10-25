@@ -104,7 +104,7 @@ class MkxpConan(ConanFile):
         #cmake.configure()
         #cmake.build()
 	
-        autotools = AutoToolsBuildEnvironment(self, win_bash=win_bash)
+        autotools = AutoToolsBuildEnvironment(self, win_bash=self.options.msys2)
         if self.options.platform == "steam":
             autotools.defines.append("STEAM=ON")
             autotools.configure()
