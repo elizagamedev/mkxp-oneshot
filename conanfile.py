@@ -28,7 +28,7 @@ class MkxpConan(ConanFile):
         "sdl2_image/2.0.5@bincrafters/stable",
         "sdl2_ttf/2.0.15@bincrafters/stable",
         "sdl_sound-mkxp/1.0.1@eliza/stable",
-        "sigc++/2.10.1@astrabit/testing",
+        "sigc++/2.10.0@astrabit/testing",
         # Overrides
         "libpng/1.6.37",
         "zlib/1.2.11",
