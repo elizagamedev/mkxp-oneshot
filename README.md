@@ -1,4 +1,6 @@
 # Modshot-Core 
+[![Build Modshot](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-standalone.yaml/badge.svg)](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-standalone.yaml)[![Build Modshot with Steam support](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-steam.yaml/badge.svg)](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-steam.yaml)[![Build Modshot with MSYS2](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-mys2.yml/badge.svg)](https://github.com/Speak2Erase/OSFM-Core-Public/actions/workflows/build-mys2.yml)
+---
 
 This is a even more specialized fork of a specialized fork of [mkxp by Ancurio](https://github.com/Ancurio/mkxp) designed for [*OneShot*](http://oneshot-game.com/) for OneShot mods.
 
