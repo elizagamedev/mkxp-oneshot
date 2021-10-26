@@ -42,12 +42,12 @@ jobs:
         run: |
           conan install mingw_installer/1.0@conan/stable;
           conan install msys2/cci.latest@
-      - name: Configure conan.conf
+      - name: Append to default profile
         run: |
-          echo [build_requires] >> C:\.conan\.conan\conan.conf;
-          echo mingw_installer/1.0@conan/stable >> C:\.conan\.conan\conan.conf;
-          echo msys2/cci.latest@ >> C:\.conan\.conan\conan.conf;
-          type C:\.conan\.conan\conan.conf
+          echo [build_requires] >> C:\.conan\.conan\profiles\default;
+          echo mingw_installer/1.0@conan/stable >> C:\.conan\.conan\profiles\default;
+          echo msys2/cci.latest@ >> C:\.conan\.conan\profiles\default;
+          type C:\.conan\.conan\profiles\default
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
