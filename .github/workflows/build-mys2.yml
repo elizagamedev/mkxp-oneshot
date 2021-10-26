@@ -22,6 +22,7 @@ jobs:
           conan config set general.revisions_enabled=1;
           conan config get;
           setx CONAN_USE_ALWAYS_SHORT_PATHS 1;
+          setx CONAN_BASH_PATH C:\msys64\usr\bin\bash.exe;
           mkdir ${{ runner.temp }}\build
       - name: Configure profile
         run: |
