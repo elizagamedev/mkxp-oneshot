@@ -113,6 +113,7 @@ class MkxpConan(ConanFile):
             if self.options.msys2:
                 cmake_command += " -G \"MinGW Makefiles\""
         self.run(cmake_command)
+        self.run("make")
         
         #autotools = AutoToolsBuildEnvironment(self, win_bash=self.options.msys2)
         #if self.options.platform == "steam":
