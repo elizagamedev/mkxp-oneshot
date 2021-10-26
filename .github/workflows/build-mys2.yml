@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install Windows SDK # Boost needs this for some dumb reason
+        run: |
+          Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2173743 -OutFile windsdksetup.exe;
+          winsdksetup.exe -q
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
