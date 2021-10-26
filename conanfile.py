@@ -98,11 +98,22 @@ class MkxpConan(ConanFile):
     def build_configure(self):
         self.generate_version_number()
 
-        cmake = CMake(self, msbuild_verbosity='minimal')
-        if self.options.platform == "steam":
-            cmake.definitions["STEAM"] = "ON"
-        cmake.configure()
-        cmake.build()
+        #cmake = CMake(self, msbuild_verbosity='minimal')
+        #if self.options.platform == "steam":
+        #    cmake.definitions["STEAM"] = "ON"
+        #cmake.configure()
+        #cmake.build()
+
+        if self.options.steam:
+            cmake_command = "cmake -DSTEAM=ON ."
+            if self.options.mys2:
+                cmake_command += " -G \"MinGW Makefiles\""
+        else:
+            cmake_command = "cmake ."
+            if self.options.mys2:
+                cmake_command += " -G \"MinGW Makefiles\""
+        self.run(cmake_command)
+        self.run("make")
 	
         #autotools = AutoToolsBuildEnvironment(self, win_bash=self.options.msys2)
         #if self.options.platform == "steam":
