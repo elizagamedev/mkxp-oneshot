@@ -110,7 +110,7 @@ class MkxpConan(ConanFile):
                 cmake_command += " -G \"MinGW Makefiles\""
         else:
             cmake_command = "cmake ."
-            if self.options.mys2:
+            if self.options.msys2:
                 cmake_command += " -G \"MinGW Makefiles\""
         self.run(cmake_command)
         self.run("make")
