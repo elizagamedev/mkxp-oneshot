@@ -41,7 +41,7 @@ jobs:
       - name: Install msys2 and mingw
         run: |
           conan install mingw_installer/1.0@conan/stable;
-          conan install msys2/cci.latest@conan/stable
+          conan install msys2/cci.latest@
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
