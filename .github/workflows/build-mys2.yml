@@ -36,6 +36,10 @@ jobs:
           echo tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe >> C:\.conan\.conan\global.conf;
           ls C:\.conan\.conan;
           type C:\.conan\.conan\global.conf
+      - name: Install msys2 and mingw
+        run: |
+          conan install mingw_installer/1.0@conan/stable;
+          conan install msys2/20190524
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
