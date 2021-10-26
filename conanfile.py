@@ -105,7 +105,7 @@ class MkxpConan(ConanFile):
         #cmake.build()
 
         if self.options.platform == "steam":
-            cmake_command = "cmake -D STEAM=ON ."
+            cmake_command = f"cmake -D STEAM=ON {self.source_folder}"
             if self.options.msys2:
                 cmake_command += " -G \"MinGW Makefiles\""
         else:
