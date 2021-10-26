@@ -42,6 +42,11 @@ jobs:
         run: |
           conan install mingw_installer/1.0@conan/stable;
           conan install msys2/cci.latest@
+      - name: Configure conan.conf
+        run: |
+          echo [build_requires] >> C:\.conan\.conan\conan.conf;
+          echo mingw_installer/1.0@conan/stable >> C:\.conan\.conan\conan.conf;
+          echo msys2/cci.latest@ >> C:\.conan\.conan\conan.conf
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
