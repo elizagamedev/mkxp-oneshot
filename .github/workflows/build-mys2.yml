@@ -13,15 +13,11 @@ jobs:
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
-        run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\vim\vim82", "Machine")'
+        shell: bash
+        run: 'echo "C:\tools\vim\vim82" >> $GITHUB_PATH'
       - name: Add Windows SDK to path
         shell: bash
-        run: 'echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64"  >> $GITHUB_PATH'
-      - name: Check Windows SDK installation
-        run:  |
-          ls 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64';
-          $env:Path -split ";";
-          mc --help;
+        run: 'echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> $GITHUB_PATH'
       - name: Configure conan
         run: |
           conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza;
@@ -48,6 +44,9 @@ jobs:
         run: |
           conan install mingw_installer/1.0@conan/stable --profile=msys2;
           conan install msys2/cci.latest@ --profile=msys2
+      - name: Edit mingw64 path to add Windows SDK
+        run: |
+          ls C:\msys64
       - name: Append to msys2 profile
         run: |
           echo [build_requires] >> C:\.conan\.conan\profiles\msys2;
