@@ -13,7 +13,9 @@ jobs:
       - name: Install Windows SDK
         run: 'choco install -y windows-sdk-10-version-2004-all'
       - name: Add Windows SDK to path
-        run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.685\x64")'
+        run: | 
+          [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64");
+          ls C:\Program Files (x86)\Windows Kits\10\bin;
       - name: Check Windows SDK installation
         run:  'mc --help'
       - name: Install conan and xxd
