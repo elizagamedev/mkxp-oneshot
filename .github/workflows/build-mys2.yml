@@ -13,7 +13,8 @@ jobs:
       - name: Install Windows SDK # Boost needs this for some dumb reason
         run: |
           Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2173743 -OutFile C:\winsdksetup.exe;
-          C:\winsdksetup.exe -q
+          C:\winsdksetup.exe /q | Out-Null;
+          [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64")
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
