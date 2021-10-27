@@ -11,10 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install Windows SDK
-        shell: pwsh
         run: 'choco install -y windows-sdk-10-version-2004-all'
       - name: Add Windows SDK to path
         run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64")'
+      - name: Check Windows SDK installation
+        run:  'mc --help'
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
