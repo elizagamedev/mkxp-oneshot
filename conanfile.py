@@ -81,7 +81,7 @@ class MkxpConan(ConanFile):
             win_bash = self.settings.compiler != "Visual Studio"
             if win_bash:
                 self.win_bash = win_bash
-		self.run("cat .bashrc")
+		self.run("cat ~/.bashrc")
 
     def generate_version_number(self):
         try:
