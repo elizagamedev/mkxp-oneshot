@@ -30,12 +30,12 @@ jobs:
           mkdir ${{ runner.temp }}\build
       - name: Configure profile
         run: |
-          conan profile new default --detect;
-          conan profile update settings.compiler=gcc default;
-          conan profile update settings.compiler.version=8.1 default;
-          conan profile update settings.compiler.libcxx=libstdc++11 default;
-          conan profile update settings.compiler.exception=seh default;
-          conan profile update settings.compiler.threads=posix default;
+          conan profile new msys2 --detect;
+          conan profile update settings.compiler=gcc msys2;
+          conan profile update settings.compiler.version=8.1 msys2;
+          conan profile update settings.compiler.libcxx=libstdc++11 msys2;
+          conan profile update settings.compiler.exception=seh msys2;
+          conan profile update settings.compiler.threads=posix msys2;
       - name: Setup global.conf
         run: |
           echo tools.microsoft.bash:subsystem=msys2 >> C:\.conan\.conan\global.conf;
@@ -55,7 +55,7 @@ jobs:
           path: C:\.conan
           key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
       - name: Build dependencies using conan
-        run: conan install ${{ github.workspace }} --build=missing -o msys2=True
+        run: conan install ${{ github.workspace }} --build=missing -o msys2=True --profile=msys2
         working-directory: ${{ runner.temp }}\build
       - name: Build ModShot
         run: conan build ${{ github.workspace }}
