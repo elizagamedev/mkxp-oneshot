@@ -46,7 +46,7 @@ jobs:
           conan install msys2/cci.latest@ --profile=msys2
       - name: Edit mingw64 path to add Windows SDK
         run: |
-          ls C:\msys64
+          ls C:\msys64\mingw64\usr\bin
       - name: Append to msys2 profile
         run: |
           echo [build_requires] >> C:\.conan\.conan\profiles\msys2;
