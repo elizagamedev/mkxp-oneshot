@@ -11,9 +11,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Download Windows SDK # Boost needs this for some dumb reason
-        run: 'Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2173743 -OutFile ~\winsdksetup.exe;'
+        run: 'Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2173743 -OutFile C:\winsdksetup.exe;'
       - name: Install Windows SDK
-        run: 'runas /user:administrator ~\winsdksetup.exe /q | Out-Null;'
+        shell: pwsh
+        run: ' C:\winsdksetup.exe /q | Out-Null;'
       - name: Add Windows SDK to path
         run: '[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64")'
       - name: Install conan and xxd
