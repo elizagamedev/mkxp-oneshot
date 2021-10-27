@@ -42,8 +42,8 @@ jobs:
           echo tools.microsoft.bash:path=C:\msys64\usr\bin\bash.exe >> C:\.conan\.conan\global.conf;
       - name: Install msys2 and mingw
         run: |
-          conan install mingw_installer/1.0@conan/stable;
-          conan install msys2/cci.latest@
+          conan install mingw_installer/1.0@conan/stable --profile=msys2;
+          conan install msys2/cci.latest@ --profile=msys2
       - name: Append to default profile
         run: |
           echo [build_requires] >> C:\.conan\.conan\profiles\default;
