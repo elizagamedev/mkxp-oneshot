@@ -49,6 +49,11 @@ jobs:
           echo [build_requires] >> C:\.conan\.conan\profiles\msys2;
           echo mingw_installer/1.0@conan/stable >> C:\.conan\.conan\profiles\msys2;
           echo msys2/cci.latest@ >> C:\.conan\.conan\profiles\msys2
+      - name: Setup path ing mingw64
+        shell: pwsh
+        run: |
+          C:\msys64\msys2_shell.cmd -mingw64 -defterm -here -no-start;
+          ls -a
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
