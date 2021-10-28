@@ -69,8 +69,8 @@ class MkxpConan(ConanFile):
     
     def build_requirements(self):
         if self.options.msys2:
-            self.build_requires("msys2/cci.latest")
-            self.build_requires("mingw-w64/8.1")
+            #self.build_requires("msys2/cci.latest")
+            #self.build_requires("mingw-w64/8.1")
             self.run("ls /home/", win_bash=True)
             self.run("cat ~/.bashrc", win_bash=True)
 
