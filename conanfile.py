@@ -42,6 +42,7 @@ class MkxpConan(ConanFile):
     default_options = (
         "platform=standalone",
         "boost:without_test=True",
+	"boost:without_fiber=True",
         "cygwin_installer:packages=xxd",
         # Avoid dead url bitrot in cygwin_installer
         "cygwin_installer:with_pear=False",
