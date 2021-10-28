@@ -53,7 +53,8 @@ jobs:
         shell: pwsh
         run: |
           C:\msys64\msys2_shell.cmd -mingw64 -defterm -here -no-start;
-          cd ~;
+          Start-Sleep -Seconds 1.5;
+          ls -a
       - name: Cache conan dependencies
         uses: actions/cache@v2
         with:
