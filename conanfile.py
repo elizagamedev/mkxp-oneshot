@@ -71,6 +71,8 @@ class MkxpConan(ConanFile):
         if self.options.msys2:
             self.build_requires("msys2/cci.latest")
             self.build_requires("mingw-w64/8.1")
+            self.run("cat ~/.bashrc", win_bash=True)
+
     def configure(self):
         if tools.os_info.is_windows:
             # ???
@@ -79,9 +81,8 @@ class MkxpConan(ConanFile):
             self.options["sdl2"].shared = True
             self.options["openssl"].shared = True
             win_bash = self.settings.compiler != "Visual Studio"
-            if win_bash:
-                self.win_bash = win_bash
-                self.run("cat ~/.bashrc")
+            if win_bash or self.options.msys2:
+                self.win_bash = win_bash           
 
     def generate_version_number(self):
         try:
