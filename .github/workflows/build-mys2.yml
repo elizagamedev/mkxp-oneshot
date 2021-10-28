@@ -59,9 +59,25 @@ jobs:
 #        with:
 #          path: C:\.conan
 #          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
-      - uses: ruby/setup-ruby@v1
+      - name: Set up Ruby & MSYS2
+        uses: MSP-Greg/setup-ruby-pkgs@ucrt
         with:
           ruby-version: 2.6
+          setup-ruby-ref: MSP-Greg/ruby-setup-ruby/00-win-ucrt
+          mingw: _upgrade_ gmp libffi libyaml openssl ragel readline gcc
+          msys2: automake1.16 bison
+      - name: where check
+        run: |
+          # show where
+          Write-Host
+          $where = 'gcc.exe', 'ragel.exe', 'make.exe', 'bison.exe', 'libcrypto-1_1-x64.dll', 'libssl-1_1-x64.dll'
+          foreach ($e in $where) {
+            $rslt = where.exe $e 2>&1 | Out-String
+            if ($rslt.contains($e)) { Write-Host $rslt }
+            else { Write-Host "`nCan't find $e" }
+          }
+      - name: devkit test
+        run: 'gem install oj'
       - name: Build dependencies using conan
         run: conan install ${{ github.workspace }} --build=missing -o msys2=True --profile=msys2
         working-directory: ${{ runner.temp }}\build
