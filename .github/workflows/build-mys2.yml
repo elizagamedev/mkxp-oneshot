@@ -61,7 +61,7 @@ jobs:
 #          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
       - name: Setup rubyinstaller
         run: |
-          InvokeWebRequest -uri https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.2-1/rubyinstaller-devkit-3.0.2-1-x64.exe -OutFile C:\rubyinstaller.exe;
+          Invoke-WebRequest -uri https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.2-1/rubyinstaller-devkit-3.0.2-1-x64.exe -OutFile C:\rubyinstaller.exe;
           C:\rubyinstaller.exe /silent /dir=C:\ruby;
           C:\ruby\bin\ridk.cmd install 1 2 3;
           C:\ruby\bin\ridk.cmd use 1;
