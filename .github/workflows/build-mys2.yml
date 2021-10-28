@@ -51,8 +51,8 @@ jobs:
           echo msys2/cci.latest@ >> C:\.conan\.conan\profiles\msys2
       - name: Setup path in msys2
         run: |
-          echo export PATH="$PATH:C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> C:\msys64\home\runneradmin\.bashrc;
-          echo export PATH="$PATH:C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64" >> C:\msys64\home\packer\.bashrc;
+          echo 'export PATH="$PATH:C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64"' >> C:\msys64\home\runneradmin\.bashrc;
+          echo 'export PATH="$PATH:C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64"' >> C:\msys64\home\packer\.bashrc;
           type C:\msys64\home\packer\.bashrc
       - name: Cache conan dependencies
         uses: actions/cache@v2
