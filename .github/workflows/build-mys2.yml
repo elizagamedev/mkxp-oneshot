@@ -76,8 +76,6 @@ jobs:
             if ($rslt.contains($e)) { Write-Host $rslt }
             else { Write-Host "`nCan't find $e" }
           }
-      - name: devkit test
-        run: 'gem install oj'
       - name: Build dependencies using conan
         run: conan install ${{ github.workspace }} --build=missing -o msys2=True --profile=msys2
         working-directory: ${{ runner.temp }}\build
