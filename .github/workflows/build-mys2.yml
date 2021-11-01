@@ -63,9 +63,7 @@ jobs:
         uses: MSP-Greg/setup-ruby-pkgs@ucrt
         with:
           ruby-version: 2.6
-          setup-ruby-ref: MSP-Greg/ruby-setup-ruby/00-win-ucrt
           mingw: _upgrade_ gmp libffi libyaml openssl ragel readline gcc
-          msys2: automake1.16 bison
       - name: where check
         run: |
           # show where
