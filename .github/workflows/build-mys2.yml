@@ -10,11 +10,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Ruby & MSYS2
-        uses: MSP-Greg/setup-ruby-pkgs@ucrt
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
-          setup-ruby-ref: MSP-Greg/ruby-setup-ruby/00-win-ucrt
+         ruby-version: 2.6
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
