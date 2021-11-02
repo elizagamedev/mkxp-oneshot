@@ -59,9 +59,9 @@ jobs:
 #        with:
 #          path: C:\.conan
 #          key: ${{ runner.os }}-cached-conan-modules-${{ hashFiles('conanfile.py') }}
-      - uses: ruby/setup-ruby@v1
-        with:
-         ruby-version: 2.6
+#      - uses: ruby/setup-ruby@v1
+#        with:
+#         ruby-version: 2.6
       - name: where check
         run: |
           # show where
