@@ -15,8 +15,6 @@ jobs:
         with:
           ruby-version: 2.6
           setup-ruby-ref: MSP-Greg/ruby-setup-ruby/00-win-ucrt
-          mingw: _upgrade_ gmp libffi libyaml openssl ragel readline gcc
-          msys2: automake1.16 bison
       - name: Install conan and xxd
         run: choco install -y vim; pip install conan
       - name: Set path to include xxd
