@@ -18,7 +18,7 @@ class Language
   LANG_CK = [
      'ko', 'zh_CN'
   ]
-  LANGUAGES = Steam.enabled? ? (LANG_WESTERN + LANG_CK + LANG_J) : ['en']
+  LANGUAGES = (LANG_WESTERN + LANG_CK + LANG_J)
 
   class << self
     def set(lc)
@@ -27,26 +27,47 @@ class Language
       @tr = nil
       script = nil
       [lc.full.to_s, lc.lang.to_s].each do |name|
-        path = "Languages/#{name}.loc"
+        path = "Languages/#{name}.pot"
         dbg_print(path)
         if FileTest.exist?(path)
-          File.open(path, "rb") do |file|
-            @data = Marshal.load(file)
-            if LANG_CK.include? name
-                Font.default_name = FONT_CK
-            elsif LANG_J.include? name
-                Font.default_name = FONT_J
-            else
-                Font.default_name = FONT_WESTERN
-            end
-            Journal.setLang(name)
-            dbg_print(Font.default_name)
+		  load_pot(path)
+          if LANG_CK.include? name
+              Font.default_name = FONT_CK
+          elsif LANG_J.include? name
+              Font.default_name = FONT_J
+          else
+              Font.default_name = FONT_WESTERN
           end
+          Journal.setLang(name)
+          dbg_print(Font.default_name)
+		  break
         end
       end
       reset_fonts(@text_sprites)
       Oneshot.set_yes_no(tr('Yes'), tr('No'))
     end
+	
+	def load_pot(path)
+	  msgid = nil
+	  msgstr = nil
+	  @data = Hash.new
+	  if FileTest.exist?(path)
+	    File.readlines(path).each do |line|
+		  if line.start_with?("msgid ")
+		    line = line[6..-1]
+			#unescape the string
+			eval("msgid = " + line)
+		  elsif line.start_with?("msgstr ")
+		    line = line[7..-1]
+			#unescape the string
+			eval("msgstr = " + line)
+			if !(msgid.nil? || msgid.empty?)
+			  @data[Oneshot::crc32(msgid)] = msgstr
+			end
+		  end
+	    end
+	  end
+	end
 
     # Translate some text
     def tr(string)
