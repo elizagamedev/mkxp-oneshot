@@ -620,7 +620,8 @@ static void mriBindingExecute()
 
 	// the three arguments are the executable name, and the '-e ""' is to tell ruby to run an empty file
 	// otherwise (since this parses options for the ruby executable) it's gonna wait on stdin for code
-	char options_argv1[] = "oneshot", options_argv2[] = "-e", options_argv3[] = "";
+	// --jit enables the jit i think
+	char options_argv1[] = "oneshot", options_argv2[] = "-e", options_argv3[] = "--jit";
 	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
 	ruby_options(3, options_argv);
 
