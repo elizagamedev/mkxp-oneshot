@@ -5,6 +5,7 @@
 
 void unloadLocale();
 void loadLocale(const char* locale);
+void decodeEscapeChars(char* s);
 const char* findtext(unsigned int msgid, const char* fallback);
 int getLocaleFamily();
 

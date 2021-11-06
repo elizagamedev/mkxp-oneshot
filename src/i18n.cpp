@@ -52,36 +52,91 @@ void _read(void * ptr, size_t size, size_t count, FILE * stream) {
 }
 
 void loadLocale(const char* locale) {
+	char line[1024];
 	char pathbuf[100];
 	FILE* locfile;
-	char header[8];
-	unsigned int i;
-	int strSize = 0;
 
 	unloadLocale();
 
 	_setLocaleFamily(locale);
 
-	sprintf(pathbuf, "Languages/internal/%s.loc", locale);
-	locfile = fopen(pathbuf, "rb");
+	int dictSize = 52;
+	// currently there are 52
+	strdict = (char**)malloc(sizeof(char*) * dictSize);
+
+	sprintf(pathbuf, "Languages/internal/%s.po", locale);
+	locfile = fopen(pathbuf, "r");
 	if (locfile) {
-		_read(header, 1, 8, locfile);
-		if (!strcmp(header, LOC_HEADER)) {
-			// Read number of strs in this file
-			_read(&nStr, 4, 1, locfile);
-			strdict = (char**)malloc(sizeof(char*) * nStr);
-			for (i = 0; i < nStr; i++) {
-				// Read the size of the next string
-				_read(&strSize, 4, 1, locfile);
-				strdict[i] = (char*)malloc(strSize+1);
-				if (strSize > 0) {
-					// Read the contents of the next string
-					_read(strdict[i], 1, strSize, locfile);
-					strdict[i][strSize] = 0;
+		while (fgets(line, 1024, locfile)) {
+			if (strncmp("msgstr \"", line, 8) == 0) {
+				char* lineWithoutMsgid = line + 8;
+				
+				char* endQuoteAddress = strrchr(lineWithoutMsgid, '"');
+
+				// end string at last quotation mark
+				if (endQuoteAddress != 0) {
+					endQuoteAddress[0] = 0;
 				}
-				strdict[i][strSize] = 0;
+
+				decodeEscapeChars(lineWithoutMsgid);
+
+				int lineLen = strlen(lineWithoutMsgid);
+
+				strdict[nStr] = (char*)malloc(lineLen + 1);
+				strcpy(strdict[nStr], lineWithoutMsgid);
+
+				nStr++;
 			}
 		}
+
 		fclose(locfile);
 	}
 }
+
+// replaces escape characters with their actual values in-place in a string
+// can do it in-place because the replacement values are always smaller than the original value
+// it only handles \\ and \", but this can be expanded to include more if needed
+void decodeEscapeChars(char* s) {
+	char* dest = s;
+	char* src = s;
+	while (src[0] != 0) {
+		switch (src[0]) {
+			// might be an escape character?
+			case '\\':
+				switch (src[1]) {
+					case '\\' :
+						dest[0] = '\\';
+						dest++;
+						src += 2;
+						break;
+					case '\"':
+						dest[0] = '\"';
+						dest++;
+						src += 2;
+						break;
+					// end of the string?
+				    // so only advance forward 1 character
+					case 0:
+						dest[0] = '\\';
+						dest++;
+						src++;
+						break;
+					// not escape, handle normally
+					default:
+						dest[0] = '\\';
+						dest[1] = src[1];
+						dest+=2;
+						src+=2;
+						break;
+				}
+				break;
+			default:
+				dest[0] = src[0];
+				dest++;
+				src++;
+		}
+	}
+	// cap the end of the string
+	dest[0] = 0;
+}
+

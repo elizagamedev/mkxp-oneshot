@@ -530,7 +530,13 @@ struct SettingsMenuPrivate
 		{
 			dstRect.w = alignW;
 			dstRect.x = drawOff.x + x;
-			SDL_BlitScaled(txtSurf, 0, surf, &dstRect);
+
+			SDL_Rect srcRect;
+			srcRect.x = 0;
+			srcRect.y = 0;
+			srcRect.w = dstRect.w;
+			srcRect.h = txtSurf->h;
+			SDL_BlitSurface(txtSurf, &srcRect, surf, &dstRect);
 		}
 	}
 
@@ -973,7 +979,7 @@ void BindingWidget::clickHandler(int x, int y, uint8_t button)
 	if (cell == -1)
 		return;
 
-	p->onBWidgetCellClicked(src[cell], vb.str, button);
+	p->onBWidgetCellClicked(src[cell], findtext(vb.trstrId, vb.str), button);
 }
 
 int BindingWidget::cellIndex(int x, int y) const
