@@ -1,0 +1,9 @@
+#include <winuser.h>
+MAINICON ICON "icon.ico"
+
+NIKO1 BITMAP "img/NIKO1.bmp"
+NIKO2 BITMAP "img/NIKO2.bmp"
+NIKO3 BITMAP "img/NIKO3.bmp"
+
+default BITMAP "img/DEFAULT.bmp"
+

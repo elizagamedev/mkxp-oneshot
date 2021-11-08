@@ -1,0 +1,7 @@
+.vs
+Debug
+journal/Debug
+!*.sln
+!*.vcxproj
+!*.vcxproj.filters
+!*.bmp

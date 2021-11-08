@@ -60,8 +60,8 @@ void loadLocale(const char* locale) {
 
 	_setLocaleFamily(locale);
 
-	int dictSize = 52;
-	// currently there are 52
+	int dictSize = 100;
+	// currently there are 52, but 100 should be plenty if we ever do add more
 	strdict = (char**)malloc(sizeof(char*) * dictSize);
 
 	sprintf(pathbuf, "Languages/internal/%s.po", locale);

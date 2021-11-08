@@ -192,6 +192,45 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win)
 	}
 }
 
+// mainly doing this so journal app knows where to load images from
+static void setGamePathInRegistry() {
+
+	// this logic is currently windows specific
+	char* dataDir = SDL_GetBasePath();
+	if (dataDir)
+	{
+		HKEY key;
+		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
+
+		if (keyOpenError != ERROR_SUCCESS) {
+			// try creating the key first
+			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
+
+			if (keyCreateError != ERROR_SUCCESS)
+			{
+				showInitError("Unable to create key in registry.");
+			}
+			else {
+				keyOpenError = ERROR_SUCCESS;
+			}
+		}
+
+		if (keyOpenError != ERROR_SUCCESS)
+		{
+			showInitError("Unable to open registry.");
+		}
+		else {
+			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
+			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS)
+			{
+				showInitError("Unable to set GameDirectory registry value.");
+			}
+			RegCloseKey(key);
+		}
+		SDL_free(dataDir);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
@@ -230,6 +269,8 @@ int main(int argc, char *argv[])
 		SDL_free(dataDir);
 	}
 #endif
+
+	setGamePathInRegistry();
 
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
