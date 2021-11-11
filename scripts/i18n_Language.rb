@@ -1,5 +1,4 @@
 # Classes for translating text similar to GNU gettext
-
 # Translator class: translate text to another language
 
 # for debug REMOVE BEFORE COMMITTING / BUILDING
@@ -7,19 +6,8 @@
 
 class Language
   FONT_WESTERN = 'Terminus (TTF)'
-  FONT_CK = 'WenQuanYi Micro Hei'
   FONT_J = 'HigashiOme Gothic regular'
-  LANG_WESTERN = [
-    'en', 'fr', 'pt_BR', 'es'
-  ]
-  LANG_J = [
-    'ja'
-  ]
-  LANG_CK = [
-     'ko', 'zh_CN'
-  ]
-  LANGUAGES = (LANG_WESTERN + LANG_CK + LANG_J)
-
+  LANGUAGES = []
   class << self
     def set(lc)
       dbg_print(lc.lang)
@@ -27,47 +15,42 @@ class Language
       @tr = nil
       script = nil
       [lc.full.to_s, lc.lang.to_s].each do |name|
-        path = "Languages/#{name}.pot"
+        path = "Languages/#{name}.po"
         dbg_print(path)
         if FileTest.exist?(path)
-		  load_pot(path)
-          if LANG_CK.include? name
-              Font.default_name = FONT_CK
-          elsif LANG_J.include? name
-              Font.default_name = FONT_J
-          else
-              Font.default_name = FONT_WESTERN
-          end
+          load_pot(path)
+          loadFontMap
+          Font.default_name = @languageFontMap[name]
           Journal.setLang(name)
           dbg_print(Font.default_name)
-		  break
+          break
         end
       end
       reset_fonts(@text_sprites)
       Oneshot.set_yes_no(tr('Yes'), tr('No'))
     end
-	
-	def load_pot(path)
-	  msgid = nil
-	  msgstr = nil
-	  @data = Hash.new
-	  if FileTest.exist?(path)
-	    File.readlines(path).each do |line|
-		  if line.start_with?("msgid ")
-		    line = line[6..-1]
-			#unescape the string
-			eval("msgid = " + line)
-		  elsif line.start_with?("msgstr ")
-		    line = line[7..-1]
-			#unescape the string
-			eval("msgstr = " + line)
-			if !(msgid.nil? || msgid.empty?)
-			  @data[Oneshot::crc32(msgid)] = msgstr
-			end
-		  end
-	    end
-	  end
-	end
+
+    def load_pot(path)
+      msgid = nil
+      msgstr = nil
+      @data = Hash.new
+      if FileTest.exist?(path)
+        File.readlines(path).each do |line|
+          if line.start_with?("msgid ")
+            line = line[6..-1]
+            #unescape the string
+            eval("msgid = " + line)
+          elsif line.start_with?("msgstr ")
+            line = line[7..-1]
+            #unescape the string
+            eval("msgstr = " + line)
+            if !(msgid.nil? || msgid.empty?)
+              @data[Oneshot::crc32(msgid)] = msgstr
+            end
+          end
+        end
+      end
+    end
 
     # Translate some text
     def tr(string)
@@ -79,6 +62,23 @@ class Language
       end
       dbg_print(string + " -> " + rv)
       return String.new(rv)
+    end
+
+    def loadFontMap
+      if !@fontMapLoaded
+        @languageFontMap = Hash.new
+        path = "Languages/language_fonts.ini"
+        if FileTest.exist?(path)
+          File.readlines(path).each do |line|
+            parts = line.split("=", 2)
+            if parts.length == 2
+              LANGUAGES.push(parts[0])
+              @languageFontMap[parts[0]] = parts[1].strip
+            end
+          end
+        end
+        @fontMapLoaded = true
+      end
     end
 
     # Turn all database items into translatable strings
@@ -116,7 +116,7 @@ class Language
       if sprites.kind_of?(Array)
         sprites.each do |spr|
           if spr.kind_of?(Sprite) and !spr.disposed?
-             spr.bitmap.font.name = Font.default_name
+            spr.bitmap.font.name = Font.default_name
           end
         end
       elsif sprites.kind_of?(Hash)
