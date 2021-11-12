@@ -47,12 +47,6 @@ const uint8_t cBgDark = 20;
 const uint8_t cLine = 0;
 const uint8_t cText = 255;
 
-// const char *const fontFamilyLatin = "Terminus (TTF)";
-const char *const fontFamilyLatin = "WenQuanYi Micro Hei";
-const uint8_t fontSizeLatin = 12;
-const char *const fontFamilyAsian = "WenQuanYi Micro Hei";
-const uint8_t fontSizeAsian = 16;
-
 static bool pointInRect(const SDL_Rect &r, int x, int y)
 {
 	return (x >= r.x && x <= r.x+r.w && y >= r.y && y <= r.y+r.h);
@@ -1086,11 +1080,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
 
-	if (getLocaleFamily() == LOCALE_FAMILY_ASIAN) {
-			p->font = shState->fontState().getFont(fontFamilyAsian, fontSizeAsian);
-	} else {
-			p->font = shState->fontState().getFont(fontFamilyLatin, fontSizeLatin);
-	}
+	p->font = shState->fontState().getFont(getFontName(), getFontSize());
 
 
 	p->rgb = p->winSurf->format;

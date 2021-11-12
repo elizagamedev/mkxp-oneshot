@@ -275,6 +275,8 @@ int main(int argc, char *argv[])
 	/* Initialize physfs here so that config can call PHYSFS_getPrefDir */
 	PHYSFS_init(argv[0]);
 
+	loadLanguageMetadata();
+
 	/* now we load the config */
 	Config conf;
 	conf.read(argc, argv);
@@ -432,6 +434,7 @@ int main(int argc, char *argv[])
 	Debug() << "Shutting down.";
 
 	unloadLocale();
+	unloadLanguageMetadata();
 
 	alcCloseDevice(alcDev);
 	SDL_DestroyWindow(win);
