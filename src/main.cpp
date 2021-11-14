@@ -195,6 +195,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win)
 // mainly doing this so journal app knows where to load images from
 static void setGamePathInRegistry() {
 
+#if defined WIN32
 	// this logic is currently windows specific
 	char* dataDir = SDL_GetBasePath();
 	if (dataDir)
@@ -229,6 +230,8 @@ static void setGamePathInRegistry() {
 		}
 		SDL_free(dataDir);
 	}
+#endif
+	//TODO handle this for Linux/Mac
 }
 
 int main(int argc, char *argv[])
