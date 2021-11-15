@@ -17,8 +17,10 @@ Preface: This only supports Visual Studio on Windows and Xcode on macOS. Ubuntu 
 With Python 3 and pip installed, install Conan via `pip3 install conan`. Afterwards, add the necessary package repositories by adding running the following commands:
 
 ```sh
-conan remote add eliza "https://api.bintray.com/conan/eliza/conan"
-conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
+conan remote add eliza https://rkevin.jfrog.io/artifactory/api/conan/eliza
+conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
+conan config set general.revisions_enabled=1
+setx CONAN_USE_ALWAYS_SHORT_PATHS 1 (windows only)
 ```
 
 Prepare to build *OneShot* by installing the necessary dependencies with Conan.
