@@ -141,7 +141,7 @@ else()
 	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(LINUXPKGS REQUIRED gtk+-2.0 libxfconf-0)
 	include_directories(${LINUXPKGS_INCLUDE_DIRS})
-	add_compile_options(${LINUXPKGS_CFLAGS_OTHER})
+	add_compile_options(${LINUXPKGS_CFLAGS_OTHER} -g)
 	list(APPEND PLATFORM_LIBRARIES ${LINUXPKGS_LDFLAGS})
 	list(APPEND MAIN_SOURCE src/xdg-user-dir-lookup.c)
 	list(APPEND MAIN_HEADERS src/xdg-user-dir-lookup.h)
@@ -195,6 +195,7 @@ set(EMBEDDED_INPUT
 	shader/crt_sprite.frag
 	shader/simpleMatrix.vert
 	shader/chronos.frag
+	shader/cubic_lens.frag
 	shader/zoom.vert
 	assets/icon.png
 	assets/gamecontrollerdb.txt

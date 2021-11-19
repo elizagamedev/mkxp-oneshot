@@ -56,6 +56,7 @@
 #include "mask.vert.xxd"
 #include "crt.frag.xxd"
 #include "crt_sprite.frag.xxd"
+#include "cubic_lens.frag.xxd"
 #include "chronos.frag.xxd"
 #include "zoom.vert.xxd"
 
@@ -721,4 +722,18 @@ ZoomShader::ZoomShader()
 void ZoomShader::setZoom(const Vec2 zoom)
 {
 	gl.Uniform2f(u_zoom, zoom.x, zoom.y);
+}
+
+CubicShader::CubicShader()
+{
+	INIT_SHADER(simple, cubic_lens, CubicShader);
+
+	ShaderBase::init();
+
+	GET_U(iTime);
+}
+
+void CubicShader::setiTime(const float value)
+{
+	gl.Uniform1f(u_iTime, value);
 }

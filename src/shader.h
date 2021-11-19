@@ -371,6 +371,18 @@ private:
 	GLint u_zoom;
 };
 
+class CubicShader : public ShaderBase
+{
+public:
+	CubicShader();
+
+	void setiTime(const float value);
+
+private:
+	GLint u_iTime;
+};
+
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -397,6 +409,7 @@ struct ShaderSet
 	ScannedShaderSprite scanned_sprite;
 	ChronosShader chronos;
 	ZoomShader zoom;
+	CubicShader cubic;
 };
 
 #endif // SHADER_H

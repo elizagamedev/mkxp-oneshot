@@ -61,7 +61,8 @@ public:
 									   const bool  /* scanned */,
 									   const Vec4 /*  rbg  */,
 									   const Vec4 /*  rbg  */,
-									   const Vec2 /* zoom */) {}
+									   const Vec2 /* zoom */,
+									   const float /* cubic */) {}
 
 	const Geometry &getGeometry() const { return geometry; }
 
