@@ -47,12 +47,6 @@ const uint8_t cBgDark = 20;
 const uint8_t cLine = 0;
 const uint8_t cText = 255;
 
-const char *const fontFamilyLatin = "Terminus (TTF)";
-//const char *const fontFamilyLatin = "WenQuanYi Micro Hei";
-const uint8_t fontSizeLatin = 12;
-const char *const fontFamilyAsian = "WenQuanYi Micro Hei";
-const uint8_t fontSizeAsian = 16;
-
 static bool pointInRect(const SDL_Rect &r, int x, int y)
 {
 	return (x >= r.x && x <= r.x+r.w && y >= r.y && y <= r.y+r.h);
@@ -532,7 +526,13 @@ struct SettingsMenuPrivate
 		{
 			dstRect.w = alignW;
 			dstRect.x = drawOff.x + x;
-			SDL_BlitScaled(txtSurf, 0, surf, &dstRect);
+
+			SDL_Rect srcRect;
+			srcRect.x = 0;
+			srcRect.y = 0;
+			srcRect.w = dstRect.w;
+			srcRect.h = txtSurf->h;
+			SDL_BlitSurface(txtSurf, &srcRect, surf, &dstRect);
 		}
 	}
 
@@ -975,7 +975,7 @@ void BindingWidget::clickHandler(int x, int y, uint8_t button)
 	if (cell == -1)
 		return;
 
-	p->onBWidgetCellClicked(src[cell], vb.str, button);
+	p->onBWidgetCellClicked(src[cell], findtext(vb.trstrId, vb.str), button);
 }
 
 int BindingWidget::cellIndex(int x, int y) const
@@ -1082,11 +1082,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
 
-	if (getLocaleFamily() == LOCALE_FAMILY_ASIAN) {
-			p->font = shState->fontState().getFont(fontFamilyAsian, fontSizeAsian);
-	} else {
-			p->font = shState->fontState().getFont(fontFamilyLatin, fontSizeLatin);
-	}
+	p->font = shState->fontState().getFont(getFontName(), getFontSize());
 
 
 	p->rgb = p->winSurf->format;

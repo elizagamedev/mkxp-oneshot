@@ -12,7 +12,9 @@
 *.filters
 *.sln
 *.user
+*.tlog
 
+.vs/
 bin/
 lib/
 *.dir/
@@ -34,12 +36,6 @@ steamshim_parent/build/
 object_script.*
 rpgscript.bat
 rpgscript - mklang.bat
-oneshot_JA_2_merge.pot
-oneshot_JA_2_merge-jpn.pot
-oneshot_JA_2_ver4.pot
-oneshot_JA_2_fixed_ver3.pot
-oneshot_JA_2_ver3_checked.pot
-oneshot_JA_Mariko1_WIP.pot
 *.pot
 xScripts.rxdata
 
