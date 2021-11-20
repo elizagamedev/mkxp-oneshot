@@ -54,6 +54,7 @@ DEF_PROP_I(Plane, BlendType)
 
 DEF_PROP_F(Plane, ZoomX)
 DEF_PROP_F(Plane, ZoomY)
+DEF_PROP_F(Plane, WaterTime)
 
 
 void
@@ -77,4 +78,5 @@ planeBindingInit()
 	INIT_PROP_BIND( Plane, BlendType, "blend_type" );
 	INIT_PROP_BIND( Plane, Color,     "color"      );
 	INIT_PROP_BIND( Plane, Tone,      "tone"       );
+	INIT_PROP_BIND( Plane, WaterTime, "waterTime"  );
 }

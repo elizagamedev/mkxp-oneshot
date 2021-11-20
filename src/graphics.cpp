@@ -178,7 +178,7 @@ public:
 		}
 	}
 
-	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 rx, const Vec4 ry, const Vec2 z, const float cubic)
+	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t, const bool s, const Vec4 rx, const Vec4 ry, const Vec2 z, const float cubic, const float water)
 	{
 		const IntRect &viewpRect = glState.scissorBox.get();
 		const IntRect &screenRect = geometry.rect;
@@ -187,6 +187,7 @@ public:
 		const bool toneGrayEffect = t.w != 0 && !s;
 		const bool colorEffect    = c.w > 0;
 		const bool flashEffect    = f.w > 0;
+		const bool waterEffect = water != 0;
 		const bool cubicEffect = cubic != 0;
 		const bool rgbOffset = rx.xyzNotNull() || ry.xyzNotNull() && !toneGrayEffect && !s && !(z.x != 1 || z.y != 1) && !cubicEffect;
 		const bool scannedEffect = s && !t.w != 0 && !rgbOffset && !(z.x != 1 || z.y != 1) && !cubicEffect;
@@ -245,6 +246,38 @@ public:
 
 			ScannedShader &shader = shState->shaders().scanned;
 			shader.bind();
+			shader.applyViewportProj();
+			shader.setTexSize(screenRect.size());
+
+			TEX::bind(pp.backBuffer().tex);
+
+			glState.blend.pushSet(false);
+			screenQuad.draw();
+			glState.blend.pop();
+		}
+
+		if (waterEffect)
+		{
+			pp.swapRender();
+
+			if (!viewpRect.encloses(screenRect))
+			{
+				/* Scissor test _does_ affect FBO blit operations,
+				 * and since we're inside the draw cycle, it will
+				 * be turned on, so turn it off temporarily */
+				glState.scissorTest.pushSet(false);
+
+				GLMeta::blitBegin(pp.frontBuffer());
+				GLMeta::blitSource(pp.backBuffer());
+				GLMeta::blitRectangle(geometry.rect, Vec2i());
+				GLMeta::blitEnd();
+
+				glState.scissorTest.pop();
+			}
+
+			WaterShader &shader = shState->shaders().water;
+			shader.bind();
+			shader.setiTime(water);
 			shader.applyViewportProj();
 			shader.setTexSize(screenRect.size());
 

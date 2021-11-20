@@ -382,6 +382,18 @@ private:
 	GLint u_iTime;
 };
 
+class WaterShader : public ShaderBase
+{
+public:
+	WaterShader();
+
+	void setiTime(const float value);
+	void setOpacity(const float opacity);
+
+private:
+	GLint u_iTime, u_opacity;
+};
+
 
 /* Global object containing all available shaders */
 struct ShaderSet
@@ -410,6 +422,7 @@ struct ShaderSet
 	ChronosShader chronos;
 	ZoomShader zoom;
 	CubicShader cubic;
+	WaterShader water;
 };
 
 #endif // SHADER_H

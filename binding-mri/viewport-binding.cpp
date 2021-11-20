@@ -102,6 +102,18 @@ RB_METHOD(setCubicTime)
 	return Qnil;
 }
 
+RB_METHOD(setWaterTime)
+{
+	double time;
+	rb_get_args(argc, argv, "f", &time);
+
+	Viewport *v = getPrivateData<Viewport>(self);
+
+	v->setWaterTime(time);
+
+	return Qnil;
+}
+
 RB_METHOD(setZoom)
 {
 	double x, y;
@@ -136,6 +148,7 @@ viewportBindingInit()
 	_rb_define_method(klass, "setRGBOffset", setRGBOffset);
 	_rb_define_method(klass, "setZoom", setZoom);
 	_rb_define_method(klass, "setCubicTime", setCubicTime);
+	_rb_define_method(klass, "setWaterTime", setWaterTime);
 
 	INIT_PROP_BIND( Viewport, Rect,  "rect"  );
 	INIT_PROP_BIND( Viewport, OX,    "ox"    );

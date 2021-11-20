@@ -57,6 +57,7 @@
 #include "crt.frag.xxd"
 #include "crt_sprite.frag.xxd"
 #include "cubic_lens.frag.xxd"
+#include "water.frag.xxd"
 #include "chronos.frag.xxd"
 #include "zoom.vert.xxd"
 
@@ -736,4 +737,24 @@ CubicShader::CubicShader()
 void CubicShader::setiTime(const float value)
 {
 	gl.Uniform1f(u_iTime, value);
+}
+
+WaterShader::WaterShader()
+{
+	INIT_SHADER(simple, water, WaterShader);
+
+	ShaderBase::init();
+
+	GET_U(iTime);
+	GET_U(opacity);
+}
+
+void WaterShader::setiTime(const float value)
+{
+	gl.Uniform1f(u_iTime, value);
+}
+
+void WaterShader::setOpacity(const float value)
+{
+	gl.Uniform1f(u_opacity, value);
 }

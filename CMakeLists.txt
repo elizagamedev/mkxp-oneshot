@@ -196,6 +196,7 @@ set(EMBEDDED_INPUT
 	shader/simpleMatrix.vert
 	shader/chronos.frag
 	shader/cubic_lens.frag
+	shader/water.frag
 	shader/zoom.vert
 	assets/icon.png
 	assets/gamecontrollerdb.txt

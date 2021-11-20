@@ -57,6 +57,8 @@ struct PlanePrivate
 	int ox, oy;
 	float zoomX, zoomY;
 
+	float waterTime;
+
 	Scene::Geometry sceneGeo;
 
 	bool quadSourceDirty;
@@ -77,7 +79,8 @@ struct PlanePrivate
 	      tone(&tmp.tone),
 	      ox(0), oy(0),
 	      zoomX(1), zoomY(1),
-	      quadSourceDirty(false)
+	      quadSourceDirty(false),
+		  waterTime(0.0)
 	{
 		updateSrcRectCon();
 		prepareCon = shState->prepareDraw.connect
@@ -186,6 +189,7 @@ DEF_ATTR_SIMPLE(Plane, SrcRect,   Rect&,  *p->srcRect)
 DEF_ATTR_SIMPLE(Plane, Opacity,   int,     p->opacity)
 DEF_ATTR_SIMPLE(Plane, Color,     Color&, *p->color)
 DEF_ATTR_SIMPLE(Plane, Tone,      Tone&,  *p->tone)
+DEF_ATTR_SIMPLE(Plane, WaterTime, float, p->waterTime)
 
 Plane::~Plane()
 {
@@ -289,7 +293,17 @@ void Plane::draw()
 
 	ShaderBase *base;
 
-	if (p->color->hasEffect() || p->tone->hasEffect() || p->opacity != 255)
+	if (p->waterTime != 0)
+	{
+		WaterShader &shader = shState->shaders().water;
+		shader.bind();
+		shader.applyViewportProj();
+		shader.setiTime(p->waterTime);
+		shader.setOpacity(p->opacity.norm);
+
+		base = &shader;
+	}
+	else if (p->color->hasEffect() || p->tone->hasEffect() || p->opacity != 255)
 	{
 		PlaneShader &shader = shState->shaders().plane;
 
