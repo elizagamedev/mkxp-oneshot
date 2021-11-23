@@ -134,9 +134,9 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
 	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 
-	if (rgssVer >= 2)
-	{
+	//if (rgssVer >= 2)
+	//{
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);
-	}
+	//}
 }
