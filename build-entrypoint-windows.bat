@@ -21,3 +21,4 @@ echo Press any key to rebuild, or Ctrl+C and then Y to quit the container.
 pause >nul
 echo Rebuilding...
 goto startbuild
+© 2021 GitHub, Inc.

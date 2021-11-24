@@ -101,8 +101,6 @@ static const KbBindingData defaultKbBindings[] =
 	{ SDL_SCANCODE_C,      Input::Deactivate },
 	{ SDL_SCANCODE_Q,      Input::L          },
 	{ SDL_SCANCODE_W,      Input::R          },
-	{ SDL_SCANCODE_TAB,    Input::Settings   },
-	{ SDL_SCANCODE_P, 	   Input::Pause	     },
 };
 
 static elementsN(defaultKbBindings);
@@ -228,8 +226,7 @@ static bool verifyDesc(const BindingDesc &desc)
 	    Input::Run,
 	    Input::Deactivate,
 	    Input::L, Input::R,
-		Input::Settings, Input::Pause,
-	    Input::F5, Input::F6, Input::F7, Input::F8, Input::F9,
+	    Input::F5, Input::F6, Input::F7, Input::F8, Input::F9
 	};
 
 	elementsN(codes);

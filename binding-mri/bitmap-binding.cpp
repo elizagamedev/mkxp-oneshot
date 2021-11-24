@@ -451,6 +451,18 @@ RB_METHOD(bitmapInitializeCopy)
 }
 
 
+RB_METHOD(bitmapChronos)
+{
+	RB_UNUSED_PARAM;
+
+	Bitmap *b = getPrivateData<Bitmap>(self);
+
+	b->chromaticAbberation();
+
+	return Qnil;
+}
+
+
 void
 bitmapBindingInit()
 {
@@ -474,14 +486,17 @@ bitmapBindingInit()
 	_rb_define_method(klass, "hue_change",  bitmapHueChange);
 	_rb_define_method(klass, "draw_text",   bitmapDrawText);
 	_rb_define_method(klass, "text_size",   bitmapTextSize);
+
 	_rb_define_method(klass, "mask",   		bitmapMask);
 
 	//if (rgssVer >= 2)
 	//{
-	_rb_define_method(klass, "gradient_fill_rect", bitmapGradientFillRect);
-	_rb_define_method(klass, "clear_rect",         bitmapClearRect);
+	 _rb_define_method(klass, "chronos",   bitmapChronos);
 	_rb_define_method(klass, "blur",               bitmapBlur);
 	_rb_define_method(klass, "radial_blur",        bitmapRadialBlur);
+	
+	_rb_define_method(klass, "gradient_fill_rect", bitmapGradientFillRect);
+	_rb_define_method(klass, "clear_rect",         bitmapClearRect);
 	//}
 
 	INIT_PROP_BIND(Bitmap, Font, "font");

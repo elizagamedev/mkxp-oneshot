@@ -12,10 +12,10 @@ function fail() {
 }
 
 function copy_dependencies() {
-    if [[ $SO_BLACKLIST =~ $1 ]]; then
+    if [[ $SO_BLACKLIST == *"$1"* ]]; then
         return
     fi
-    if [[ $SO_PROCESSED =~ $1 ]]; then
+    if [[ $SO_PROCESSED == *"$1"* ]]; then
         return
     fi
     [[ ! $1 =~ ^[a-zA-Z0-9+\._-]*$ ]] && fail "The library $1 has weird characters!"

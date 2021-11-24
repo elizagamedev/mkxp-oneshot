@@ -33,7 +33,9 @@
 #include <string.h>
 #include <assert.h>
 
+
 #define BUTTON_CODE_COUNT 262
+
 // SDLK can range from 0x00 to 0x7f for ones with character representation
 // and 0x40000039 to 0x4000011a for ones without character representation
 // we squash 0x40000039 - 0x4000007f to 0x139 - 0x17f
@@ -286,10 +288,12 @@ static const int mapToIndex[] =
 	16, 17, 18, 19, 20,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	21, 22, 23,
+
 	//settings & pause
 	260, 261,
 	// pad: index 43 to 59
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
 	// sdl keycodes, 60 (0x00) to 91 (0x1f)
 	24, 0, 0, 0, 0, 0, 0, 0, 25, 26, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0,
 	// sdl keycodes, 92 (0x20) to 123 (0x3f)
@@ -823,6 +827,7 @@ void Input::setPressed(int button) {
 }
 void Input::setTriggered(int button) {
 	ButtonState& state = p->getStateCheck(button);
+	state.pressed = true;
 	state.triggered = true;
 	p->updateDir4();
 	p->updateDir8();
@@ -833,6 +838,7 @@ void Input::setRepeated(int button) {
 	p->updateDir4();
 	p->updateDir8();
 }
+
 void Input::unsetKey(int button) {
 	ButtonState& state = p->getStateCheck(button);
 	state.pressed = false;

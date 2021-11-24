@@ -181,6 +181,7 @@ RB_METHOD(inputUnsetKey)
 	shState->input().unsetKey(num);
 	return Qnil;
 }
+
 RB_METHOD(inputSetKeyPressed)
 {
 	RB_UNUSED_PARAM;
@@ -228,9 +229,6 @@ static buttonCodes[] =
 	{ "L",          Input::L          },
 	{ "R",          Input::R          },
 
-	{ "SETTINGS", 	Input::Settings   },
-	{ "PAUSE", 		Input::Pause	  },
-	
 	{ "F5",         Input::F5         },
 	{ "F6",         Input::F6         },
 	{ "F7",         Input::F7         },
@@ -497,6 +495,7 @@ RB_METHOD(inputGetAllPressed)
 	}
 	return res;
 }
+
 RB_METHOD(inputGetAllTriggered)
 {
 	RB_UNUSED_PARAM;
@@ -539,8 +538,8 @@ RB_METHOD(inputSetAllUnPressed)
 	}
 	return Qnil;
 }
-void
-inputBindingInit()
+
+void inputBindingInit()
 {
 	VALUE module = rb_define_module("Input");
 
@@ -563,6 +562,7 @@ inputBindingInit()
 	_rb_define_module_function(module, "set_text_input", inputSetTextInput);
 
 	_rb_define_module_function(module, "get_all_pressed", inputGetAllPressed);
+
 	_rb_define_module_function(module, "get_all_triggered", inputGetAllTriggered);
 	_rb_define_module_function(module, "get_all_repeated", inputGetAllRepeated);
 	_rb_define_module_function(module, "set_all_pressed_unpressed", inputSetAllPressedUnPressed);

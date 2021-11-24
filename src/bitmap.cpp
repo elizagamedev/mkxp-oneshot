@@ -697,6 +697,14 @@ void Bitmap::blur()
 	p->onModified();
 }
 
+void Bitmap::chromaticAbberation() //int R, int G, int B, int A)
+{
+	guardDisposed();
+	GUARD_MEGA;
+
+	ChronosShader &shader = shState->shaders().chronos;
+}
+
 void Bitmap::radialBlur(int angle, int divisions)
 {
 	guardDisposed();

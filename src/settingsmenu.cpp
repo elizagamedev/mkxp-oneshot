@@ -40,7 +40,7 @@
 #include <algorithm>
 #include <assert.h>
 
-const Vec2i winSize(700, 564);
+const Vec2i winSize(700, 500);
 
 const uint8_t cBgNorm = 50;
 const uint8_t cBgDark = 20;
@@ -67,16 +67,14 @@ struct VButton
 	BTN_STRING(Action, TRSTR_KEYBIND_ACTION),
 	BTN_STRING(Cancel, TRSTR_KEYBIND_CANCEL),
 	BTN_STRING(Menu, TRSTR_KEYBIND_MENU),
-	{ Input:: L, TRSTR_KEYBIND_L, "Statistics" },
-	BTN_STRING(Settings, TRSTR_KEYBIND_SETTINGS),
-	
+	BTN_STRING(L, TRSTR_KEYBIND_L),
+
 	BTN_STRING(Down, TRSTR_KEYBIND_DOWN),
 	BTN_STRING(Right, TRSTR_KEYBIND_RIGHT),
 	BTN_STRING(Run, TRSTR_KEYBIND_RUN),
 	BTN_STRING(Deactivate, TRSTR_KEYBIND_DEACTIVATE),
 	BTN_STRING(Items, TRSTR_KEYBIND_ITEMS),
-	{ Input:: R, TRSTR_KEYBIND_R, "Skip text" },
-	BTN_STRING(Pause, TRSTR_KEYBIND_PAUSE),
+	BTN_STRING(R, TRSTR_KEYBIND_R),
 };
 
 static elementsN(vButtons);
@@ -1088,7 +1086,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->rgb = p->winSurf->format;
 
 	const size_t layoutW = 2;
-	const size_t layoutH = 7;
+	const size_t layoutH = 6;
 	assert(layoutW*layoutH == vButtonsN);
 
 	const int bWidgetW = winSize.x / layoutW;

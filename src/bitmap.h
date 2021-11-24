@@ -78,6 +78,7 @@ public:
 	void blur();
 	void radialBlur(int angle, int divisions);
 	
+	void glitch();
 
 	void clear();
 
