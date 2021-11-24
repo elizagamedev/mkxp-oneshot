@@ -1,5 +1,8 @@
 #define WINVER 0x0600
 #define _WIN32_WINNT 0x0600
+// needed to suppress warnings about wcscpy and such
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include <windows.h>
 #include <stdio.h>
 #include <objbase.h>
@@ -8,6 +11,7 @@
 #define DEFAULT_WIDTH 800
 #define DEFAULT_HEIGHT 600
 #define IN_BUFFER_SIZE 256
+#define IMAGE_PATH_MAX_SIZE 512
 
 #define WINDOW_STYLE (WS_OVERLAPPEDWINDOW ^ (WS_THICKFRAME | WS_MAXIMIZEBOX))
 
@@ -20,25 +24,61 @@ static DWORD err = 0;
 
 static HWND window = NULL;
 
+static char DataPath[512];
+
 static void loadImage(const char *name) {
-    char copy_space[IN_BUFFER_SIZE];
-    const char* lang_ptr;
+    char imagePath[IMAGE_PATH_MAX_SIZE];
+
     if (image_handle) {
         DeleteObject(image_handle);
     }
-    image_handle = LoadBitmapA(GetModuleHandleW(NULL), name);
-    // In the event we can't find an image's translated value
-    // try to find a matching resource without any language code suffix
-    if (!image_handle) {
-        lang_ptr = strchr(name, '_');
-        if (lang_ptr) {
-          memset(copy_space, 0, IN_BUFFER_SIZE);
-          strncpy(copy_space, name, lang_ptr - name);
-          //terminate the string because I guess strncpy doesn't
-          image_handle = LoadBitmapA(GetModuleHandleW(NULL), copy_space);
-          if (!image_handle) {
-            err = GetLastError();
-          }
+
+    // handle default as a special case, since we'll keep that image internally
+    if (strcmp(name, "default") == 0) {
+        image_handle = LoadBitmapA(GetModuleHandleW(NULL), "default");
+    }
+    else {
+        // names come in the format XX_YY
+        // where XX is the image (ex: c1)
+        // and YY is the lang code (ex: ja, or pt_br)
+        // so let's separate this into 2 char pointers
+        char imageName[IN_BUFFER_SIZE];
+        char* langCode = 0;
+        char* emptyString = "\0";
+        strcpy(imageName, name);
+        langCode = strchr(imageName, '_');
+        if (langCode > 0) {
+            // replace the code with 0 to null terminate the image name where this is
+            // then use the rest of the string as the language code
+            // so c1_ja becomes "c1\0ja", thus imageName is "c1" and then langCode is "ja"
+            (*langCode) = 0;
+            langCode++;
+        }
+        else {
+            langCode = emptyString;
+        }
+
+        // build imagePath
+        strcpy(imagePath, DataPath);
+        strcat(imagePath, "Graphics\\Journal\\");
+        strcat(imagePath, langCode);
+        strcat(imagePath, "\\");
+        strcat(imagePath, imageName);
+        strcat(imagePath, ".bmp");
+
+        image_handle = LoadImageA(NULL, imagePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+        // In the event we can't find an image's translated value
+        // try to find a matching file in the root folder
+        if (!image_handle) {
+            // build imagePath
+            strcpy(imagePath, DataPath);
+            strcat(imagePath, "Graphics\\Journal\\");
+            strcat(imagePath, imageName);
+            strcat(imagePath, ".bmp");
+            image_handle = LoadImageA(NULL, imagePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+            if (!image_handle) {
+                err = GetLastError();
+            }
         }
     }
 }
@@ -146,10 +186,33 @@ void init_check_save(WCHAR* save_path) {
   }
 }
 
+// images should be loaded from gamepath folder
+// so we need a gamepath, which should be saved in the registry
+boolean readGamePath() {
+    // clear data path
+    memset(&DataPath[0], 0, sizeof(DataPath));
+    DWORD dataPathSize = sizeof(DataPath);
+    
+    HKEY key;
+    long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
+
+    if (keyOpenError == ERROR_SUCCESS) {
+        long dirReadError = RegQueryValueEx(key, TEXT("GameDirectory"), NULL, NULL, (LPBYTE)DataPath, &dataPathSize);
+
+        RegCloseKey(key);
+
+        return dirReadError == ERROR_SUCCESS;
+    }
+    return FALSE;
+}
+
 int do_journal()
 {
   // Create
   HINSTANCE module = GetModuleHandleW(NULL);
+
+  // load data path from registry
+  readGamePath();
 
 	// Default image
 	WCHAR save_path[MAX_PATH];
