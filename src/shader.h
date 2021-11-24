@@ -316,7 +316,6 @@ private:
 	GLint u_obscured;
 };
 
-
 class MaskShader : public ShaderBase
 {
 public:
@@ -395,6 +394,7 @@ private:
 	GLint u_iTime, u_opacity;
 };
 
+
 /* Global object containing all available shaders */
 struct ShaderSet
 {
@@ -415,7 +415,6 @@ struct ShaderSet
 	BltShader blt;
 	SimpleMatrixShader simpleMatrix;
 	BlurShader blur;
-	ChromaticAbberation chronos;
 	ObscuredShader obscured;
 	MaskShader mask;
 	ScannedShader scanned;

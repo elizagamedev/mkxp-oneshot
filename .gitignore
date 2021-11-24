@@ -50,7 +50,7 @@ conan_imports_manifest\.txt
 package/
 
 oclint/
-conan-steamworks/
+
 steamworks/
 .vs/
 assets/icon.ico

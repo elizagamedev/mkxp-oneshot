@@ -309,15 +309,6 @@ SimpleShader::SimpleShader()
 	GET_U(texOffsetX);
 }
 
-SimpleShader::SimpleShader()
-{
-	INIT_SHADER(simple, simple, SimpleShader);
-
-	ShaderBase::init();
-
-	GET_U(texOffsetX);
-}
-
 void SimpleShader::setTexOffsetX(int value)
 {
 	gl.Uniform1f(u_texOffsetX, value);
@@ -767,36 +758,3 @@ void WaterShader::setOpacity(const float value)
 {
 	gl.Uniform1f(u_opacity, value);
 }
-
-ChromaticAbberation::ChronosShader()
-{
-	INIT_SHADER(simple, chronos, ChromaticAbberation);
-
-	ShaderBase::init();
-
-	GET_U(texOffsetX);
-}
-
-/*
-GlitchShader::GlitchShader()
-{
-
-INIT_SHADER(simple, glitch, GlitchShader);
-
-ShaderBase::init();
-
-//GET_U(time);
-//GET_U(end);
-
-}
-*/
-
-//void ObscuredShader::setTime(const TEXT::ID value)
-//{
-//	setTexUniform(u_time, 1, value);
-//}
-//
-//void ObscuredShader::setEnd(const TEXT::ID value)
-//{
-//	setTexUniform(u_end, 1, value);
-//}

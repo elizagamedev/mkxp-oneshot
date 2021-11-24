@@ -1,3 +1,0 @@
-#ifndef MODSHOT_VERSION
-#define MODSHOT_VERSION "70cc588-dirty-210410-175641"
-#endif

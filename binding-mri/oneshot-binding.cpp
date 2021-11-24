@@ -33,26 +33,13 @@ RB_METHOD(oneshotMsgBox)
 RB_METHOD(oneshotTextInput)
 {
 	RB_UNUSED_PARAM;
-	shState->oneshot().textinput();
-	return Qnil;
-}
-
-RB_METHOD(oneshotCtrlZ)
-{
-	RB_UNUSED_PARAM;
-	return shState->oneshot().checkctrlzinput() ? Qtrue : Qfalse;
-}
-
-RB_METHOD(oneshotTextInputUpdate)
-{
-	RB_UNUSED_PARAM;
-	return rb_str_new2(shState->oneshot().updatetextinput().c_str());
-}
-
-RB_METHOD(oneshotTextInputStopped)
-{
-	RB_UNUSED_PARAM;
-	return shState->oneshot().istextinputstopped() ? Qtrue : Qfalse;
+	VALUE prompt;
+	int char_limit = 100;
+	VALUE font = Qnil;
+	rb_get_args(argc, argv, "S|iS", &prompt, &char_limit, &font RB_ARG_END);
+	std::string promptStr = std::string(RSTRING_PTR(prompt), RSTRING_LEN(prompt));
+	std::string fontStr = (font == Qnil) ? "" : std::string(RSTRING_PTR(font), RSTRING_LEN(font));
+	return rb_str_new2(shState->oneshot().textinput(promptStr.c_str(), char_limit, fontStr.c_str()).c_str());
 }
 
 RB_METHOD(oneshotResetObscured)
@@ -139,9 +126,6 @@ void oneshotBindingInit()
 	_rb_define_module_function(module, "set_yes_no", oneshotSetYesNo);
 	_rb_define_module_function(module, "msgbox", oneshotMsgBox);
 	_rb_define_module_function(module, "textinput", oneshotTextInput);
-	_rb_define_module_function(module, "textinput_ctrlz", oneshotCtrlZ);
-	_rb_define_module_function(module, "textinput_update", oneshotTextInputUpdate);
-	_rb_define_module_function(module, "textinput_stopped", oneshotTextInputStopped);
 	_rb_define_module_function(module, "reset_obscured", oneshotResetObscured);
 	_rb_define_module_function(module, "obscured_cleared?", oneshotObscuredCleared);
 	_rb_define_module_function(module, "allow_exit", oneshotAllowExit);

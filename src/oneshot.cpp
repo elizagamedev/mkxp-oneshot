@@ -65,7 +65,6 @@ struct OneshotPrivate
 
 	bool exiting;
 	bool allowExit;
-	int pressedCtrlV;
 
 	// Alpha texture data for portions of window obscured by screen edges
 	int winX, winY;
@@ -187,7 +186,6 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	p->winPosChanged = false;
 	p->allowExit = true;
 	p->exiting = false;
-	p->pressedCtrlV = 0;
 	#ifdef OS_W32
 		p->os = "windows";
 	#elif defined OS_OSX
@@ -582,62 +580,39 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 #endif // #ifdef OS_LINUX
 }
 
-void Oneshot::textinput() {
+std::string Oneshot::textinput(const char* prompt, int char_limit, const char* fontName) {
+	std::vector<std::string> *fontNames = new std::vector<std::string>();
+	fontNames->push_back(fontName);
+	fontNames->push_back("VL Gothic");
+	Font *font = new Font(fontNames, 18);
+
+	Bitmap *promptBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	promptBmp->setInitFont(font);
+	promptBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, prompt, 1);
+
+	Bitmap *inputBmp = new Bitmap(DEF_SCREEN_W, DEF_SCREEN_H);
+	inputBmp->setInitFont(font);
+	inputBmp->drawText(0, 0, DEF_SCREEN_W, DEF_SCREEN_H, "", 1);
+
 	std::string inputTextPrev = std::string("");
 	threadData.acceptingTextInput.set();
-	threadData.inputTextLimit = 160;
+	threadData.inputTextLimit = char_limit;
 	threadData.inputText.clear();
 	SDL_StartTextInput();
-}
 
-bool Oneshot::checkctrlzinput() {
-	// Easter egg CTRL+Z to escape to 'actual' console
-	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	if (state[SDL_SCANCODE_LCTRL]) {
-		const Uint8 *state_2 = SDL_GetKeyboardState(NULL);
-		if (state_2[SDL_SCANCODE_Z]) {
-			if (threadData.acceptingTextInput) {
-				SDL_StopTextInput();
-			}
-			return true;
+	// Main loop
+	while (threadData.acceptingTextInput) {
+		if (inputTextPrev != threadData.inputText) {
+			inputBmp->clear();
+			inputBmp->drawText(DEF_SCREEN_W / 2, DEF_SCREEN_H / 2, DEF_SCREEN_W, DEF_SCREEN_H, threadData.inputText.c_str(), 1);
+			inputTextPrev = threadData.inputText;
 		}
 	}
-	return false;
-}
 
-std::string Oneshot::updatetextinput() {
-	//Copy-paste
+	// Disable text input
+	SDL_StopTextInput();
 
-	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	if (state[SDL_SCANCODE_LCTRL] && p->pressedCtrlV <= 0) {
-		const Uint8 *state_2 = SDL_GetKeyboardState(NULL);
-		if (state_2[SDL_SCANCODE_V] && p->pressedCtrlV <= 0) {
-			if (threadData.acceptingTextInput) {
-				std::string str = SDL_GetClipboardText();
-				if (SDL_HasClipboardText() && ((str.length() + threadData.inputText.length()) < (size_t)(threadData.inputTextLimit))) {
-					threadData.inputText += str;
-					p->pressedCtrlV = 30;
-				}
-			}
-		}
-	}
-	if (p->pressedCtrlV >= 0)
-	{
-		p->pressedCtrlV -= 1;
-	}
-	if (!threadData.acceptingTextInput) {
-		// Disable text input
-		SDL_StopTextInput();
-	}
 	return threadData.inputText;
-}
-
-bool Oneshot::istextinputstopped() {
-	if (!threadData.acceptingTextInput) {
-		// Disable text input
-		return true;
-	}
-	return false;
 }
 
 void Oneshot::setWindowPos(int x, int y)
