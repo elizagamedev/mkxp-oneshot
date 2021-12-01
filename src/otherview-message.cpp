@@ -28,9 +28,9 @@ void OtherViewMessager::sendMsg(const char *str) {
     std::memcpy (message.data(), str, size);
 
     if (conf.isOtherView) {
-        otherview.send (message, zmq::send_flags::none);
+        otherview.send (message, zmq::send_flags::dontwait);
     } else {
-        mainwindow.send (message, zmq::send_flags::none);
+        mainwindow.send (message, zmq::send_flags::dontwait);
     }
 }
 
