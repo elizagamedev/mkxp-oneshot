@@ -86,6 +86,7 @@ void steamBindingInit();
 void chromaBindingInit();
 void modshotwindowBindingInit();
 void aleffectBindingInit();
+void otherviewBindingInit();
 RB_METHOD(mriPrint);
 RB_METHOD(mriP);
 RB_METHOD(mkxpDataDirectory);
@@ -124,6 +125,7 @@ static void mriBindingInit()
 	chromaBindingInit();
 	modshotwindowBindingInit();
 	aleffectBindingInit();
+	otherviewBindingInit();
 	rb_define_global_const("MODSHOT_VERSION", rb_str_new_cstr(MODSHOT_VERSION));
 	if (rgssVer >= 3)
 	{
@@ -441,6 +443,7 @@ static void runRMXPScripts(BacktraceData &btData)
 
 	/* Set the debug flag */
 	rb_gv_set("$debug", conf.debugMode ? Qtrue : Qfalse);
+	rb_gv_set("$otherview", conf.isOtherView ? Qtrue : Qfalse);
 
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 

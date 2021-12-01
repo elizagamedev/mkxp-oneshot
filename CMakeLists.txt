@@ -82,6 +82,7 @@ set(MAIN_HEADERS
 	chromasdk/RzErrors.h
 	chromasdk/ChromaApi.h
 	src/i18n.h
+	src/otherview-message.h
 )
 
 set(MAIN_SOURCE
@@ -125,6 +126,7 @@ set(MAIN_SOURCE
 	src/oneshot.cpp
 	src/screen.cpp
 	src/i18n.cpp
+	src/otherview-message.cpp
 )
 
 if(WIN32)
@@ -287,6 +289,7 @@ set(BINDING_SOURCE
 	binding-mri/niko-binding.cpp
 	binding-mri/modshot-window-binding.cpp
 	binding-mri/aleffect-binding.cpp
+	binding-mri/otherview-binding.cpp
 )
 
 source_group("Binding Source" FILES ${BINDING_SOURCE} ${BINDING_HEADERS})
@@ -316,6 +319,7 @@ target_link_libraries(${PROJECT_NAME}
 	CONAN_PKG::sdl2_ttf
 	CONAN_PKG::sdl_sound-mkxp
 	CONAN_PKG::sigc++
+	CONAN_PKG::cppzmq
 	${PLATFORM_LIBRARIES})
 
 IF(APPLE)
