@@ -3,6 +3,7 @@
 #include "sharedstate.h"
 #include "eventthread.h"
 #include "otherview-message.h"
+#include "debugwriter.h"
 
 #include <vector>
 
@@ -10,21 +11,28 @@ std::vector<VALUE> subscribers;
 
 void notify(VALUE message)
 {
-    std::vector<VALUE>::iterator it;
+    /*
+    Debug() << "ruby_string";
+    Debug() << message;
+    */
+    VALUE args[] = { message };
 
-    for (it = subscribers.begin(); it != subscribers.end(); it++)
-    {
-        rb_proc_call(*it, message);
+    for (auto & element : subscribers) {
+        /* rb_funcallv(element, rb_intern("call"), 1, args); */
+        rb_funcallv(element, rb_intern("call"), 1, args);
     }
 }
 
 RB_METHOD(pushSubscriber)
 {
+    
     VALUE subscriberProc;
     rb_get_args(argc, argv, "o", &subscriberProc RB_ARG_END);
-
     subscribers.push_back(subscriberProc);
-
+    /*
+    VALUE obj = rb_block_proc();
+    subscribers.push_back(obj);
+    */
     return Qnil;
 }
 
@@ -57,11 +65,19 @@ RB_METHOD(otherViewUpdate)
 {
     OtherViewMessager &messager = shState->otherView();
     const char* response = messager.getMsg();
+    /*
+    Debug() << "response";
+    Debug() << response;
+    Debug() << strlen(response);
+    */
+    
+    VALUE str = rb_str_new_cstr(response);
+
     if (response !=  "NO MESSAGES") {
-        notify(rb_str_new_cstr(response));
+        notify(str);
     }
 
-    return Qnil;
+    return str;
 }
 
 RB_METHOD(sendMessage)

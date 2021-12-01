@@ -460,6 +460,5 @@ int main(int argc, char *argv[])
 #ifdef STEAM
 	STEAMSHIM_deinit();
 #endif
-
 	return 0;
 }

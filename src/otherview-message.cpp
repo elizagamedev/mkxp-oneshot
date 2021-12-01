@@ -8,16 +8,18 @@
 OtherViewMessager::OtherViewMessager(const Config &c):
     conf(c)
 {
+    //zmq::context_t ctx;
     if (conf.isOtherView) { 
         otherview = zmq::socket_t (ctx, ZMQ_PUSH);
         mainwindow = zmq::socket_t (ctx, ZMQ_PULL);
+        otherview.bind("tcp://127.0.0.1:9698");
+        mainwindow.connect("tcp://127.0.0.1:9697");
     } else {
         otherview = zmq::socket_t (ctx, ZMQ_PULL);
         mainwindow = zmq::socket_t (ctx, ZMQ_PUSH);
+        otherview.connect("tcp://127.0.0.1:9698");
+        mainwindow.bind("tcp://127.0.0.1:9697");
     }
-
-    otherview.connect("tcp://localhost:9698");
-    mainwindow.connect("tcp://loclahost:9697");
 }
 
 void OtherViewMessager::sendMsg(const char *str) {
@@ -37,24 +39,49 @@ const char* OtherViewMessager::getMsg() {
     if (conf.isOtherView) {
         auto res = mainwindow.recv (message, zmq::recv_flags::dontwait);
 
-        if (res.has_value() && (EAGAIN == res.value())) {
-            return "NO MESSAGES";
-        } else  {
-            return (char*) message.data();
+        /*
+        Debug() << "message";
+        Debug() << message;
+        Debug() << res.has_value();
+        if (res.has_value()){
+            Debug() << res.value();
         }
+        Debug() << "message data";
+        Debug() << message.data();
+        Debug() << sizeof(message.data());
+        */
+
+        if ((res.has_value() && (EAGAIN == res.value())) || zmq_errno() == EAGAIN) 
+            return "NO MESSAGES";
+
+        return static_cast<char*>(message.data());
+        
     } else {
         auto res = otherview.recv (message, zmq::recv_flags::dontwait);
 
-        if (res.has_value() && (EAGAIN == res.value())) {
-            return "NO MESSAGES";
-        } else  {
-            return (char*) message.data();
+        /*
+        Debug() << message;
+        Debug() << res.has_value();
+        if (res.has_value()){
+            Debug() << res.value();
         }
-    }
+        Debug() << message.data();
+        */
+        if ((res.has_value() && (EAGAIN == res.value())) || zmq_errno() == EAGAIN) 
+            return "NO MESSAGES";
 
+        return static_cast<char*>(message.data());
+
+    }
 }
 // Ignore because 0MQ has some python zen ass bullshit and you can't check the amount of messages in a queue
 // I also can't figure out how to enable the active poller which would bypass this problem entirely
 int OtherViewMessager::unreadMsgs() {
     return 0;
+}
+
+void OtherViewMessager::closeSockets() {
+    otherview.close();
+    mainwindow.close();
+    ctx.close();
 }

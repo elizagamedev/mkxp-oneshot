@@ -5,11 +5,9 @@
 struct Config;
 
 class OtherViewMessager {
-    zmq::context_t ctx;
-    
     zmq::socket_t otherview;
     zmq::socket_t mainwindow;
-
+    zmq::context_t ctx;
     const Config &conf;
     
 public:
@@ -18,4 +16,5 @@ public:
     void sendMsg(const char *str);
     const char* getMsg();
     int unreadMsgs();
+    void closeSockets();
 };
