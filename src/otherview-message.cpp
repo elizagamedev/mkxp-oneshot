@@ -11,7 +11,6 @@
 #include "otherview-message.h"
 #include "config.h"
 #include "debugwriter.h"
-#include "crash-handler.h"
 
 // Boost Interprocess.
 #include <boost/asio.hpp>
@@ -27,6 +26,7 @@
 
 
 using namespace boost::process;
+using namespace std;
 
 #define OSFM_NAMEDPIPE_NAME "OSFMOtherViewPipe_DontTouch"
 
