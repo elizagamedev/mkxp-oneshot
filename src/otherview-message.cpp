@@ -11,7 +11,6 @@
 #include "otherview-message.h"
 #include "config.h"
 #include "debugwriter.h"
-#include "crash-handler.h"
 
 // Boost Interprocess.
 #include <boost/asio.hpp>
