@@ -26,6 +26,7 @@
 
 
 using namespace boost::process;
+using namespace std;
 
 #define OSFM_NAMEDPIPE_NAME "OSFMOtherViewPipe_DontTouch"
 
