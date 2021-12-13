@@ -88,6 +88,12 @@ RB_METHOD(sendMessage)
 
     return Qnil;
 }
+RB_METHOD(readMessage) 
+{
+    OtherViewMessager &messager = shState->otherView();
+    VALUE rtn = rb_str_new_cstr(messager.getMsg().c_str());
+    return rtn;
+}
 
 RB_METHOD(openOneShot) 
 {
@@ -105,5 +111,6 @@ void otherviewBindingInit()
     _rb_define_module_function(module, "subscribers", returnSubscribers);
     _rb_define_module_function(module, "update", otherViewUpdate);
     _rb_define_module_function(module, "send", sendMessage);
+    _rb_define_module_function(module, "read", readMessage);
     _rb_define_module_function(module, "openOneShot", openOneShot);
 }
