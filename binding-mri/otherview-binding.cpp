@@ -6,6 +6,7 @@
 #include "debugwriter.h"
 
 #include <vector>
+#include <string>
 
 std::vector<VALUE> subscribers;
 
@@ -64,18 +65,14 @@ RB_METHOD(returnSubscribers)
 RB_METHOD(otherViewUpdate)
 {
     OtherViewMessager &messager = shState->otherView();
-    const char* response = messager.getMsg();
+    std::string response = messager.getMsg();
     /*
     Debug() << "response";
     Debug() << response;
     Debug() << strlen(response);
     */
     
-    VALUE str = rb_str_new_cstr(response);
-
-    if (response !=  "NO MESSAGES") {
-        notify(str);
-    }
+    VALUE str = rb_str_new_cstr(response.c_str());
 
     return str;
 }
@@ -84,10 +81,24 @@ RB_METHOD(sendMessage)
 {
     OtherViewMessager &messager = shState->otherView();
 
-    const char* message;
+    std::string message;
     rb_get_args(argc, argv, "z", &message RB_ARG_END);
 
     messager.sendMsg(message);
+
+    return Qnil;
+}
+RB_METHOD(readMessage) 
+{
+    OtherViewMessager &messager = shState->otherView();
+    VALUE rtn = rb_str_new_cstr(messager.getMsg().c_str());
+    return rtn;
+}
+
+RB_METHOD(openOneShot) 
+{
+    OtherViewMessager &messager = shState->otherView();
+    messager.OpenOneShot();
 
     return Qnil;
 }
@@ -100,4 +111,6 @@ void otherviewBindingInit()
     _rb_define_module_function(module, "subscribers", returnSubscribers);
     _rb_define_module_function(module, "update", otherViewUpdate);
     _rb_define_module_function(module, "send", sendMessage);
+    _rb_define_module_function(module, "read", readMessage);
+    _rb_define_module_function(module, "openOneShot", openOneShot);
 }

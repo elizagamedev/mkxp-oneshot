@@ -20,61 +20,85 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ## Setup main source ##
 
+set(SRC_AUDIO_HEADER_PATH src/audio/headers)
+set(SRC_GRAPHICS_HEADER_PATH src/graphics/headers)
+set(SRC_OPENGL_HEADER_PATH src/opengl/headers)
+set(SRC_INPUT_HEADER_PATH src/input/headers)
+set(SRC_FS_HEADER_PATH src/filesystem/headers)
+
+set(SRC_AUDIO_SOURCE_PATH src/audio/source)
+set(SRC_GRAPHICS_SOURCE_PATH src/graphics/source)
+set(SRC_OPENGL_SOURCE_PATH src/opengl/source)
+set(SRC_INPUT_SOURCE_PATH src/input/source)
+set(SRC_FS_SOURCE_PATH src/filesystem/source)
+
+set(SRC_STEAM_PATH src/steam)
+
 set(MAIN_HEADERS
-	src/quadarray.h
-	src/audio.h
+	# Audio
+	${SRC_AUDIO_HEADER_PATH}/audio.h
+	${SRC_AUDIO_HEADER_PATH}/al-util.h
+	${SRC_AUDIO_HEADER_PATH}/aldatasource.h
+	${SRC_AUDIO_HEADER_PATH}/alstream.h
+	${SRC_AUDIO_HEADER_PATH}/audiostream.h
+	${SRC_AUDIO_HEADER_PATH}/audiochannels.h
+	${SRC_AUDIO_HEADER_PATH}/soundemitter.h
+
+	# Graphics
+	${SRC_GRAPHICS_HEADER_PATH}/bitmap.h
+	${SRC_GRAPHICS_HEADER_PATH}/graphics.h
+	${SRC_GRAPHICS_HEADER_PATH}/disposable.h
+	${SRC_GRAPHICS_HEADER_PATH}/font.h
+	${SRC_GRAPHICS_HEADER_PATH}/sprite.h
+	${SRC_GRAPHICS_HEADER_PATH}/scene.h
+	${SRC_GRAPHICS_HEADER_PATH}/tilemap.h
+	${SRC_GRAPHICS_HEADER_PATH}/tilemap-common.h
+	${SRC_GRAPHICS_HEADER_PATH}/tileatlas.h
+	${SRC_GRAPHICS_HEADER_PATH}/flashable.h
+
+	# OpenGL
+	${SRC_OPENGL_HEADER_PATH}/glstate.h
+	${SRC_OPENGL_HEADER_PATH}/gl-debug.h
+	${SRC_OPENGL_HEADER_PATH}/gl-util.h
+	${SRC_OPENGL_HEADER_PATH}/gl-fun.h
+	${SRC_OPENGL_HEADER_PATH}/gl-meta.h
+	${SRC_OPENGL_HEADER_PATH}/quadarray.h
+	${SRC_OPENGL_HEADER_PATH}/plane.h
+	${SRC_OPENGL_HEADER_PATH}/shader.h
+	${SRC_OPENGL_HEADER_PATH}/quad.h
+	${SRC_OPENGL_HEADER_PATH}/texpool.h
+	${SRC_OPENGL_HEADER_PATH}/tilequad.h
+	${SRC_OPENGL_HEADER_PATH}/vertex.h
+	${SRC_OPENGL_HEADER_PATH}/window.h
+	${SRC_OPENGL_HEADER_PATH}/sdl-util.h
+	${SRC_OPENGL_HEADER_PATH}/viewport.h
+	${SRC_OPENGL_HEADER_PATH}/table.h
+	${SRC_OPENGL_HEADER_PATH}/transform.h
+
+	# Input
+	${SRC_INPUT_HEADER_PATH}/input.h
+	${SRC_INPUT_HEADER_PATH}/keybindings.h
+
+	# Filesystem
+	${SRC_FS_HEADER_PATH}/filesystem.h
+	${SRC_FS_HEADER_PATH}/rgssad.h
+
 	src/binding.h
-	src/bitmap.h
-	src/disposable.h
 	src/etc.h
 	src/etc-internal.h
 	src/eventthread.h
-	src/flashable.h
-	src/font.h
-	src/input.h
-	src/plane.h
-	src/scene.h
-	src/sprite.h
-	src/table.h
-	src/texpool.h
-	src/tilequad.h
-	src/transform.h
-	src/viewport.h
-	src/window.h
 	src/serializable.h
-	src/shader.h
-	src/glstate.h
-	src/quad.h
-	src/tilemap.h
-	src/tilemap-common.h
-	src/graphics.h
-	src/gl-debug.h
 	src/global-ibo.h
 	src/exception.h
-	src/filesystem.h
 	src/serial-util.h
 	src/intrulist.h
 	src/binding.h
-	src/gl-util.h
 	src/util.h
 	src/config.h
 	src/settingsmenu.h
-	src/keybindings.h
-	src/tileatlas.h
 	src/sharedstate.h
-	src/al-util.h
 	src/boost-hash.h
 	src/debugwriter.h
-	src/gl-fun.h
-	src/gl-meta.h
-	src/vertex.h
-	src/soundemitter.h
-	src/aldatasource.h
-	src/alstream.h
-	src/audiostream.h
-	src/audiochannels.h
-	src/rgssad.h
-	src/sdl-util.h
 	src/oneshot.h
 	src/pipe.h
 	chromasdk/RzChromaSDKDefines.h
@@ -83,50 +107,62 @@ set(MAIN_HEADERS
 	chromasdk/ChromaApi.h
 	src/i18n.h
 	src/otherview-message.h
+	src/crash-handler.h
 )
 
 set(MAIN_SOURCE
+	# Audio
+	${SRC_AUDIO_SOURCE_PATH}/alstream.cpp
+	${SRC_AUDIO_SOURCE_PATH}/audiostream.cpp
+	${SRC_AUDIO_SOURCE_PATH}/audiochannels.cpp
+	${SRC_AUDIO_SOURCE_PATH}/audio.cpp
+	${SRC_AUDIO_SOURCE_PATH}/soundemitter.cpp
+	${SRC_AUDIO_SOURCE_PATH}/sdlsoundsource.cpp
+	${SRC_AUDIO_SOURCE_PATH}/vorbissource.cpp
+
+	# Graphics
+	${SRC_GRAPHICS_SOURCE_PATH}/autotiles.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/bitmap.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/graphics.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/font.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/sprite.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/scene.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/tilemap.cpp
+	${SRC_GRAPHICS_SOURCE_PATH}/tileatlas.cpp
+
+	# OpenGL
+	${SRC_OPENGL_SOURCE_PATH}/glstate.cpp
+	${SRC_OPENGL_SOURCE_PATH}/gl-debug.cpp
+	${SRC_OPENGL_SOURCE_PATH}/gl-fun.cpp
+	${SRC_OPENGL_SOURCE_PATH}/gl-meta.cpp
+	${SRC_OPENGL_SOURCE_PATH}/plane.cpp
+	${SRC_OPENGL_SOURCE_PATH}/shader.cpp
+	${SRC_OPENGL_SOURCE_PATH}/texpool.cpp
+	${SRC_OPENGL_SOURCE_PATH}/vertex.cpp
+	${SRC_OPENGL_SOURCE_PATH}/tilequad.cpp
+	${SRC_OPENGL_SOURCE_PATH}/window.cpp
+	${SRC_OPENGL_SOURCE_PATH}/screen.cpp
+	${SRC_OPENGL_SOURCE_PATH}/viewport.cpp
+	${SRC_OPENGL_SOURCE_PATH}/table.cpp
+
+	# Input
+	${SRC_INPUT_SOURCE_PATH}/input.cpp
+	${SRC_INPUT_SOURCE_PATH}/keybindings.cpp
+
+	# Filesystem
+	${SRC_FS_SOURCE_PATH}/filesystem.cpp
+	${SRC_FS_SOURCE_PATH}/rgssad.cpp
+
 	src/main.cpp
-	src/audio.cpp
-	src/bitmap.cpp
 	src/eventthread.cpp
-	src/filesystem.cpp
-	src/font.cpp
-	src/input.cpp
-	src/plane.cpp
-	src/scene.cpp
-	src/sprite.cpp
-	src/table.cpp
-	src/tilequad.cpp
-	src/viewport.cpp
-	src/window.cpp
-	src/texpool.cpp
-	src/shader.cpp
-	src/glstate.cpp
-	src/tilemap.cpp
-	src/autotiles.cpp
-	src/graphics.cpp
-	src/gl-debug.cpp
 	src/etc.cpp
 	src/config.cpp
 	src/settingsmenu.cpp
-	src/keybindings.cpp
-	src/tileatlas.cpp
 	src/sharedstate.cpp
-	src/gl-fun.cpp
-	src/gl-meta.cpp
-	src/vertex.cpp
-	src/soundemitter.cpp
-	src/sdlsoundsource.cpp
-	src/alstream.cpp
-	src/audiostream.cpp
-	src/audiochannels.cpp
-	src/rgssad.cpp
-	src/vorbissource.cpp
 	src/oneshot.cpp
-	src/screen.cpp
 	src/i18n.cpp
 	src/otherview-message.cpp
+	src/crash-handler.cpp
 )
 
 if(WIN32)
@@ -151,11 +187,11 @@ endif()
 
 if (STEAM)
 	list(APPEND MAIN_HEADERS
-		src/steam.h
+		${SRC_STEAM_PATH}/steam.h
 		steamshim/steamshim_child.h
 	)
 	list(APPEND MAIN_SOURCE
-		src/steam.cpp
+		${SRC_STEAM_PATH}/steam.cpp
 		steamshim/steamshim_child.c
 	)
 	list(APPEND DEFINES
@@ -308,6 +344,11 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_AUDIO_HEADER_PATH})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_GRAPHICS_HEADER_PATH})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_OPENGL_HEADER_PATH})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_INPUT_HEADER_PATH})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_FS_HEADER_PATH})
 target_link_libraries(${PROJECT_NAME}
 	CONAN_PKG::boost
 	CONAN_PKG::openal
