@@ -54,6 +54,7 @@ set(MAIN_HEADERS
 	${SRC_GRAPHICS_HEADER_PATH}/tilemap.h
 	${SRC_GRAPHICS_HEADER_PATH}/tilemap-common.h
 	${SRC_GRAPHICS_HEADER_PATH}/tileatlas.h
+	${SRC_GRAPHICS_HEADER_PATH}/flashable.h
 
 	# OpenGL
 	${SRC_OPENGL_HEADER_PATH}/glstate.h
@@ -86,7 +87,6 @@ set(MAIN_HEADERS
 	src/etc.h
 	src/etc-internal.h
 	src/eventthread.h
-	src/flashable.h
 	src/serializable.h
 	src/global-ibo.h
 	src/exception.h
