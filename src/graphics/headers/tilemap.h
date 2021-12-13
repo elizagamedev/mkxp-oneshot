@@ -50,7 +50,7 @@ public:
 		friend struct TilemapPrivate;
 	};
 
-	Tilemap(Viewport *viewport = 0);
+	Tilemap(Viewport *viewport = 0, int xSize = 21, int ySize = 16);
 	~Tilemap();
 
 	void update();

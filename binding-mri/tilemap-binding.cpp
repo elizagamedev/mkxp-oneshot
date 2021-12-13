@@ -71,14 +71,16 @@ RB_METHOD(tilemapInitialize)
 	/* Get parameters */
 	VALUE viewportObj = Qnil;
 	Viewport *viewport = 0;
+	int xSize = 21;
+	int ySize = 16;
 
-	rb_get_args(argc, argv, "|o", &viewportObj RB_ARG_END);
+	rb_get_args(argc, argv, "|oii", &viewportObj, &xSize, &ySize RB_ARG_END);
 
 	if (!NIL_P(viewportObj))
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
 
 	/* Construct object */
-	t = new Tilemap(viewport);
+	t = new Tilemap(viewport, xSize, ySize);
 
 	setPrivateData(self, t);
 

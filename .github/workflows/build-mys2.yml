@@ -44,6 +44,9 @@ jobs:
         run: |
           conan install mingw_installer/1.0@conan/stable --profile=msys2;
           conan install msys2/cci.latest@ --profile=msys2
+      - name: Install gems
+        run: |
+          gem install pathname
       - name: Append to msys2 profile
         run: |
           echo [build_requires] >> C:\.conan\.conan\profiles\msys2;

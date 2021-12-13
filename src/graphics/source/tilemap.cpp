@@ -48,6 +48,8 @@
 
 #include <SDL_surface.h>
 
+#include "debugwriter.h"
+
 extern const StaticRect autotileRects[];
 
 typedef std::vector<SVertex> SVVector;
@@ -64,10 +66,10 @@ static const int atAreaH = autotileH * autotileCount;
 static const int tsLaneW = tilesetW / 2;
 
 /* Map viewport size */
-static const int viewpW = 21;
-static const int viewpH = 16;
+// static const int viewpW = 21;
+// const int viewpH = 16;
 
-static const size_t zlayersMax = viewpH + 5;
+// static const size_t zlayersMax = viewpH + 5;
 
 /* Vocabulary:
  *
@@ -211,6 +213,7 @@ struct ZLayer : public ViewportElement
 	GLsizei vboBatchCount;
 
 	ZLayer(TilemapPrivate *p, Viewport *viewport);
+	ZLayer();
 
 	void setIndex(int value);
 
@@ -265,37 +268,12 @@ struct TilemapPrivate
 	/* Ground layer vertices */
 	SVVector groundVert;
 
-	/* ZLayer vertices */
-	SVVector zlayerVert[zlayersMax];
-
-	/* Base quad indices of each zlayer
-	 * in the shared buffer */
-	size_t zlayerBases[zlayersMax+1];
-
-	/* Shared buffers for all tiles */
-	struct
-	{
-		GLMeta::VAO vao;
-		VBO::ID vbo;
-		bool animated;
-
-		/* Animation state */
-		uint8_t frameIdx;
-		uint8_t aniIdx;
-	} tiles;
+	int xSize;
+	int ySize;
+	size_t zlayersMax;
 
 	FlashMap flashMap;
 	uint8_t flashAlphaIdx;
-
-	/* Scene elements */
-	struct
-	{
-		GroundLayer *ground;
-		ZLayer* zlayers[zlayersMax];
-		/* Used layers out of 'zlayers' (rest is hidden) */
-		size_t activeLayers;
-		Scene::Geometry sceneGeo;
-	} elem;
 
 	/* Affected by: autotiles, tileset */
 	bool atlasSizeDirty;
@@ -311,6 +289,30 @@ struct TilemapPrivate
 	/* Resources are sufficient and tilemap is ready to be drawn */
 	bool tilemapReady;
 
+	/* Shared buffers for all tiles */
+	struct
+	{
+		GLMeta::VAO vao;
+		VBO::ID vbo;
+		bool animated;
+
+		/* Animation state */
+		uint8_t frameIdx;
+		uint8_t aniIdx;
+	} tiles;
+
+	/* Scene elements */
+	struct
+	{
+		GroundLayer *ground;
+		std::vector<ZLayer*> zlayers;
+		/* Used layers out of 'zlayers' (rest is hidden) */
+		size_t activeLayers;
+		Scene::Geometry sceneGeo;
+	} elem;
+	SVVector* zlayerVert;
+	size_t* zlayerBases;
+
 	/* Change watches */
 	sigc::connection tilesetCon;
 	sigc::connection autotilesCon[autotileCount];
@@ -323,7 +325,7 @@ struct TilemapPrivate
 	/* Draw prepare call */
 	sigc::connection prepareCon;
 
-	TilemapPrivate(Viewport *viewport)
+	TilemapPrivate(Viewport *viewport, int argxSize, int argySize)
 	    : viewport(viewport),
 	      tileset(0),
 	      mapData(0),
@@ -336,8 +338,22 @@ struct TilemapPrivate
 	      buffersDirty(false),
 	      mapViewportDirty(false),
 	      zOrderDirty(false),
-	      tilemapReady(false)
+	      tilemapReady(false),
+		  xSize(argxSize),
+		  ySize(argySize),
+		  zlayersMax(argySize + 5)
 	{
+		Debug() << xSize; Debug() << ySize;  
+
+		/* ZLayer vertices */
+		zlayerVert = new SVVector[zlayersMax];
+
+		/* Base quad indices of each zlayer
+		 * in the shared buffer */
+		zlayerBases = new size_t[zlayersMax+1];
+
+		elem.zlayers.resize(zlayersMax);
+
 		memset(autotiles, 0, sizeof(autotiles));
 
 		atlas.animatedATs.reserve(autotileCount);
@@ -395,7 +411,7 @@ struct TilemapPrivate
 
 	void updateFlashMapViewport()
 	{
-		flashMap.setViewport(IntRect(viewpPos, Vec2i(viewpW, viewpH)));
+		flashMap.setViewport(IntRect(viewpPos, Vec2i(xSize, ySize)));
 	}
 
 	void updateAtlasInfo()
@@ -721,8 +737,8 @@ struct TilemapPrivate
 	{
 		clearQuadArrays();
 
-		for (int x = 0; x < viewpW; ++x)
-			for (int y = 0; y < viewpH; ++y)
+		for (int x = 0; x < xSize; ++x)
+			for (int y = 0; y < ySize; ++y)
 				for (int z = 0; z < mapData->zSize(); ++z)
 					handleTile(x, y, z);
 	}
@@ -867,7 +883,7 @@ struct TilemapPrivate
 	 * single sized batches are possible. */
 	void prepareZLayerBatches()
 	{
-		ZLayer *const *zlayers = elem.zlayers;
+		std::vector<ZLayer*> const zlayers = elem.zlayers;
 
 		for (size_t i = 0; i < elem.activeLayers; ++i)
 		{
@@ -1106,9 +1122,9 @@ Bitmap *Tilemap::Autotiles::get(int i) const
 	return p->autotiles[i];
 }
 
-Tilemap::Tilemap(Viewport *viewport)
+Tilemap::Tilemap(Viewport *viewport, int xSize, int ySize)
 {
-	p = new TilemapPrivate(viewport);
+	p = new TilemapPrivate(viewport, xSize, ySize);
 	atProxy.p = p;
 }
 

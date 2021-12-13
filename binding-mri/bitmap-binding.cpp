@@ -476,13 +476,13 @@ bitmapBindingInit()
 	_rb_define_method(klass, "text_size",   bitmapTextSize);
 	_rb_define_method(klass, "mask",   		bitmapMask);
 
-	if (rgssVer >= 2)
-	{
+	//if (rgssVer >= 2)
+	//{
 	_rb_define_method(klass, "gradient_fill_rect", bitmapGradientFillRect);
 	_rb_define_method(klass, "clear_rect",         bitmapClearRect);
 	_rb_define_method(klass, "blur",               bitmapBlur);
 	_rb_define_method(klass, "radial_blur",        bitmapRadialBlur);
-	}
+	//}
 
 	INIT_PROP_BIND(Bitmap, Font, "font");
 }
