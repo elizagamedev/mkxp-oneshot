@@ -34,21 +34,60 @@ class Language
       msgid = nil
       msgstr = nil
       @data = Hash.new
+      lastLineWasMsgId = false
+      lastLineWasMsgStr = false
       if FileTest.exist?(path)
         File.readlines(path).each do |line|
           if line.start_with?("msgid ")
             line = line[6..-1]
             #unescape the string
+			#note that I tried using undump here instead before, but it doesn't play nicely with non-ascii characters
             eval("msgid = " + line)
+            lastLineWasMsgId = true
+            lastLineWasMsgStr = false
+      
           elsif line.start_with?("msgstr ")
             line = line[7..-1]
             #unescape the string
             eval("msgstr = " + line)
+            lastLineWasMsgId = false
+            lastLineWasMsgStr = true
+      
+          elsif line.start_with?("\"")
+            if lastLineWasMsgId
+              eval("msgid += " + line)
+              lastLineWasMsgId = true
+              lastLineWasMsgStr = false
+        
+            elsif lastLineWasMsgStr
+              eval("msgstr += " + line)
+              lastLineWasMsgId = false
+              lastLineWasMsgStr = true
+        
+            else #ignore
+              lastLineWasMsgId = false
+              lastLineWasMsgStr = false
+        
+            end
+      
+          else
+            lastLineWasMsgId = false
+            lastLineWasMsgStr = false
+      
             if !(msgid.nil? || msgid.empty?)
               @data[Oneshot::crc32(msgid)] = msgstr
+              msgid = nil
+              msgstr = nil
             end
           end
         end
+      end
+    
+      # make sure we cleared out the last one stored
+      if !(msgid.nil? || msgid.empty?)
+        @data[Oneshot::crc32(msgid)] = msgstr
+        msgid = nil
+        msgstr = nil
       end
     end
 
