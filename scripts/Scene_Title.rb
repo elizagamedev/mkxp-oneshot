@@ -54,6 +54,14 @@ class Scene_Title
        @sprite.bitmap = RPG::Cache.title($data_system.title_name)
  	end
 	
+	# check for debug file to add debug items
+	if File.exists?("debug_tester.dat")
+		# debug save
+		$game_party.gain_item(54, 1)
+		# plight skip
+		$game_party.gain_item(82, 1)
+	end
+	
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
     # Create/render menu options

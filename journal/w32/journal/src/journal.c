@@ -161,13 +161,13 @@ DWORD WINAPI ipc_thread(LPVOID lpParam)
 void init_check_save(WCHAR* save_path) {
   FILE* savefile = _wfopen(save_path, L"rb");
   char imgfile[16] = {0};
-  char langbuf[9] = {0};
+  char langbuf[17] = {0};
   char* openbrace = 0;
   char* closebrace = 0;
   if (savefile) {
     strcpy(imgfile, "save");
-    fseek(savefile, -8, SEEK_END);
-    fread(langbuf, 1, 8, savefile);
+    fseek(savefile, -16, SEEK_END);
+    fread(langbuf, 1, 16, savefile);
     fclose(savefile);
 
     openbrace = strchr(langbuf, '[');

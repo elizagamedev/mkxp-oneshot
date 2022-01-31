@@ -71,12 +71,16 @@ module Script
   end
 
   def self.skip_bruteforce
-    $game_oneshot.bruteforce_start -= 62800*2*60
+    $game_oneshot.bruteforce_start -= 63014*2*60
   end
 
   def self.lose_all_items
     for i in 1..99
-      $game_party.lose_item(i, 99)
+		#skip debug testing items
+		if i == 54 or i == 81 or i == 82
+			next
+		end
+		$game_party.lose_item(i, 99)
     end
   end
 
