@@ -21,12 +21,13 @@ class Scene_File
     @help_window.set_text(@help_text)
     # Make save file window
     @savefile_windows = []
-    for i in 0..3
+    for i in 0..99
       @savefile_windows.push(Window_SaveFile.new(i, make_filename(i)))
     end
     # Select last file to be operated
     @file_index = $game_temp.last_file_index
     @savefile_windows[@file_index].selected = true
+	updateVisibleSavefileWindows
     # Execute transition
     Graphics.transition
     # Main loop
@@ -76,13 +77,17 @@ class Scene_File
     if Input.repeat?(Input::DOWN)
       # If the down directional button pressed down is not a repeat,
       # or cursor position is more in front than 3
-      if Input.trigger?(Input::DOWN) or @file_index < 3
+      if Input.trigger?(Input::DOWN) or @file_index < 99
         # Play cursor SE
         $game_system.se_play($data_system.cursor_se)
         # Move cursor down
         @savefile_windows[@file_index].selected = false
-        @file_index = (@file_index + 1) % 4
+        @file_index = (@file_index + 1)
+		if @file_index > 99
+			@file_index = 0
+		end
         @savefile_windows[@file_index].selected = true
+		updateVisibleSavefileWindows
         return
       end
     end
@@ -95,8 +100,12 @@ class Scene_File
         $game_system.se_play($data_system.cursor_se)
         # Move cursor up
         @savefile_windows[@file_index].selected = false
-        @file_index = (@file_index + 3) % 4
+        @file_index = (@file_index - 1)
+		if @file_index < 0
+			@file_index = 99
+		end
         @savefile_windows[@file_index].selected = true
+		updateVisibleSavefileWindows
         return
       end
     end
@@ -107,5 +116,16 @@ class Scene_File
   #--------------------------------------------------------------------------
   def make_filename(file_index)
     return "Save#{file_index + 1}.rxdata"
+  end
+  
+  def updateVisibleSavefileWindows
+		for i in 0..99
+			@savefile_windows[i].visible = false
+		end
+		
+		screen_start_index = @file_index - (@file_index % 4)
+		for i in screen_start_index..(screen_start_index + 3)
+			@savefile_windows[i].visible = true
+		end
   end
 end

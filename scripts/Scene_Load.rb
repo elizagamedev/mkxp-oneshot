@@ -14,7 +14,7 @@ class Scene_Load < Scene_File
     # Timestamp selects new file
     $game_temp.last_file_index = 0
     latest_time = Time.at(0)
-    for i in 0..3
+    for i in 0..99
       filename = make_filename(i)
       if FileTest.exist?(filename)
         file = File.open(filename, "r")
@@ -58,7 +58,7 @@ class Scene_Load < Scene_File
     # Play cancel SE
     $game_system.se_play($data_system.cancel_se)
     # Switch to title screen
-    $scene = Scene_Title.new
+    $scene = Scene_Map.new
   end
   #--------------------------------------------------------------------------
   # * Read Save Data
@@ -101,6 +101,16 @@ class Scene_Load < Scene_File
       f.moveto($game_player.x, $game_player.y)
 	  f_prev = f
     end
+	
+	
+	# check for debug file to add debug items
+	if File.exists?("debug_tester.dat")
+		# debug save
+		$game_party.gain_item(54, 1)
+		# plight skip
+		$game_party.gain_item(82, 1)
+	end
+	
     load_perma_flags
   end
 end

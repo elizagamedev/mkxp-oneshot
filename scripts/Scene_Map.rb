@@ -279,7 +279,7 @@ class Scene_Map
       end
     end
     # If debug mode is ON and F5 key was pressed
-    if $debug and Input.press?(Input::F5)
+    if $debug and Input.press?(Input::F5) and 
       # Set transferring player flag
       $game_temp.player_transferring = true
       # Set player move destination
@@ -288,23 +288,23 @@ class Scene_Map
       $game_temp.player_new_y = $data_system.start_y
     end
     # debug && F6
-    if $debug and Input.press?(Input::F6) and $lastpress != 6
-      $lastpress = 6
-      Chroma.playAnim("chroma/blank_keyboard.chroma", false);
-    end
-    if $debug and Input.press?(Input::F7) and $lastpress != 7
-      $lastpress = 7
-      Chroma.playAnim("chroma/Fire_Keyboard.chroma", true);
-    end
-    if $debug and Input.press?(Input::F9) and $lastpress != 9
-      $lastpress = 9
-      Chroma.playAnim("chroma/Random_Keyboard.chroma", false);
-    end
+    #if $debug and Input.press?(Input::F6) and $lastpress != 6
+    #  $lastpress = 6
+    #  Chroma.playAnim("chroma/blank_keyboard.chroma", false);
+    #end
+    #if $debug and Input.press?(Input::F7) and $lastpress != 7
+    #  $lastpress = 7
+    #  Chroma.playAnim("chroma/Fire_Keyboard.chroma", true);
+    #end
+    #if $debug and Input.press?(Input::F9) and $lastpress != 9
+    #  $lastpress = 9
+    #  Chroma.playAnim("chroma/Random_Keyboard.chroma", false);
+    #end
     # If debug mode is ON and F9 key was pressed
-    # if $debug and Input.press?(Input::F9)
-    #   # Set debug calling flag
-    #   $game_temp.debug_calling = true
-    # end
+    if Input.press?(Input::F9) && File.exists?("debug_tester.dat")
+       # Set debug calling flag
+       $game_temp.debug_calling = true
+    end
     # If player is not moving
     unless $game_player.moving?
       # Run calling of each screen

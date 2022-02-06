@@ -42,23 +42,18 @@ module Wallpaper
       end
       Graphics.update
     end
-  
-    if (name == 'save_w32')
-	  case $persistent.langcode
-	    when 'fr'
-          name = $persistent.langcode + "/" + name
-	    when 'pt_BR'
-	      name = $persistent.langcode + "/" + name
-	    when 'es'
-	      name = $persistent.langcode + "/" + name
-	    when 'ja'
-	      name = $persistent.langcode + "/" + name
-	    when 'ko'
-	      name = $persistent.langcode + "/" + name
-	    when 'zh_CN'
-	      name = $persistent.langcode + "/" + name
-      end
+	
+	locWallpaper = $persistent.langcode + "/" + name
+	if (name == 'save_w32')
+		locWallpaperFullPath = "Wallpaper/" + locWallpaper + ".bmp"
+	else
+		locWallpaperFullPath = "Wallpaper/" + locWallpaper + ".png"
 	end
+	
+	if File.exists?(locWallpaperFullPath)
+		name = locWallpaper
+	end
+	
     $game_oneshot.wallpaper = name
     $game_oneshot.wallpaper_color = color
     Wallpaper.set(name, color)
