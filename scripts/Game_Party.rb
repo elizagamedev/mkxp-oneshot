@@ -131,15 +131,17 @@ class Game_Party
     actor = $game_actors[actor_id]
     # Delete follower
     unless $game_followers.empty?
-      follower = $game_followers.pop
-      $scene.remove_follower(follower)
-      new_actor = follower.actor
-	  if new_actor != actor
-        $game_followers.reverse_each do |follower|
-          new_actor, follower.actor = follower.actor, new_actor
-          break if new_actor == actor
+      for i in 0...$game_followers.size
+        follower = $game_followers[i]
+        if follower.actor.id == actor.id
+          if $game_followers.size > i + 1
+            $game_followers[i + 1].leader = follower.leader
+          end
+          $game_followers.delete_at(i)
+          $scene.remove_follower(follower)
+          break
         end
-	  end
+      end
     end
     # Delete actor
     @actors.delete(actor)
