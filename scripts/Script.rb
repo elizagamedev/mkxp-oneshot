@@ -565,12 +565,14 @@ module Script
     portal_path = Oneshot::GAME_PATH + "/Oneshot/BigPortal"
 	case numb
 	when 1
-	  return File.exists?(portal_path + "/keyB.txt")
+	  return (File.exists?(portal_path + "/keyB.txt") or File.exists?(portal_path + "/Portal1/keyB.txt"))
 	when 2
-	  return File.exists?(portal_path + "/keyG.txt")
+	  return (File.exists?(portal_path + "/keyG.txt") or File.exists?(portal_path + "/Portal2/keyG.txt"))
 	when 3
-	  return File.exists?(portal_path + "/keyR.txt")
+	  return (File.exists?(portal_path + "/keyR.txt") or File.exists?(portal_path + "/Portal3/keyR.txt"))
 	end
+	
+	
     return false
   end
 
