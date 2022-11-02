@@ -53,8 +53,16 @@ class Sprite_Character
         self.oy = 32
       # If tile ID value is invalid
       else
-        @sprite.bitmap = RPG::Cache.character(@character.character_name,
-          @character.character_hue)
+	    name = @character.character_name
+	    translation_name = "#{$persistent.langcode}/#{name}"
+        if File.exists?("Graphics/Characters/#{translation_name}.png")
+          @sprite.bitmap = RPG::Cache.character(translation_name,
+            @character.character_hue)
+	    else
+          @sprite.bitmap = RPG::Cache.character(name,
+            @character.character_hue)
+	    end
+	  
         begin
           @light_sprite.bitmap = RPG::Cache.lightmap(@character.character_name)
           @light_sprite.visible = true
