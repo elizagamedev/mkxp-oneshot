@@ -16,7 +16,7 @@ module Script
 
   def self.is_name_swear
     test_string = $game_oneshot.player_name.downcase
-    if ["fuck", "shit", "ass", "cock", "damn", "penis", "tiddy", "titty", "cunt", "fag", "whore"].any? { |swear| test_string.include? swear }
+    if ["fuck", "shit", "ass", "cock", "damn", "penis", "tiddy", "titty", "cunt", "fag", "whore", "блять", "блядь", "пиздец", "пиздос", "ебать", "поебать", "говно", "говнище", "дерьмо", "дерьмище", "насрать", "жопа", "член", "хуй", "пенис", "охуеть", "похуй", "сиська", "титька", "залупа", "пезда", "пизда", "говнюк", "долбаёб", "уёбище", "уёбок", "пидор", "пидр", "шлюха", "сука"].any? { |swear| test_string.include? swear }
       return true
     end
     return false
@@ -24,7 +24,7 @@ module Script
 
   def self.is_name_niko
     test_string = $game_oneshot.player_name.downcase
-    if test_string == "niko"
+    if ["niko", "нико"].any? { |name| test_string == name }
       return true
     end
     return false
@@ -32,7 +32,7 @@ module Script
 
   def self.is_name_like_niko
     test_string = $game_oneshot.player_name.downcase
-    if ["nico", "nikko", "nicco", "nikoh", "nicoh"].any? { |name| test_string == name }
+    if ["nico", "nikko", "nicco", "nikoh", "nicoh", "никко"].any? { |name| test_string == name }
       return true
     end
     return false
@@ -40,7 +40,7 @@ module Script
 
   def self.is_name_like_mom_dad
     test_string = $game_oneshot.player_name.downcase
-    if ["mom", "dad", "mommy", "daddy", "mama", "papa"].any? { |name| test_string == name }
+    if ["mom", "dad", "mommy", "daddy", "mama", "papa", "мать", "отец", "мамочка", "папочка", "мама", "папа", "батя"].any? { |name| test_string == name }
       return true
     end
     return false
@@ -48,7 +48,7 @@ module Script
 
   def self.is_name_gross
     test_string = $game_oneshot.player_name.downcase
-    if ["poo", "pee", "fart", "stinky", "piss", "shit", "slimy"].any? { |name| test_string == name }
+    if ["poo", "pee", "fart", "stinky", "piss", "slimy", "какашка", "моча", "пердёж", "вонючка", "засранец"].any? { |name| test_string == name }
       return true
     end
     return false
