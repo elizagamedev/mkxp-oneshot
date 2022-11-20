@@ -41,6 +41,7 @@ class Scene_Title
     end
     load_perma_flags
 	Window_Settings.load_settings
+    Oneshot.allow_exit true
 	
     @window_settings_title = Window_Settings.new
     # Make title graphic
@@ -227,6 +228,7 @@ class Scene_Title
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
+	Oneshot.allow_exit false
     $game_map.update
     # Switch to map screen
     $scene = Scene_Map.new
