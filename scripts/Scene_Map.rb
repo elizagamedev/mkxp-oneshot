@@ -110,9 +110,6 @@ class Scene_Map
       millisec = ((Graphics.frame_count * 1000) / Graphics.frame_rate) % 1000
       time_string = sprintf("%02d:%02d:%02d.%03d", hour, min, sec, millisec)
 
-      igt_seconds = (Graphics.frame_count / 60) % 60
-      igt_minutes = (Graphics.frame_count / (60 * 60)) % 60
-      igt_hours = Graphics.frame_count / (60 * 60 * 60)
       @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0, 128))
       @in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
     end
