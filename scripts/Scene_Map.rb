@@ -9,6 +9,14 @@ class Scene_Map
   # * Main Processing
   #--------------------------------------------------------------------------
   def main
+    @in_game_timer = Sprite.new
+    @in_game_timer.x = 8;
+    @in_game_timer.y = 8;
+    @in_game_timer.bitmap = Bitmap.new(140, 30)
+    @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0))
+    @in_game_timer.z = 10001
+    @in_game_timer.visible = $game_temp.igt_timer_visible
+  
     # Make sprite set
     @spriteset = Spriteset_Map.new
     # Make message window
@@ -82,6 +90,7 @@ class Scene_Map
     @item_icon.dispose
     @item_icon_flash.dispose
     @blackfade.dispose
+    @in_game_timer.dispose
     # If switching to title screen
     if $scene.is_a?(Scene_Title)
       # Fade out screen
@@ -93,6 +102,21 @@ class Scene_Map
   # * Frame Update
   #--------------------------------------------------------------------------
   def update
+    if $game_temp.igt_timer_visible && (Graphics.frame_count != nil)
+      total_sec = Graphics.frame_count / Graphics.frame_rate
+      hour = total_sec / 60 / 60
+      min = total_sec / 60 % 60
+      sec = total_sec % 60
+      millisec = ((Graphics.frame_count * 1000) / Graphics.frame_rate) % 1000
+      time_string = sprintf("%02d:%02d:%02d.%03d", hour, min, sec, millisec)
+
+      igt_seconds = (Graphics.frame_count / 60) % 60
+      igt_minutes = (Graphics.frame_count / (60 * 60)) % 60
+      igt_hours = Graphics.frame_count / (60 * 60 * 60)
+      @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0, 128))
+      @in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
+    end
+  
     if Input.quit?
       # put in dialogue boxes here for player
       # either telling them they can't quit during a cutscene

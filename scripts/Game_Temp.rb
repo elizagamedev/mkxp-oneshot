@@ -66,6 +66,7 @@ class Game_Temp
   attr_accessor :prompt_wait              # wait for delay caused by prompt
   attr_accessor :menus_visible
   attr_accessor :countdown_password
+  attr_accessor :igt_timer_visible
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -123,8 +124,9 @@ class Game_Temp
     @footstep_sfx = nil
     @filmsprite = nil
     @prompt_wait = 0
-	@menus_visible = false
-	@countdown_password = ""
+    @menus_visible = false
+    @countdown_password = ""
+    @igt_timer_visible = false
   end
 
   def bgm_fadein(game_system)
