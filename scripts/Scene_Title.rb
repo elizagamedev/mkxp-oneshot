@@ -32,6 +32,11 @@ class Scene_Title
     new_game #unless load
     # Make system object
     $game_system = Game_System.new
+
+    if File.exists?("igt.ini")
+      $game_temp.igt_timer_visible = true
+    end
+
     # Skip title screen if debug mode (or demo, but not GDC)
     if $debug || ($demo && !$GDC) || save_exists
       $game_map.update
@@ -225,6 +230,8 @@ class Scene_Title
   # * Command: Continue
   #--------------------------------------------------------------------------
   def command_continue
+    # Reset frame count for measuring play time
+    Graphics.frame_count = 0
     # Play decision SE
     Audio.se_play('Audio/SE/title_decision.wav')
     # Update map (run parallel process event)
