@@ -33,10 +33,6 @@ class Scene_Title
     # Make system object
     $game_system = Game_System.new
 
-    if File.exists?("igt.ini")
-      $game_temp.igt_timer_visible = true
-    end
-
     # Skip title screen if debug mode (or demo, but not GDC)
     if $debug || ($demo && !$GDC) || save_exists
       $game_map.update
@@ -47,11 +43,11 @@ class Scene_Title
     load_perma_flags
 	Window_Settings.load_settings
     Oneshot.allow_exit true
-	
+
     @window_settings_title = Window_Settings.new
     # Make title graphic
     @sprite = Sprite.new
-	
+
 	# chinese has its own special title screen so check for it
 	translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
     if File.exists?("Graphics/Titles/#{translation_name}.png")
@@ -59,7 +55,7 @@ class Scene_Title
  	else
        @sprite.bitmap = RPG::Cache.title($data_system.title_name)
  	end
-	
+
 	# check for debug file to add debug items
 	if File.exists?("debug_tester.dat")
 		# debug save
@@ -67,7 +63,7 @@ class Scene_Title
 		# plight skip
 		$game_party.gain_item(82, 1)
 	end
-	
+
     @sprite.zoom_x = 2.0
     @sprite.zoom_y = 2.0
     # Create/render menu options
@@ -151,7 +147,7 @@ class Scene_Title
           update_cursor = true
         end
       elsif Input.trigger?(Input::DOWN)
-	    
+
 	    if $game_switches[160] && $game_switches[152]
           if @cursor_pos < 3
             @cursor_pos += 1
@@ -254,7 +250,7 @@ class Scene_Title
     Oneshot.exiting true
     $scene = nil
   end
-  
+
   def command_settings
     $game_system.se_play($data_system.decision_se)
     @window_settings_title.open
