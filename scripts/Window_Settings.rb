@@ -17,6 +17,7 @@ class Window_Settings
       file.puts('colorblind_mode=' + $game_switches[252].to_s)
       file.puts('automash_enabled=' + $game_switches[253].to_s)
       file.puts('frameskip=' + Graphics.frameskip.to_s)
+      file.puts('in_game_timer=' + $game_temp.igt_timer_visible.to_s)
     end
   end
 
@@ -60,16 +61,20 @@ class Window_Settings
 		end
 	  when "automash_enabled"
 	    if vals[1] == "true"
-		  $game_switches[253] = true
-		elsif vals[1] == "false"
-		  $game_switches[253] = false
-		end
+		    $game_switches[253] = true
+		  elsif vals[1] == "false"
+		    $game_switches[253] = false
+		  end
 	  when "frameskip"
 	    if vals[1] == "true"
-		  Graphics.frameskip = true
-		elsif vals[1] == "false"
-		  Graphics.frameskip = false
-		end
+		    Graphics.frameskip = true
+		  elsif vals[1] == "false"
+		    Graphics.frameskip = false
+		  end
+    when "in_game_timer"
+      timer_enabled = vals[1] == "true"
+      $game_temp.igt_timer_visible = timer_enabled
+      $scene.in_game_timer.visible = timer_enabled if $scene.is_a?(Scene_Map)
 	  end
     end
   end
@@ -128,6 +133,7 @@ class Window_Settings
 			 tr('Colorblind mode'),
 			 tr('Skip Text (R)'),
 			 tr('Frameskip'),
+			 tr('In-Game Timer'),
 			 tr('Language'),
 			 tr('Configure Controls (Press F1)'),
 			]
@@ -203,10 +209,13 @@ class Window_Settings
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-        when 7 # Language
-          l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
-          spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
-        end
+		when 7 # In-game timer
+      text = tr($game_temp.igt_timer_visible ? "ON" : "OFF")
+      spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, text)
+    when 8 # Language
+      l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
+      spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
+    end
   end
 
 
@@ -414,34 +423,41 @@ class Window_Settings
 
 	  when 6 #frameskip
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-
-		  $game_system.se_play($data_system.decision_se)
-          if Graphics.frameskip == true
-	        Graphics.frameskip = false
-	      else
-	        Graphics.frameskip = true
-	      end
-		  redraw_setting_index(6)
-		end
-
-	  when 7 #language
-	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
-          @lang_index += 1
-          if @lang_index >= Language::LANGUAGES.length
-            @lang_index = 0
-          end
-          $persistent.lang = Language::LANGUAGES[@lang_index]
-          redraw_all_settings()
-		end
-		if Input.trigger?(Input::LEFT)
-		  @lang_index -= 1
-		  if @lang_index < 0
-		    @lang_index = Language::LANGUAGES.length - 1
+		    $game_system.se_play($data_system.decision_se)
+            if Graphics.frameskip == true
+	          Graphics.frameskip = false
+	        else
+	          Graphics.frameskip = true
+	        end
+		    redraw_setting_index(6)
 		  end
+    
+	  when 7 # In-game timer
+	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+        $game_temp.igt_timer_visible = !$game_temp.igt_timer_visible
+        $scene.in_game_timer.visible = $game_temp.igt_timer_visible if $scene.is_a?(Scene_Map)
+		    redraw_setting_index(7)
+      end
+
+	  when 8 #language
+	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
+        @lang_index += 1
+        if @lang_index >= Language::LANGUAGES.length
+          @lang_index = 0
+        end
+        $persistent.lang = Language::LANGUAGES[@lang_index]
+        redraw_all_settings()
+		  end
+
+      if Input.trigger?(Input::LEFT)
+		    @lang_index -= 1
+		    if @lang_index < 0
+		      @lang_index = Language::LANGUAGES.length - 1
+		    end
           $persistent.lang = Language::LANGUAGES[@lang_index]
           redraw_all_settings()
-		end
-	end
+        end
+      end
 
     if Input.trigger?(Input::CANCEL)
       $game_system.se_play($data_system.cancel_se)
