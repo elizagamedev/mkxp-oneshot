@@ -153,9 +153,16 @@ class Journal(QWidget):
 			self.close_label.hide()
 			self.close_button = False
 
-		if lang == 'en': img = os.path.join(base_path, 'images', '{}.png'.format(name))
-		else: img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
-		if not os.path.exists(img): return
+		img = img_en = os.path.join(base_path, 'images', '{}.png'.format(name))
+		if lang != 'en':
+			img = os.path.join(base_path, 'images', lang.upper(), '{}.png'.format(name))
+			if not os.path.exists(img):
+				print("No image {!r} for locale {!r}".format(name, lang), file=sys.stderr)
+				img = img_en
+
+		if not os.path.exists(img):
+			print("Image not found: {!r}".format(img), file=sys.stderr)
+			return
 
 		self.pixmap = QPixmap(img)
 		self.label.setPixmap(self.pixmap)
