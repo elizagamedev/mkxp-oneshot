@@ -47,6 +47,7 @@
 		static int defColorStyle;
 		static GValue defColor = G_VALUE_INIT;
 		static bool defColorExists;
+		static std::string pictureURIKey;
 		static std::string optionImage, optionColor, optionImageStyle, optionColorStyle;
 		// KDE settings
 		static std::map<std::string, std::string> defPlugins, defPictures, defColors, defModes;
@@ -64,15 +65,43 @@
 		}
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
-				if (desktop == "cinnamon") bgsetting = g_settings_new("org.cinnamon.desktop.background");
-				else if (desktop == "deepin") bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
-				else bgsetting = g_settings_new("org.gnome.desktop.background");
-				defPictureURI = g_settings_get_string(bgsetting, "picture-uri");
-			} else {
-				bgsetting = g_settings_new("org.mate.background");
-				defPictureURI = g_settings_get_string(bgsetting, "picture-filename");
+			pictureURIKey = "picture-uri";
+			if (desktop == "cinnamon") {
+				bgsetting = g_settings_new("org.cinnamon.desktop.background");
 			}
+			else if (desktop == "deepin") {
+				bgsetting = g_settings_new("com.deepin.wrap.gnome.desktop.background");
+			}
+			else if (desktop == "mate")
+			{
+				pictureURIKey = "picture-filename";
+				bgsetting = g_settings_new("org.mate.background");
+			}
+			else // GNOME
+			{
+				bgsetting = g_settings_new("org.gnome.desktop.background");
+
+				// In Ubuntu 22.04 and later, GNOME exposes a different key for
+				// the light theme wallpaper (`picture-uri`) and a different
+				// key for the dark theme wallpaper (`picture-uri-dark`):
+				// https://askubuntu.com/a/1403992
+				//
+				// Try and guess what theme is currently being used from the
+				// current theme's name (e.g. `Yaru` vs `Yaru-dark`).
+				GSettings* interfaceSettings = g_settings_new("org.gnome.desktop.interface");
+				if (theme != nullptr)
+				{
+					std::string theme = g_settings_get_string(interfaceSettings, "gtk-theme");
+					if (theme.find("dark") != std::string::npos)
+					{
+						pictureURIKey = "picture-uri-dark";
+					}
+				}
+				g_clear_object(&interfaceSettings);
+			}
+
+			defPictureURI = g_settings_get_string(bgsetting, pictureURIKey);
+
 			defPictureOptions = g_settings_get_string(bgsetting, "picture-options");
 			defPrimaryColor = g_settings_get_string(bgsetting, "primary-color");
 			defColorShading = g_settings_get_string(bgsetting, "color-shading-type");
@@ -271,11 +300,13 @@ end:
 			g_settings_set_string(bgsetting, "picture-options", "scaled");
 			g_settings_set_string(bgsetting, "primary-color", hexColor.str().c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", "solid");
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
-				g_settings_set_string(bgsetting, "picture-uri", ("file://" + gameDirStr + path).c_str());
-			} else {
-				g_settings_set_string(bgsetting, "picture-filename", (gameDirStr + path).c_str());
-			}
+
+			std::string wallpaperPath = (desktop == "mate")
+				? gameDirStr + path
+				: "file://" + gameDirStr + path;
+
+			g_settings_set_string(bgsetting, pictureURIKey, wallpaperPath.c_str());
+			g_clear_object(&bgsetting);
 		} else if (desktop == "xfce") {
 			int r = (color >> 16) & 0xFF;
 			int g = (color >> 8) & 0xFF;
@@ -395,11 +426,8 @@ RB_METHOD(wallpaperReset)
 	#else
 		desktopEnvironmentInit();
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
-			if (desktop == "cinnamon" || desktop == "gnome" || desktop == "deepin") {
-				g_settings_set_string(bgsetting, "picture-uri", defPictureURI.c_str());
-			} else {
-				g_settings_set_string(bgsetting, "picture-filename", defPictureURI.c_str());
-			}
+			g_settings_set_string(bgsetting, pictureURIKey, defPictureURI.c_str());
+
 			g_settings_set_string(bgsetting, "picture-options", defPictureOptions.c_str());
 			g_settings_set_string(bgsetting, "primary-color", defPrimaryColor.c_str());
 			g_settings_set_string(bgsetting, "color-shading-type", defColorShading.c_str());
